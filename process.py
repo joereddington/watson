@@ -2,9 +2,6 @@ from icalendar import Calendar, Event
 import datetime
 from pytz import UTC  # timezone
 
-outfilename = "oysterjourneys.ics"
-infilename = "test.csv"
-
 
 def addEvent(cal, summary, start, end):
         event = Event()
@@ -32,6 +29,8 @@ def write_cal(outfilename, cal):
 
 
 def processOyster():
+        outfilename = "oysterjourneys.ics"
+        infilename = "test.csv"
         __TIME_FORMAT = "%d-%b-%y %H:%M"
         cal = getCal()
         with open(infilename) as f:
@@ -59,27 +58,31 @@ def processOyster():
                 write_cal(outfilename, cal)
 
 
-def process_hours(infilename):
+def process_hours(content):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
-        cal = getCal()
         outfilename = "sleep.ics"
+        cal = getCal()
+        for x in content:
+                if "Clocked" in x:
+                        pass
+                else:
+                        if "Sleep" in x:
+                                journey = x.split(',')
+                                print datetime.date.today().strftime(__TIME_FORMAT)
+                                print x
+                                journeytime = datetime.datetime.strptime(
+                                        journey[1].replace('"', ''), __TIME_FORMAT)
+                                endtime = datetime.datetime.strptime(
+                                        journey[2].replace('"', ''), __TIME_FORMAT)
+                                addEvent(
+                                    cal, "Sleep", journeytime, endtime)
+        write_cal(outfilename, cal)
+
+
+def get_content(infilename):
         with open(infilename) as f:
                 content = f.readlines()
-                for x in content:
-                        if "Clocked" in x:
-                                pass
-                        else:
-                                if "Sleep" in x:
-                                        journey = x.split(',')
-                                        print datetime.date.today().strftime(__TIME_FORMAT)
-                                        print x
-                                        journeytime = datetime.datetime.strptime(
-                                                journey[1].replace('"', ''), __TIME_FORMAT)
-                                        endtime = datetime.datetime.strptime(
-                                                journey[2].replace('"', ''), __TIME_FORMAT)
-                                        addEvent(
-                                            cal, "Sleep", journeytime, endtime)
-                write_cal(outfilename, cal)
+        return content
 
 
 def process_email(infilename):
@@ -88,8 +91,8 @@ def process_email(infilename):
         with open(infilename) as f:
                 content = f.readlines()
                 content = [x for x in content if "2016-10" in x]
-                breakdown = [(x[:10], x[11:19], x[19:])
-                             for x in content if any(a in x[19:] for a in ["Gmail","irmail"])]
+                breakdown = [(x[:10], x[11:19], x[19:]) for x in content if any(
+                        a in x[19:] for a in ["Gmail", "irmail"])]
                 day_bucket = {}
                 for thing in breakdown:
                         day_bucket.setdefault(
@@ -98,14 +101,15 @@ def process_email(infilename):
 
                 outfilename = "emails.ics"
                 for key in day_bucket.keys():
-                        print "{}  {} {}".format(key, day_bucket[key][0][0],day_bucket[key][-1][0])
-                        journeytime = datetime.datetime.strptime( key+day_bucket[key][0][0], __TIME_FORMAT)
-                        endtime = datetime.datetime.strptime( key+day_bucket[key][-1][0], __TIME_FORMAT)
+                        print "{}  {} {}".format(key, day_bucket[key][0][0], day_bucket[key][-1][0])
+                        journeytime = datetime.datetime.strptime(
+                                key+day_bucket[key][0][0], __TIME_FORMAT)
+                        endtime = datetime.datetime.strptime(
+                                key+day_bucket[key][-1][0], __TIME_FORMAT)
                         addEvent(cal, "Processing Email", journeytime, endtime)
                 write_cal(outfilename, cal)
 
 
-processOyster()
+# processOyster()
 #process_email( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")
-
-#process_hours("sleep.csv")
+process_hours(get_content("inputfiles/sleep.csv"))
