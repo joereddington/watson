@@ -62,6 +62,7 @@ def processOyster():
 def process_hours(infilename):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
         cal = getCal()
+        outfilename = "sleep.ics"
         with open(infilename) as f:
                 content = f.readlines()
                 for x in content:
@@ -104,7 +105,7 @@ def process_email(infilename):
                 write_cal(outfilename, cal)
 
 
-process_email( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")
 processOyster()
+#process_email( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")
 
 #process_hours("sleep.csv")
