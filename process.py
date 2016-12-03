@@ -1,5 +1,6 @@
 from icalendar import Calendar, Event
 import datetime
+import sys
 from pytz import UTC  # timezone
 
 
@@ -23,6 +24,7 @@ def getCal():
 
 
 def write_cal(outfilename, cal):
+	print "Writing calendar"
         f = open(outfilename, 'wb')
         f.write(cal.to_ical())
         f.close()
@@ -64,19 +66,23 @@ def process_hours(content):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
         cal = getCal()
         for x in content:
+		print "XX:"+x
                 if "Clocked" in x:
                         pass
                 else:
                         if "Sleep" in x:
+			    if "2016" in x:
                                 journey = x.split(',')
-                                print datetime.date.today().strftime(__TIME_FORMAT)
-                                print x
+                                #print datetime.date.today().strftime(__TIME_FORMAT)
+                                #print x
                                 journeytime = datetime.datetime.strptime(
                                         journey[1].replace('"', ''), __TIME_FORMAT)
                                 endtime = datetime.datetime.strptime(
                                         journey[2].replace('"', ''), __TIME_FORMAT)
                                 addEvent(
                                     cal, "Sleep", journeytime, endtime)
+				print "event added"+x
+	print "returning with calendar"
         return cal
 
 
@@ -104,3 +110,7 @@ def process_email(content):
 #write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
 #write_cal("emails.ics",process_email( get_content( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")))
 #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
+
+content= sys.argv[1].split("hope")
+#print content
+write_cal("Sleep.ics", process_hours(content))
