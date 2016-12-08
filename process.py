@@ -1,6 +1,12 @@
 from icalendar import Calendar, Event
+import sys
 import datetime
 from pytz import UTC  # timezone
+
+
+# Watson is really only designed to parse formats and output them as
+# calendar events.  The inputs should know, for example, their start and
+# end times already...
 
 
 def addEvent(cal, summary, start, end):
@@ -100,7 +106,10 @@ def process_email(content):
                 addEvent(cal, "Processing Email", journeytime, endtime)
         return cal
 
+if __name__ == "__main__":
+    #write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
+    #write_cal("emails.ics",process_email( get_content( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")))
+    #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
 
-#write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
-#write_cal("emails.ics",process_email( get_content( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")))
-#write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
+    content = sys.argv[1]
+    write_cal("Sleep.ics", process_hours(content))

@@ -5,12 +5,25 @@ import datetime
 import argparse
 import glob
 import os
+import process
 
 debug = False
 max_dist_between_logs = 15  # in minutes
 min_session_size = 15  # in minutes
 vision_dir = "/Users/josephreddington/Dropbox/git/Vision/_posts/"
 __TIME_FORMAT = "%d/%m/%Y-%H:%M:%S "
+
+
+def get_matching_lines(filename, markers):
+
+    content=process.get_content(filename)
+    content=[line for line in content if any(word in line for word in markers)]
+    print len(content)
+    return content
+
+
+def get_sessions(content):
+#Assumes all content is valid, designed to be flexible
 
 def addEvent(cal, summary, start, end, uid):
         event = Event()
@@ -108,14 +121,14 @@ def getboundedcontentdic(content):
         return boundedsessiondic
 
 
-def process_content(content, fname):
+def process_content(content, name):
         "Parses content of Vision file, expected to be MarkDown"
         sessions = []
         last = datetime.datetime.strptime(
             "11/07/2010-10:00:06 ", __TIME_FORMAT)
         current = last
         start = 0
-        title = fname
+        title = name
         action = ""
         in_session = False
         boundedsessiondic = getboundedcontentdic(content)
@@ -276,39 +289,41 @@ def graph_out(sesssions):
         print "sessions=["+",".join(str(x) for x in total_time)+"]"
         print "running_mean=["+",".join(str(x) for x in running_mean)+"]"
 
-args = setup_argument_list()
-os.chdir(vision_dir)
+if __name__ == "__main__":
+    args = setup_argument_list()
+    os.chdir(vision_dir)
 
-# sessions=process_project_file(vision_dir+"2017-04-01-tmc50private.md", [])
-# This is the line that compiles all of the information.
-sessions = process_project_file("/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt", [])
-
-
-
-if args.action != "calendar":
-        if args.action == "graph":
-                graph_out(sessions)
-        else:
-                print "# Project Logs\n"
-
-"""
-#### Work Graph
-Total Time on this project: 1:43:26
-
-##### Sessions
-    2016-08-12 06:16:26 to 06:36:32 (0:20:06)
-    2016-08-12 07:58:21 to 09:21:41 (1:23:20)
+    # sessions=process_project_file(vision_dir+"2017-04-01-tmc50private.md", [])
+    # This is the line that compiles all of the information.
+    sessions = process_project_file("/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt", [])
 
 
-### Summary for 2016-08-12
-Total project time  -     1:43:26"""
+    print "there"
+    print "here"
+    if args.action != "calendar":
+            if args.action == "graph":
+                    graph_out(sessions)
+            else:
+                    print "# Project Logs\n"
+
+    """
+    #### Work Graph
+    Total Time on this project: 1:43:26
+
+    ##### Sessions
+        2016-08-12 06:16:26 to 06:36:32 (0:20:06)
+        2016-08-12 07:58:21 to 09:21:41 (1:23:20)
 
 
-if args.action == "today":
-        day_projects(sessions)
+    ### Summary for 2016-08-12
+    Total project time  -     1:43:26"""
 
-if args.action == "all":
-        all_projects(sessions)
 
-if args.action == "calendar":
-        calendar_output(sessions)
+    if args.action == "today":
+            day_projects(sessions)
+
+    if args.action == "all":
+            all_projects(sessions)
+
+    if args.action == "calendar":
+            calendar_output(sessions)
