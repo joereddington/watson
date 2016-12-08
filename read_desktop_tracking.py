@@ -122,7 +122,6 @@ def getboundedcontentdic(content):
 
 
 def process_content(content, name):
-        "Parses content of Vision file, expected to be MarkDown"
         sessions = []
         last = datetime.datetime.strptime(
             "11/07/2010-10:00:06 ", __TIME_FORMAT)
