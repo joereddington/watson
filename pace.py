@@ -1,5 +1,6 @@
 import re
 import calendar_helper_functions as icalhelper
+import glob
 import datetime
 import argparse
 import os
@@ -57,6 +58,7 @@ def projectreport(name, sessions, verbose):
 
 
 def print_original(atoms):
+    previous_date=""
     for atom in atoms:
       if atom['date']==previous_date:
         print "###### "+atom['start']+ "Where is the end time???"
@@ -105,22 +107,26 @@ def get_sessions(atoms):
             if i:
                 x = (get_e(i[-1])-get_e(i[0]))
                 if ((get_s(i[-1])-get_e(i[0]))> datetime.timedelta(minutes=min_session_size)):
-                    sessions.append(Session("thing",get_s(i[0]),get_e(i[-1]),i))
+                    sessions.append(Session(i[0]['title'],get_s(i[0]),get_e(i[-1]),i))
         return sessions
 
 def read_log_file(filename):
-    content="\n".join(icalhelper.get_content(filename))
-    entries=content.split("######")
+    content=icalhelper.get_content(filename)
+    title=filename
+    if "title" in content[0]:
+        print content[0]
+        title=content[0][7:]
+    entries="\n".join(content).split("######")
     atoms=[]
     atom={}
     lastdate="01/01/10"
     date=""
+    entries=entries[1:]
     for e in entries:
-        if len(e)<10:
-            continue
         lines=e.split("\n")
         atom['content']="\n".join(lines[1:]).strip()+"\n"
         atom['start']=""
+        atom['title']=title
         date= e.split("\n")[0]
         date=date.replace("2016-","16 ")
         date=date.replace("2017-","17 ")
@@ -174,6 +180,30 @@ def make_pacesetter_file():
     graph_out(sessions,"pacesetter")
 
 
+def make_jurgen_file():
+    atoms=read_log_file("/Users/josephreddington/Dropbox/git/Vision/jurgen.md")
+    sessions=get_sessions(atoms)
+    output_sessions_as_projects(sessions)
+    graph_out(sessions,"jurgen")
+
+def make_email_file():
+    atoms=read_tracking_file()
+    sessions=get_sessions(atoms)
+    output_sessions_as_projects(sessions)
+    graph_out(sessions,"email")
+
+def make_projects_file():
+    location="/Users/josephreddington/Dropbox/git/Vision/issues/*"
+    atoms=[]
+    for file in glob.glob(location):
+        atoms.extend(read_log_file(file))
+    sessions=get_sessions(atoms)
+    output_sessions_as_projects(sessions)
+    graph_out(sessions,"projects")
+
+
+
+
 def read_tracking_file():
     content=icalhelper.get_content('/Users/josephreddington/Dropbox/git/DesktopTracking/output/results.txt')
     matchingcontent=  [line for line in content if ("mail" in line )]
@@ -182,17 +212,12 @@ def read_tracking_file():
         atom={}
         atom['content']=line[19:]
         atom['start']=line[11:16]
+        atom['title']="mail"
         atom['end']=line[11:16]
         atom['date']=line[8:10]+"/"+line[5:7]+"/"+line[2:4]
         atoms.append(atom.copy())
     return atoms
 
-
-def make_email_file():
-    atoms=read_tracking_file()
-    sessions=get_sessions(atoms)
-    output_sessions_as_projects(sessions)
-    graph_out(sessions,"email")
 
 
 def graph_out(sessions,slug):
@@ -221,7 +246,9 @@ def write_to_javascript(total_time,running_mean,slug):
 
 args = setup_argument_list()
 make_pacesetter_file()
+make_jurgen_file()
 make_email_file()
+make_projects_file()
 
 
 

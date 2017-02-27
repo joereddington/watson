@@ -32,13 +32,13 @@
        emailrunning_mean.push((emailsessions[6] + emailrunning_mean[6]) / 2) //to give some idea of where we go from here...
       emailsessions = emailsessions.slice(Math.max(emailsessions.length - number_of_days, 1))
 //vision
-   //     visionrunning_mean = visionrunning_mean.slice(Math.max(visionrunning_mean.length - number_of_days, 1))
-    //    visionrunning_mean.push((visionsessions[6] + visionrunning_mean[6]) / 2) //to give some idea of where we go from here...
-     //   visionsessions = visionsessions.slice(Math.max(visionsessions.length - number_of_days, 1))
+        projectsrunning_mean = projectsrunning_mean.slice(Math.max(projectsrunning_mean.length - number_of_days, 1))
+        projectsrunning_mean.push((projectssessions[6] + projectsrunning_mean[6]) / 2) //to give some idea of where we go from here...
+        projectssessions = projectssessions.slice(Math.max(projectssessions.length - number_of_days, 1))
 //jurgen
-        //jurgenrunning_mean = jurgenrunning_mean.slice(Math.max(jurgenrunning_mean.length - number_of_days, 1))
-        //jurgenrunning_mean.push((visionsessions[6] + jurgenrunning_mean[6]) / 2) //to give some idea of where we go from here...
-        //jurgensessions = jurgensessions.slice(Math.max(jurgensessions.length - number_of_days, 1))
+        jurgenrunning_mean = jurgenrunning_mean.slice(Math.max(jurgenrunning_mean.length - number_of_days, 1))
+        jurgensessions = jurgensessions.slice(Math.max(jurgensessions.length - number_of_days, 1))
+        jurgenrunning_mean.push((jurgensessions[6] + jurgenrunning_mean[6]) / 2) //to give some idea of where we go from here...
 //
 
         pacesetterrunning_mean = pacesetterrunning_mean.slice(Math.max(pacesetterrunning_mean.length - number_of_days, 1))
@@ -51,7 +51,7 @@ sum=[]
 for(var i = 0; i < pacesetterrunning_mean.length; i++){
 	//console.log("V:"+running_mean[i]+" J:"+jurgenrunning_mean[i]);
    //sum.push(jurgenrunning_mean[i] + visionrunning_mean[i]+emailrunning_mean[i]);
-   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]);
+   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
 }
 
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
@@ -74,19 +74,25 @@ for(var i = 0; i < pacesetterrunning_mean.length; i++){
                     backgroundColor: "rgba(240,240,0,0.25)",
                     data: pacesettersessions
                 }, 
-//                {
-//                    type: 'bar',
-//                    label: 'Logged Next Actions Work',
-//                    backgroundColor: "rgba(240,0,0,0.25)",
-//                    data: jurgensessions
-//                },
-//
+                {
+                    type: 'bar',
+                    label: 'Logged Next Actions Work',
+                    backgroundColor: "rgba(240,0,0,0.25)",
+                    data: jurgensessions
+                },
+
                 {
                     type: 'bar',
                     label: 'Logged Email Work',
                     backgroundColor: "rgba(0,0,240,0.25)",
                     data: emailsessions
+                },   {
+                    type: 'bar',
+                    label: 'Logged Project Work',
+                    backgroundColor: "rgba(0,0,140,0.25)",
+                    data: projectssessions
                 },
+
 
  {
                     type: 'line',
