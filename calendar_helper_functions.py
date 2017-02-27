@@ -1,4 +1,6 @@
-def addEvent(cal, summary, start, end):
+from icalendar import Calendar, Event
+
+def add_event(cal, summary, start, end):
         event = Event()
         event.add('summary', summary)
         event.add('dtstart', start)
@@ -10,7 +12,7 @@ def addEvent(cal, summary, start, end):
         cal.add_component(event)
 
 
-def getCal():
+def get_cal():
         cal = Calendar()
         cal.add('prodid', '-//My calendar product//mxm.dk//')
         cal.add('version', '2.0')
@@ -22,4 +24,10 @@ def write_cal(outfilename, cal):
         f.write(cal.to_ical())
         f.close()
 
+
+
+def get_content(infilename):
+        with open(infilename) as f:
+                content = f.readlines()
+        return content
 

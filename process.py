@@ -10,12 +10,6 @@ import calendar_helper_functions
 
 
 
-def get_content(infilename):
-        with open(infilename) as f:
-                content = f.readlines()
-        return content
-
-
 def processOyster(content):
         __TIME_FORMAT = "%d-%b-%y %H:%M"
         cal = getCal()
