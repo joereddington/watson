@@ -24,11 +24,11 @@ class Session(object):
                 self.project, self.start, self.end = project, start, end
 
         def length(self):
-                return self.end-self.start
+                return (self.end-self.start)
 
         def __str__(self):
                 return "    {} to {} ({})".format(
-                    self.start, self.end.time(), self.length())
+                    self.start.strftime("%d/%m/%y %H:%M"), self.end.strftime("%H:%M"), str(self.length())[:-3])
 
 
 def setup_argument_list():
@@ -50,7 +50,7 @@ def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
         total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
         if verbose:
-                print "#### {}\n\nTotal Time on this project: {}\n".format(name.ljust(45), total_time)
+                print "#### {}\n\nTotal Time on this project: {}\n".format(name.ljust(45), str(total_time)[:-3])
                 for entry in project_sessions:
                         print entry
         else:
