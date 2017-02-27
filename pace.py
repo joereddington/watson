@@ -173,6 +173,28 @@ def make_pacesetter_file():
     output_sessions_as_projects(sessions)
     graph_out(sessions,"pacesetter")
 
+
+def read_tracking_file():
+    content=icalhelper.get_content('/Users/josephreddington/Dropbox/git/DesktopTracking/output/results.txt')
+    matchingcontent=  [line for line in content if ("mail" in line )]
+    atoms=[]
+    for line in matchingcontent:
+        atom={}
+        atom['content']=line[19:]
+        atom['start']=line[11:16]
+        atom['end']=line[11:16]
+        atom['date']=line[8:10]+"/"+line[5:7]+"/"+line[2:4]
+        atoms.append(atom.copy())
+    return atoms
+
+
+def make_email_file():
+    atoms=read_tracking_file()
+    sessions=get_sessions(atoms)
+    output_sessions_as_projects(sessions)
+    graph_out(sessions,"email")
+
+
 def graph_out(sessions,slug):
         DAY_COUNT = 26
         total_time = []
@@ -199,6 +221,7 @@ def write_to_javascript(total_time,running_mean,slug):
 
 args = setup_argument_list()
 make_pacesetter_file()
+make_email_file()
 
 
 
