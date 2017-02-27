@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Rolling Average of Logged Work Hours</title>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="javascript/Chart.js"></script>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+
+<script src="javascript/projects.js"></script>
+<script src="javascript/email.js"></script>
+<script src="javascript/jurgen.js"></script>
+<script src="javascript/pacesetter.js"></script>
+<script>
+</script>
+
+<body>
+    <div id="container" style="width: 75%;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+	number_of_days=15
+//email
+//        emailrunning_mean = emailrunning_mean.slice(Math.max(emailrunning_mean.length - number_of_days, 1))
+ //       emailrunning_mean.push((emailsessions[6] + emailrunning_mean[6]) / 2) //to give some idea of where we go from here...
+  //      emailsessions = emailsessions.slice(Math.max(emailsessions.length - number_of_days, 1))
+//vision
+   //     visionrunning_mean = visionrunning_mean.slice(Math.max(visionrunning_mean.length - number_of_days, 1))
+    //    visionrunning_mean.push((visionsessions[6] + visionrunning_mean[6]) / 2) //to give some idea of where we go from here...
+     //   visionsessions = visionsessions.slice(Math.max(visionsessions.length - number_of_days, 1))
+//jurgen
+        //jurgenrunning_mean = jurgenrunning_mean.slice(Math.max(jurgenrunning_mean.length - number_of_days, 1))
+        //jurgenrunning_mean.push((visionsessions[6] + jurgenrunning_mean[6]) / 2) //to give some idea of where we go from here...
+        //jurgensessions = jurgensessions.slice(Math.max(jurgensessions.length - number_of_days, 1))
+//
+
+        pacesetterrunning_mean = pacesetterrunning_mean.slice(Math.max(pacesetterrunning_mean.length - number_of_days, 1))
+        pacesetterrunning_mean.push((pacesettersessions[6] + pacesetterrunning_mean[6]) / 2) //to give some idea of where we go from here...
+        pacesettersessions = pacesettersessions.slice(Math.max(pacesettersessions.length - number_of_days, 1))
+//
+sum=[]
+//console.log("Jlength"+jurgenrunning_mean.length)
+//console.log("Vlength"+running_mean.length)
+for(var i = 0; i < pacesetterrunning_mean.length; i++){
+	//console.log("V:"+running_mean[i]+" J:"+jurgenrunning_mean[i]);
+   //sum.push(jurgenrunning_mean[i] + visionrunning_mean[i]+emailrunning_mean[i]);
+   sum.push(pacesetterrunning_mean[i]);
+}
+
+        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
+        var d = new Date()
+        var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+	daylabels=[]	
+	for (i=-number_of_days;i<0;i++)
+	{
+		daylabels.push(weekdays[(d.getDay()+i+4900) % 7 ])//4900 is just a sufficiantly large number that has 7 as a factor
+	}
+
+        var barChartData = {
+            labels: daylabels,
+
+            datasets: [
+	    {
+                    type: 'bar',
+                    label: 'Logged Project Work',
+                    backgroundColor: "rgba(240,240,0,0.25)",
+                    data: pacesettersessions
+                }, 
+//                {
+//                    type: 'bar',
+//                    label: 'Logged Next Actions Work',
+//                    backgroundColor: "rgba(240,0,0,0.25)",
+//                    data: jurgensessions
+//                },
+//
+//                {
+//                    type: 'bar',
+//                    label: 'Logged Email Work',
+//                    backgroundColor: "rgba(0,0,240,0.25)",
+//                    data: emailsessions
+//                },
+
+ {
+                    type: 'line',
+                    label: 'Rolling Average',
+                    backgroundColor: "rgba(220,0,0,0.5)",
+                    data: sum
+                }
+            ]
+
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    // Elements options apply to all of the options unless overridden in a dataset
+                    // In this case, we are setting the border of each bar to be 2px wide and green
+                    elements: {
+                        rectangle: {
+                            borderWidth: 2,
+                            borderColor: 'rgb(0,0,0)',
+                            borderSkipped: 'bottom'
+                        }
+                    },
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Vision Logged Hours'
+                    },
+                    scales: {
+                        yAxes: [{
+                            position: "left",
+				      stacked: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Hours'
+                            },
+                            ticks: {
+                                stepSize: 60,
+				callback: function(label, index, labels){ return label/60;}
+
+                            }
+                        }],
+                        xAxes: [{
+                            // Change here
+stacked: true,
+                            barPercentage: 0.1
+                        }]
+                    }
+                }
+            });
+
+        };
+    </script>
+</body>
+
+</html>

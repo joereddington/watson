@@ -12,8 +12,6 @@ pacesetter_file="/Users/josephreddington/pacesetter.md"
 vision_dir = "/Users/josephreddington/Dropbox/git/Vision/issues/"
 os.chdir(vision_dir)
 
-
-
 class Session(object):
         project = "Unknown"
         start = ""
@@ -110,8 +108,6 @@ def get_sessions(atoms):
                     sessions.append(Session("thing",get_s(i[0]),get_e(i[-1]),i))
         return sessions
 
-
-
 def read_log_file(filename):
     content="\n".join(icalhelper.get_content(filename))
     entries=content.split("######")
@@ -177,7 +173,6 @@ def make_pacesetter_file():
     output_sessions_as_projects(sessions)
     graph_out(sessions,"pacesetter")
 
-
 def graph_out(sessions,slug):
         DAY_COUNT = 26
         total_time = []
@@ -201,8 +196,6 @@ def write_to_javascript(total_time,running_mean,slug):
         f.write(slug+"sessions=["+",".join(str(x) for x in total_time)+"];\n")
         f.write(slug+"running_mean=["+",".join(str(x) for x in running_mean)+"]")
         f.close()
-
-
 
 args = setup_argument_list()
 make_pacesetter_file()
