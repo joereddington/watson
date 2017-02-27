@@ -1,6 +1,7 @@
 import re
 import calendar_helper_functions as icalhelper
 import glob
+import time
 import datetime
 import argparse
 import os
@@ -86,8 +87,6 @@ def get_s(atom):
         return datetime.datetime.strptime(total_date,__TIME_FORMAT)
 
 def get_sessions(atoms):
-
-        #Make this three functions - one grouping, one removing small ones, and the other converting the list to a session.
         last= datetime.datetime.strptime(
             "11/07/10 10:00", __TIME_FORMAT)
         current = get_e(atoms[0])
@@ -114,7 +113,6 @@ def read_log_file(filename):
     content=icalhelper.get_content(filename)
     title=filename
     if "title" in content[0]:
-        print content[0]
         title=content[0][7:]
     entries="\n".join(content).split("######")
     atoms=[]
@@ -176,21 +174,21 @@ def get_running_mean(l, N):
 def make_pacesetter_file():
     atoms=read_log_file(pacesetter_file)
     sessions=get_sessions(atoms)
-    output_sessions_as_projects(sessions)
     graph_out(sessions,"pacesetter")
+    return sessions
 
 
 def make_jurgen_file():
     atoms=read_log_file("/Users/josephreddington/Dropbox/git/Vision/jurgen.md")
     sessions=get_sessions(atoms)
-    output_sessions_as_projects(sessions)
     graph_out(sessions,"jurgen")
+    return sessions
 
 def make_email_file():
     atoms=read_tracking_file()
     sessions=get_sessions(atoms)
-    output_sessions_as_projects(sessions)
     graph_out(sessions,"email")
+    return sessions
 
 def make_projects_file():
     location="/Users/josephreddington/Dropbox/git/Vision/issues/*"
@@ -198,8 +196,8 @@ def make_projects_file():
     for file in glob.glob(location):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
-    output_sessions_as_projects(sessions)
     graph_out(sessions,"projects")
+    return sessions
 
 
 
@@ -238,6 +236,10 @@ def graph_out(sessions,slug):
         running_mean = get_running_mean(total_time, 7)
         write_to_javascript(total_time,running_mean,slug)
 
+def days_old(session):
+        delta = datetime.datetime.now() - session.start
+	return delta.days
+
 def write_to_javascript(total_time,running_mean,slug):
         f = open(vision_dir+"../../watson/javascript/"+slug+".js", 'wb')
         f.write(slug+"sessions=["+",".join(str(x) for x in total_time)+"];\n")
@@ -245,10 +247,14 @@ def write_to_javascript(total_time,running_mean,slug):
         f.close()
 
 args = setup_argument_list()
-make_pacesetter_file()
-make_jurgen_file()
-make_email_file()
-make_projects_file()
+sessions=[]
+sessions.extend(make_pacesetter_file())
+sessions.extend(make_jurgen_file())
+sessions.extend(make_email_file())
+sessions.extend(make_projects_file())
 
+if args.d:
+        sessions = [i for i in sessions if days_old(i)<int(args.d)]
 
+output_sessions_as_projects(sessions)
 
