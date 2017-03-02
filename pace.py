@@ -94,18 +94,19 @@ def get_sessions(atoms):
         current_group=[]
         for current in atoms:
                 difference=get_s(current)-last
-                if ((get_s(current)-last) > datetime.timedelta(
-                        minutes=max_dist_between_logs)):
-                        grouped_timevalues.append(current_group)
-                        current_group=[current]
+                if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
+                    grouped_timevalues.append(current_group)
+                    current_group=[current]
+                if (get_s(current) <last): #preventing negative times being approved...
+                    grouped_timevalues.append(current_group)
+                    current_group=[current]
                 last = get_e(current)
                 current_group.append(current)
         grouped_timevalues.append(current_group)
         sessions = []
         for i in grouped_timevalues:
             if i:
-                x = (get_e(i[-1])-get_e(i[0]))
-                if ((get_s(i[-1])-get_e(i[0]))> datetime.timedelta(minutes=min_session_size)):
+                if ((get_e(i[-1])-get_s(i[0]))> datetime.timedelta(minutes=min_session_size)):
                     sessions.append(Session(i[0]['title'],get_s(i[0]),get_e(i[-1]),i))
         return sessions
 
@@ -137,7 +138,7 @@ def read_log_file(filename):
             atom['date']=newdate
             lastdate=newdate
         else:
-            atom['start']=date.strip()[:5]
+            atom['start']=date.strip()
             atom['date']=lastdate
         if len(atom['start'])>6:
             #Then it was a 'to' construct and has a start and end time
@@ -196,9 +197,18 @@ def make_projects_file():
     for file in glob.glob(location):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
+    for session in sessions:
+        if "entirely" in session.project:
+            print session
     graph_out(sessions,"projects")
     return sessions
 
+def make_project_file(filename):
+    atoms=[]
+    atoms.extend(read_log_file(filename))
+    sessions=get_sessions(atoms)
+    graph_out(sessions,"projects")
+    return sessions
 
 
 
