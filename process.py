@@ -56,29 +56,9 @@ def process_hours(content):
         return cal
 
 
-def process_email(content):
-        __TIME_FORMAT = "%Y-%m-%d%H:%M:%S"
-        cal = getCal()
-        content = [x for x in content if "2016-10" in x]
-        breakdown = [(x[:10], x[11:19], x[19:]) for x in content if any(
-                a in x[19:] for a in ["Gmail", "irmail"])]
-        day_bucket = {}
-        for thing in breakdown:
-                day_bucket.setdefault(
-                    thing[0], []).append(
-                    (thing[1], thing[2]))
-        for key in day_bucket.keys():
-                print "{}  {} {}".format(key, day_bucket[key][0][0], day_bucket[key][-1][0])
-                journeytime = datetime.datetime.strptime(
-                        key+day_bucket[key][0][0], __TIME_FORMAT)
-                endtime = datetime.datetime.strptime(
-                        key+day_bucket[key][-1][0], __TIME_FORMAT)
-                addEvent(cal, "Processing Email", journeytime, endtime)
-        return cal
 
 if __name__ == "__main__":
     #write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
-    #write_cal("emails.ics",process_email( get_content( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")))
     #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
 
     content = sys.argv[1]
