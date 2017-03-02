@@ -1,6 +1,7 @@
 from icalendar import Calendar, Event
 import sys
 import datetime
+import sys
 from pytz import UTC  # timezone
 import calendar_helper_functions
 
@@ -40,19 +41,23 @@ def process_hours(content):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
         cal = getCal()
         for x in content:
+		print "XX:"+x
                 if "Clocked" in x:
                         pass
                 else:
                         if "Sleep" in x:
+			    if "2016" in x:
                                 journey = x.split(',')
-                                print datetime.date.today().strftime(__TIME_FORMAT)
-                                print x
+                                #print datetime.date.today().strftime(__TIME_FORMAT)
+                                #print x
                                 journeytime = datetime.datetime.strptime(
                                         journey[1].replace('"', ''), __TIME_FORMAT)
                                 endtime = datetime.datetime.strptime(
                                         journey[2].replace('"', ''), __TIME_FORMAT)
                                 addEvent(
                                     cal, "Sleep", journeytime, endtime)
+				print "event added"+x
+	print "returning with calendar"
         return cal
 
 
@@ -60,6 +65,3 @@ def process_hours(content):
 if __name__ == "__main__":
     #write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
     #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
-
-    content = sys.argv[1]
-    write_cal("Sleep.ics", process_hours(content))
