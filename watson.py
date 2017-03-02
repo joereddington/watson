@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import re
 import calendar_helper_functions as icalhelper
 import glob
@@ -256,15 +257,20 @@ def write_to_javascript(total_time,running_mean,slug):
         f.write(slug+"running_mean=["+",".join(str(x) for x in running_mean)+"]")
         f.close()
 
+
+
+
 args = setup_argument_list()
-sessions=[]
-sessions.extend(make_pacesetter_file())
-sessions.extend(make_jurgen_file())
-sessions.extend(make_email_file())
-sessions.extend(make_projects_file())
 
-if args.d:
-        sessions = [i for i in sessions if days_old(i)<int(args.d)]
+def do():
+    sessions=[]
+    sessions.extend(make_pacesetter_file())
+    sessions.extend(make_jurgen_file())
+    sessions.extend(make_email_file())
+    sessions.extend(make_projects_file())
 
-output_sessions_as_projects(sessions)
+    if args.d:
+            sessions = [i for i in sessions if days_old(i)<int(args.d)]
+
+    output_sessions_as_projects(sessions)
 
