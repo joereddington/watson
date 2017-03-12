@@ -1,9 +1,11 @@
 from icalendar import Calendar, Event
 import sys
+import glob
 import datetime
 import sys
 from pytz import UTC  # timezone
-import calendar_helper_functions
+import calendar_helper_functions as icalhelper
+
 
 # Watson is really only designed to parse formats and output them as
 # calendar events.  The inputs should know, for example, their start and
@@ -13,16 +15,19 @@ import calendar_helper_functions
 
 def processOyster(content):
         __TIME_FORMAT = "%d-%b-%y %H:%M"
-        cal = getCal()
+        cal = icalhelper.get_cal()
         for x in content:
-                if "Start" in x:
+                print x
+                if "Date" in x:
+                        pass
+                elif "Start" in x:
                         pass
                 else:
                         journey = x.split(',')
                         journeytime = datetime.datetime.strptime(
                                 "{} {}".format(journey[0], journey[1]), __TIME_FORMAT)
                         if "Bus Journey" in x:
-                                addEvent(
+                                icalhelper.addEvent(
                                     cal,
                                     "Bus Journey",
                                     journeytime,
@@ -32,14 +37,14 @@ def processOyster(content):
                         else:
                                 journeyendtime = datetime.datetime.strptime(
                                         "{} {}".format(journey[0], journey[2]), __TIME_FORMAT)
-                                addEvent(
+                                icalhelper.addEvent(
                                     cal, journey[3], journeytime, journeyendtime)
         return cal
 
 
 def process_hours(content):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
-        cal = getCal()
+        cal = icalhelper.get_cal()
         for x in content:
 		print "XX:"+x
                 if "Clocked" in x:
@@ -54,7 +59,7 @@ def process_hours(content):
                                         journey[1].replace('"', ''), __TIME_FORMAT)
                                 endtime = datetime.datetime.strptime(
                                         journey[2].replace('"', ''), __TIME_FORMAT)
-                                addEvent(
+                                icalhelper.addEvent(
                                     cal, "Sleep", journeytime, endtime)
 				print "event added"+x
 	print "returning with calendar"
@@ -63,5 +68,10 @@ def process_hours(content):
 
 
 if __name__ == "__main__":
-    #write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
+    location="oyster/*.csv"
+    content=[]
+    for file in glob.glob(location):
+        content.extend(icalhelper.get_content(file))
+    print content
+    processOyster(content)
     #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
