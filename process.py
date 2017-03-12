@@ -14,7 +14,7 @@ import calendar_helper_functions as icalhelper
 
 
 def processOyster(content):
-        __TIME_FORMAT = "%d-%b-%y %H:%M"
+        __TIME_FORMAT = "%d/%m/%Y %H:%M"
         cal = icalhelper.get_cal()
         for x in content:
                 print x
@@ -24,10 +24,10 @@ def processOyster(content):
                         pass
                 else:
                         journey = x.split(',')
-                        journeytime = datetime.datetime.strptime(
-                                "{} {}".format(journey[0], journey[1]), __TIME_FORMAT)
+                        date=journey[0]
                         if "Bus Journey" in x:
-                                icalhelper.addEvent(
+                                journeytime = datetime.datetime.strptime( "{} {}".format(journey[0], journey[1]), __TIME_FORMAT)
+                                icalhelper.add_event(
                                     cal,
                                     "Bus Journey",
                                     journeytime,
@@ -35,10 +35,13 @@ def processOyster(content):
                                     datetime.timedelta(
                                         minutes=20))
                         else:
+                                starttime=journey[1][:5]
+                                endtime=journey[1][8:]
+                                journeytime = datetime.datetime.strptime( "{} {}".format(journey[0], starttime), __TIME_FORMAT)
                                 journeyendtime = datetime.datetime.strptime(
-                                        "{} {}".format(journey[0], journey[2]), __TIME_FORMAT)
-                                icalhelper.addEvent(
-                                    cal, journey[3], journeytime, journeyendtime)
+                                        "{} {}".format(journey[0], endtime), __TIME_FORMAT)
+                                icalhelper.add_event(
+                                    cal, journey[2], journeytime, journeyendtime)
         return cal
 
 
@@ -59,7 +62,7 @@ def process_hours(content):
                                         journey[1].replace('"', ''), __TIME_FORMAT)
                                 endtime = datetime.datetime.strptime(
                                         journey[2].replace('"', ''), __TIME_FORMAT)
-                                icalhelper.addEvent(
+                                icalhelper.add_event(
                                     cal, "Sleep", journeytime, endtime)
 				print "event added"+x
 	print "returning with calendar"
@@ -72,6 +75,5 @@ if __name__ == "__main__":
     content=[]
     for file in glob.glob(location):
         content.extend(icalhelper.get_content(file))
-    print content
-    processOyster(content)
+    icalhelper.write_cal("Oyster.ics",processOyster(content))
     #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
