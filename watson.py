@@ -11,8 +11,8 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
-pacesetter_file="/Users/josephreddington/pacesetter.md"
-vision_dir = "/Users/josephreddington/Dropbox/git/Vision/issues/"
+vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
+pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/pacesetter.md'
 os.chdir(vision_dir)
 
 class Session(object):
@@ -181,7 +181,7 @@ def make_pacesetter_file():
 
 
 def make_jurgen_file():
-    atoms=read_log_file("/Users/josephreddington/Dropbox/git/Vision/jurgen.md")
+    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../vision/jurgen.md')
     sessions=get_sessions(atoms)
     graph_out(sessions,"jurgen")
     return sessions
@@ -193,9 +193,8 @@ def make_email_file():
     return sessions
 
 def make_projects_file():
-    location="/Users/josephreddington/Dropbox/git/Vision/issues/*"
     atoms=[]
-    for file in glob.glob(location):
+    for file in glob.glob(vision_dir+"/*.md"):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
     for session in sessions:
@@ -214,7 +213,7 @@ def make_project_file(filename):
 
 
 def read_tracking_file():
-    content=icalhelper.get_content('/Users/josephreddington/Dropbox/git/DesktopTracking/output/results.txt')
+    content=icalhelper.get_content(os.path.dirname(os.path.abspath(__file__))+'/desktop.txt')
     matchingcontent=  [line for line in content if ("mail" in line )]
     atoms=[]
     for line in matchingcontent:
