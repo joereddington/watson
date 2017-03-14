@@ -261,12 +261,27 @@ def write_to_javascript(total_time,running_mean,slug):
 
 args = setup_argument_list()
 
+
+
+def calendar_output(filename,sessions):
+        cal = icalhelper.get_cal()
+        for entry in sessions:
+                icalhelper.add_event(cal, entry.project, entry.start, entry.end)
+        icalhelper.write_cal("Oyster.ics",cal)
+
+
+
+
 def do():
     sessions=[]
-    sessions.extend(make_pacesetter_file())
-    sessions.extend(make_jurgen_file())
-    sessions.extend(make_email_file())
-    sessions.extend(make_projects_file())
+    pacesetter_sessions=make_pacesetter_file()
+    jurgen_sessions=make_jurgen_file()
+    email_sessions=make_email_file()
+    projects_sessions=make_projects_file()
+    sessions.extend("pacesetter.ics",pacesetter_sessions)
+    sessions.extend("jurgen.ics",jurgen_sessions)
+    sessions.extend("email.ics",email_sessions)
+    sessions.extend("projects.ics",projects_sessions)
 
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
