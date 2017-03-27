@@ -13,7 +13,6 @@ max_dist_between_logs = 15  # in minutes TODO these should be arguments for diff
 min_session_size = 15  # in minutes
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/pacesetter.md'
-os.chdir(vision_dir)
 
 class Session(object):
         project = "Unknown"
@@ -267,7 +266,7 @@ def calendar_output(filename,sessions):
         cal = icalhelper.get_cal()
         for entry in sessions:
                 icalhelper.add_event(cal, entry.project, entry.start, entry.end)
-        icalhelper.write_cal("Oyster.ics",cal)
+        icalhelper.write_cal(filename,cal)
 
 
 
@@ -278,10 +277,14 @@ def do():
     jurgen_sessions=make_jurgen_file()
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
-    sessions.extend("pacesetter.ics",pacesetter_sessions)
-    sessions.extend("jurgen.ics",jurgen_sessions)
-    sessions.extend("email.ics",email_sessions)
-    sessions.extend("projects.ics",projects_sessions)
+    sessions.extend(pacesetter_sessions)
+    sessions.extend(jurgen_sessions)
+    sessions.extend(email_sessions)
+    sessions.extend(projects_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
 
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
