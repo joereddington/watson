@@ -12,7 +12,8 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
-pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/pacesetter.md'
+pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
+email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
 class Session(object):
         project = "Unknown"
@@ -50,7 +51,7 @@ def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
         total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
         if verbose:
-                print "#### {}\n\nTotal Time on this project: {}\n".format(name.ljust(45), str(total_time)[:-3])
+                print "#### {}\n\nTotal Time on this project: {}\n".format(name.strip().ljust(65), str(total_time)[:-3])
                 for entry in project_sessions:
                         print entry
         else:
@@ -107,12 +108,14 @@ def get_sessions(atoms):
         for i in grouped_timevalues:
             if i:
                 if ((get_e(i[-1])-get_s(i[0]))> datetime.timedelta(minutes=min_session_size)):
+#                    print "{} {} {}".format(i[0]['title'],get_s(i[0]),get_e(i[-1]),i)
                     sessions.append(Session(i[0]['title'],get_s(i[0]),get_e(i[-1]),i))
         return sessions
 
-def read_log_file(filename):
+def read_log_file(filename, title=None):
+    if title==None:
+	title=filename
     content=icalhelper.get_content(filename)
-    title=filename
     if "title" in content[0]:
         title=content[0][7:]
     entries="\n".join(content).split("######")
@@ -173,7 +176,7 @@ def get_running_mean(l, N):
         return result
 
 def make_pacesetter_file():
-    atoms=read_log_file(pacesetter_file)
+    atoms=read_log_file(pacesetter_file, "Pacesetter")
     sessions=get_sessions(atoms)
     graph_out(sessions,"pacesetter")
     return sessions
@@ -196,9 +199,9 @@ def make_projects_file():
     for file in glob.glob(vision_dir+"/*.md"):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
-    for session in sessions:
-        if "entirely" in session.project:
-            print session
+    #for session in sessions:
+#        if "entirely" in session.project:
+#            print session
     graph_out(sessions,"projects")
     return sessions
 
@@ -212,7 +215,7 @@ def make_project_file(filename):
 
 
 def read_tracking_file():
-    content=icalhelper.get_content(os.path.dirname(os.path.abspath(__file__))+'/desktop.txt')
+    content=icalhelper.get_content(email_file)
     matchingcontent=  [line for line in content if ("mail" in line )]
     atoms=[]
     for line in matchingcontent:
@@ -285,7 +288,6 @@ def do():
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
-
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
 
