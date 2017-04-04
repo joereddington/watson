@@ -55,7 +55,7 @@ def projectreport(name, sessions, verbose):
                 for entry in project_sessions:
                         print entry
         else:
-                print "{}: {}".format(name.ljust(45), total_time)
+                print "{}: {}".format(name.strip().ljust(45), total_time)
         return total_time
 
 
