@@ -63,7 +63,7 @@ def processOyster(content):
 
 
 def process_hours(tag, content):
-        __TIME_FORMAT = "%d/%m/%Y %H:%M"
+        __TIME_FORMAT = "%d/%m/%y %H:%M"
         cal = getCal()
 	print "Tag:"+tag
         for x in content:
@@ -71,7 +71,7 @@ def process_hours(tag, content):
                         pass
                 else:
                         if tag in x:
-			    if "1" in x:
+			    if "\/1" in x:
 				print "XX:"+x
                                 journey = x.split(',')
                                 #print datetime.date.today().strftime(__TIME_FORMAT)
@@ -108,13 +108,12 @@ def process_email(content):
         return cal
 
 
-#write_cal("oyster.ics", processOyster(get_content("inputfiles/oystertest.csv")))
-#write_cal("emails.ics",process_email( get_content( "/Users/josephreddington/" + "Dropbox/git/DesktopTracking/output/results.txt")))
 #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
-
+#content=get_content("test.txt")
+#write_cal("Sleep.ics", process_hours("Sleep",content))
+#write_cal("Climbing.ics", process_hours("Climbing",content))
+#write_cal("Swimming.ics", process_hours("Swimming",content))
 content= sys.argv[1].split("hope")
-for i in content:
-	print i
 write_cal("calendars/Sleep.ics", process_hours("Sleep",content))
 write_cal("calendars/Climbing.ics", process_hours("Climbing",content))
 write_cal("calendars/Swimming.ics", process_hours("Swimming",content))
