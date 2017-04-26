@@ -65,13 +65,14 @@ def processOyster(content):
 def process_hours(tag, content):
         __TIME_FORMAT = "%d/%m/%Y %H:%M"
         cal = getCal()
+	print "Tag:"+tag
         for x in content:
-		print "XX:"+x
                 if "Clocked" in x:
                         pass
                 else:
                         if tag in x:
-			    if "201" in x:
+			    if "1" in x:
+				print "XX:"+x
                                 journey = x.split(',')
                                 #print datetime.date.today().strftime(__TIME_FORMAT)
                                 #print x
@@ -79,8 +80,8 @@ def process_hours(tag, content):
                                         journey[1].replace('"', ''), __TIME_FORMAT)
                                 endtime = datetime.datetime.strptime(
                                         journey[2].replace('"', ''), __TIME_FORMAT)
-                                addEvent(
-                                    cal, tag, journeytime, endtime)
+                                print "{} {} {}".format(tag, journeytime, endtime)
+                                addEvent( cal, tag, journeytime, endtime)
 				print "event added"+x
 	print "returning with calendar"
         return cal
@@ -114,6 +115,6 @@ def process_email(content):
 content= sys.argv[1].split("hope")
 for i in content:
 	print i
-write_cal("Sleep.ics", process_hours("Sleep",content))
-write_cal("Climbing.ics", process_hours("Climbing",content))
-write_cal("Swimming.ics", process_hours("Swimming",content))
+write_cal("calendars/Sleep.ics", process_hours("Sleep",content))
+write_cal("calendars/Climbing.ics", process_hours("Climbing",content))
+write_cal("calendars/Swimming.ics", process_hours("Swimming",content))

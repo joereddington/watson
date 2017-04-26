@@ -80,7 +80,13 @@ def output_sessions_as_projects(sessions):
 
 def get_e(atom):
         total_date=atom['date']+" "+atom['end']
-        return datetime.datetime.strptime(total_date,__TIME_FORMAT)
+	try: 
+		returnvalue= datetime.datetime.strptime(total_date,__TIME_FORMAT)
+		return returnvalue
+	except ValueError: 
+		print "Value error!" 
+		print total_date
+		return 0
 
 
 def get_s(atom):
