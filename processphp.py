@@ -71,7 +71,7 @@ def process_hours(tag, content):
                         pass
                 else:
                         if tag in x:
-			    if "\/1" in x:
+			    if any(year in x for year in ['17','16','18']):
 				print "XX:"+x
                                 journey = x.split(',')
                                 #print datetime.date.today().strftime(__TIME_FORMAT)
@@ -109,11 +109,11 @@ def process_email(content):
 
 
 #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
-#content=get_content("test.txt")
-#write_cal("Sleep.ics", process_hours("Sleep",content))
-#write_cal("Climbing.ics", process_hours("Climbing",content))
-#write_cal("Swimming.ics", process_hours("Swimming",content))
-content= sys.argv[1].split("hope")
-write_cal("calendars/Sleep.ics", process_hours("Sleep",content))
-write_cal("calendars/Climbing.ics", process_hours("Climbing",content))
-write_cal("calendars/Swimming.ics", process_hours("Swimming",content))
+content=get_content("test.txt")
+write_cal("Sleep.ics", process_hours("Sleep",content))
+write_cal("Climbing.ics", process_hours("Climbing",content))
+write_cal("Swimming.ics", process_hours("Swimming",content))
+#content= sys.argv[1].split("hope")
+#write_cal("calendars/Sleep.ics", process_hours("Sleep",content))
+#write_cal("calendars/Climbing.ics", process_hours("Climbing",content))
+#write_cal("calendars/Swimming.ics", process_hours("Swimming",content))
