@@ -123,7 +123,7 @@ def read_log_file(filename, title=None):
 	title=filename
     content=icalhelper.get_content(filename)
     if "title" in content[0]:
-        title=content[0][7:]
+        title=content[0][7:].strip()
     entries="\n".join(content).split("######")
     atoms=[]
     atom={}
