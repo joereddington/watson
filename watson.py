@@ -80,11 +80,11 @@ def output_sessions_as_projects(sessions):
 
 def get_e(atom):
         total_date=atom['date']+" "+atom['end']
-	try: 
+	try:
 		returnvalue= datetime.datetime.strptime(total_date,__TIME_FORMAT)
 		return returnvalue
-	except ValueError: 
-		print "Value error!" 
+	except ValueError:
+		print "Value error!"
 		print total_date
 		return 0
 
@@ -267,7 +267,7 @@ def write_to_javascript(total_time,running_mean,slug):
 
 
 
-args = setup_argument_list()
+#args = setup_argument_list()
 
 
 
