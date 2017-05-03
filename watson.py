@@ -289,12 +289,13 @@ def write_to_javascript(total_time,running_mean,slug):
 #args = setup_argument_list()
 
 
-def invert_sesssions(sessions):
+def invert_sessions(sessions):
     lastsession=sessions[0]
     new_sessions=[]
     for session in sessions:
-        new_sessions.append(Session(session.project,lastsession.end,session.start,session.content)
-        lastsession=sessions
+        final= lastsession.end
+        new_sessions.append(Session(session.project,final,session.start,session.content))
+        lastsession=session
     return new_sessions
 
 
