@@ -28,5 +28,12 @@ class watsonTest(TestCase):
         atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
         self.assertEqual(atoms[0]['title'],"safe")
 
+
+    def test_make_sessions(self):
+        atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),2)
+
+
 if __name__=="__main__":
     unittest.main()
