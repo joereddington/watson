@@ -39,8 +39,9 @@ class watsonTest(TestCase):
         self.assertEqual(len(atoms),164868)
 
     def test_count_awake_sessions(self):
+        TF = "%d-%M-%Y %H:%M"
         atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
-        sessions=watson.get_sessions(atoms)
+        sessions=watson.get_sessions(atoms,TF)
         self.assertEqual(len(sessions),3)
 
 

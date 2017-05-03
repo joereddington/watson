@@ -78,10 +78,10 @@ def output_sessions_as_projects(sessions):
                 projectreport(project, sessions, args.verbatim)
         print "Total project time".ljust(45)+str(total_time)
 
-def get_e(atom):
+def get_e(atom,TF):
         total_date=atom['date']+" "+atom['end']
 	try:
-		returnvalue= datetime.datetime.strptime(total_date,__TIME_FORMAT)
+		returnvalue= datetime.datetime.strptime(total_date,TF)
 		return returnvalue
 	except ValueError:
 		print "Value error!"
@@ -89,33 +89,33 @@ def get_e(atom):
 		return 0
 
 
-def get_s(atom):
+def get_s(atom,TF):
         total_date=atom['date']+" "+atom['start']
-        return datetime.datetime.strptime(total_date,__TIME_FORMAT)
+        return datetime.datetime.strptime(total_date,TF)
 
-def get_sessions(atoms):
+def get_sessions(atoms,TF=__TIME_FORMAT):
         last= datetime.datetime.strptime(
-            "11/07/10 10:00", __TIME_FORMAT)
-        current = get_e(atoms[0])
+            "11/07/10 10:00", TF)
+        current = get_e(atoms[0],TF)
         grouped_timevalues=[]
         current_group=[]
         for current in atoms:
-                difference=get_s(current)-last
-                if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
+                difference=get_s(current,TF)-last
+                if ((get_s(current,TF)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (get_s(current) <last): #preventing negative times being approved...
+                if (get_s(current,TF) <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                last = get_e(current)
+                last = get_e(current,TF)
                 current_group.append(current)
         grouped_timevalues.append(current_group)
         sessions = []
         for i in grouped_timevalues:
             if i:
-                if ((get_e(i[-1])-get_s(i[0]))> datetime.timedelta(minutes=min_session_size)):
+                if ((get_e(i[-1],TF)-get_s(i[0],TF))> datetime.timedelta(minutes=min_session_size)):
 #                    print "{} {} {}".format(i[0]['title'],get_s(i[0]),get_e(i[-1]),i)
-                    sessions.append(Session(i[0]['title'],get_s(i[0]),get_e(i[-1]),i))
+                    sessions.append(Session(i[0]['title'],get_s(i[0],TF),get_e(i[-1],TF),i))
         return sessions
 
 def read_log_file(filename, title=None):
@@ -166,18 +166,21 @@ def read_log_file(filename, title=None):
 def read_watch_heartrate(filename):
     #01-May-2017 23:46,01-May-2017 23:46,69.0
     timestamplength=len("01-May-2017 23:46")
+    datelength=len("01-May-2017")
     content=icalhelper.get_content(filename)
     atoms=[]
     atom={}
     atom['content']="alive"
     atom['title']="Heartrate"
     for a in content:
-        start=a[0:timestamplength]
-        end=a[timestamplength+1:(timestamplength*2)+1]
+        start=a[datelength+1:timestamplength]
+        date=a[:datelength]
+        end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
         atom['start']=start
         atom['end']=end
+        atom['date']=date
         atoms.append(atom.copy())
-        #        print "X{}X to Z{}Z ".format(start, end)
+        print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
     return atoms
 
 # From SE
