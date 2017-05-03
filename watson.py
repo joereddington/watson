@@ -289,6 +289,14 @@ def write_to_javascript(total_time,running_mean,slug):
 #args = setup_argument_list()
 
 
+def invert_sesssions(sessions):
+    lastsession=sessions[0]
+    new_sessions=[]
+    for session in sessions:
+        new_sessions.append(Session(session.project,lastsession.end,session.start,session.content)
+        lastsession=sessions
+    return new_sessions
+
 
 def calendar_output(filename,sessions):
         cal = icalhelper.get_cal()
