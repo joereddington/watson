@@ -163,6 +163,23 @@ def read_log_file(filename, title=None):
     return atoms
 
 
+def read_watch_heartrate(filename):
+    #01-May-2017 23:46,01-May-2017 23:46,69.0
+    timestamplength=len("01-May-2017 23:46")
+    content=icalhelper.get_content(filename)
+    atoms=[]
+    atom={}
+    atom['content']="alive"
+    atom['title']="Heartrate"
+    for a in content:
+        start=a[0:timestamplength]
+        end=a[timestamplength+1:(timestamplength*2)+1]
+        atom['start']=start
+        atom['end']=end
+        atoms.append(atom.copy())
+        #        print "X{}X to Z{}Z ".format(start, end)
+    return atoms
+
 # From SE
 # http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
 

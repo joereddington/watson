@@ -34,6 +34,11 @@ class watsonTest(TestCase):
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),2)
 
+    def test_read_heartrate_file(self):
+        atoms=watson.read_watch_heartrate("testinputs/heart.csv")
+        self.assertEqual(len(atoms),164868)
+
+
 
 if __name__=="__main__":
     unittest.main()
