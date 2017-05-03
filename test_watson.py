@@ -39,10 +39,17 @@ class watsonTest(TestCase):
         self.assertEqual(len(atoms),164868)
 
     def test_count_awake_sessions(self):
-        TF = "%d-%M-%Y %H:%M"
+        TF = "%d-%b-%Y %H:%M"
+        pre=watson.max_dist_between_logs
+        watson.max_dist_between_logs=90
         atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
         sessions=watson.get_sessions(atoms,TF)
-        self.assertEqual(len(sessions),3)
+        watson.max_dist_between_logs=pre
+        projects = list(set([entry.project for entry in sessions]))
+        for project in projects:
+                watson.projectreport(project, sessions, True)
+
+        self.assertEqual(len(sessions),66)
 
 
 

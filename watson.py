@@ -94,8 +94,7 @@ def get_s(atom,TF):
         return datetime.datetime.strptime(total_date,TF)
 
 def get_sessions(atoms,TF=__TIME_FORMAT):
-        last= datetime.datetime.strptime(
-            "11/07/10 10:00", TF)
+        last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
         current = get_e(atoms[0],TF)
         grouped_timevalues=[]
         current_group=[]
@@ -180,7 +179,7 @@ def read_watch_heartrate(filename):
         atom['end']=end
         atom['date']=date
         atoms.append(atom.copy())
-        print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
+      #  print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
     return atoms
 
 # From SE
