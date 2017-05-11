@@ -313,7 +313,8 @@ def sleep():
      global max_dist_between_logs
      pre=max_dist_between_logs
      max_dist_between_logs=90
-     atoms=read_watch_heartrate("HealthData.csv")
+     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms.pop(0) #to get rid of the column titles
      sessions=get_sessions(atoms,TF)
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
@@ -321,6 +322,7 @@ def sleep():
      projects = list(set([entry.project for entry in sessions]))
      for project in projects:
              projectreport(project, sessions, True)
+     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/Sleep.ics",sessions)
 
 
 

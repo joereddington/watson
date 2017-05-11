@@ -71,9 +71,11 @@ def process_hours(content):
 
 
 if __name__ == "__main__":
-    location="oyster/*.csv"
-    content=[]
-    for file in glob.glob(location):
-        content.extend(icalhelper.get_content(file))
+#    location="oyster/*.csv"
+#    content=[]
+#    for file in glob.glob(location):
+#
+#        content.extend(icalhelper.get_content(file))
+    content= icalhelper.get_content("/Users/josephreddington/Dropbox/git/watson/oyster/all.csv")
     icalhelper.write_cal("Oyster.ics",processOyster(content))
     #write_cal("Sleep.ics", process_hours(get_content("inputfiles/sleep.csv")))
