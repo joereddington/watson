@@ -171,6 +171,7 @@ def read_watch_heartrate(filename):
     atom={}
     atom['content']="alive"
     atom['title']="Heartrate"
+#    content.pop(0)#remove header low.
     for a in content:
         start=a[datelength+1:timestamplength]
         date=a[:datelength]
@@ -307,8 +308,27 @@ def calendar_output(filename,sessions):
 
 
 
+def sleep():
+     TF = "%d-%b-%Y %H:%M"
+     global max_dist_between_logs
+     pre=max_dist_between_logs
+     max_dist_between_logs=90
+     atoms=read_watch_heartrate("HealthData.csv")
+     sessions=get_sessions(atoms,TF)
+     sessions=invert_sessions(sessions)
+     max_dist_between_logs=pre
+     print sessions
+     projects = list(set([entry.project for entry in sessions]))
+     for project in projects:
+             projectreport(project, sessions, True)
+
+
 
 def do():
+
+  if args.action == "sleep":
+        sleep()
+  else:
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
     jurgen_sessions=make_jurgen_file()
