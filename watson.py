@@ -194,6 +194,12 @@ def make_jurgen_file():
     graph_out(sessions,"jurgen")
     return sessions
 
+def make_meetings_file():
+    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../vision/meeting.md')
+    sessions=get_sessions(atoms)
+    graph_out(sessions,"meetings")
+    return sessions
+
 def make_email_file():
     atoms=read_tracking_file()
     sessions=get_sessions(atoms)
@@ -284,13 +290,16 @@ def do():
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
     jurgen_sessions=make_jurgen_file()
+    meeting_sessions=make_meetings_file()
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
     sessions.extend(projects_sessions)
+    sessions.extend(meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/meetings.ics",meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
