@@ -2,6 +2,7 @@
 import re
 import calendar_helper_functions as icalhelper
 import glob
+import sys
 import time
 import datetime
 import argparse
@@ -99,7 +100,7 @@ def get_sessions(atoms):
         current = get_e(atoms[0])
         grouped_timevalues=[]
         current_group=[]
-        for current in atoms:
+        for current in atoms: 
                 difference=get_s(current)-last
                 if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
@@ -287,6 +288,9 @@ def calendar_output(filename,sessions):
 
 
 def do():
+    if args.action == "now":
+        print datetime.datetime.utcnow().strftime("###### "+__TIME_FORMAT) 
+	sys.exit()
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
     jurgen_sessions=make_jurgen_file()
@@ -305,6 +309,5 @@ def do():
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
-
     output_sessions_as_projects(sessions)
 
