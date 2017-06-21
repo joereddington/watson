@@ -1,5 +1,8 @@
 #!/usr/bin/python
 import re
+import sys
+import traceback
+import pytz
 import calendar_helper_functions as icalhelper
 import glob
 import sys
@@ -14,6 +17,7 @@ max_dist_between_logs = 15  # in minutes TODO these should be arguments for diff
 min_session_size = 15  # in minutes
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
+#pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/temp.md'
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
 class Session(object):
@@ -101,6 +105,8 @@ def get_sessions(atoms):
         grouped_timevalues=[]
         current_group=[]
         for current in atoms: 
+
+	   try:
                 difference=get_s(current)-last
                 if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
@@ -109,7 +115,14 @@ def get_sessions(atoms):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
                 last = get_e(current)
+
                 current_group.append(current)
+	   except:
+	      traceback.print_exc()
+              print current
+
+
+	      sys.exit()
         grouped_timevalues.append(current_group)
         sessions = []
         for i in grouped_timevalues:
@@ -190,7 +203,7 @@ def make_pacesetter_file():
 
 
 def make_jurgen_file():
-    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../vision/jurgen.md')
+    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../../Jurgen/livenotes.md')
     sessions=get_sessions(atoms)
     graph_out(sessions,"jurgen")
     return sessions
@@ -289,7 +302,7 @@ def calendar_output(filename,sessions):
 
 def do():
     if args.action == "now":
-        print datetime.datetime.utcnow().strftime("###### "+__TIME_FORMAT) 
+	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT) 
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
@@ -310,4 +323,20 @@ def do():
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
     output_sessions_as_projects(sessions)
+    if args.action == "print": 
+	atoms=[]
+	atoms=read_log_file(os.path.dirname(os.path.abspath(__file__)    )+'/../../Jurgen/livenotes.md')
+	atoms.extend(read_log_file(pacesetter_file, "Pacesetter"))
+	atoms=sorted(atoms, key=get_s)
+        for atom in atoms:
+	    s=get_s(atom)
+	    e=get_e(atom)
+	    difference=e-s
+	    if (difference>datetime.timedelta( minutes=1)):
+		    print difference
+		    print "###### {} {} to {}:".format(atom['date'],atom['start'],atom['end'])
+	    else:
+		    print "###### {} {}:".format(atom['date'],atom['start'])
+	    print atom['content']
+
 
