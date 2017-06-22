@@ -12,7 +12,7 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
-pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
+pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/pacesetter.md'
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
 class Session(object):
@@ -312,12 +312,15 @@ def sleep():
      TF = "%d-%b-%Y %H:%M"
      global max_dist_between_logs
      pre=max_dist_between_logs
-     max_dist_between_logs=90
+     pre2=min_session_size = 15  # in minutes
+     min_session_size = 240  # in minutes
+     max_dist_between_logs=240
      atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
      atoms.pop(0) #to get rid of the column titles
      sessions=get_sessions(atoms,TF)
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
+     min_session_size = pre2
      print sessions
      projects = list(set([entry.project for entry in sessions]))
      for project in projects:
