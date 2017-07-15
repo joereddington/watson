@@ -309,6 +309,7 @@ def calendar_output(filename,sessions):
 
 
 def sleep():
+     print "hello"
      TF = "%d-%b-%Y %H:%M"
      global max_dist_between_logs
      pre=max_dist_between_logs
@@ -326,6 +327,7 @@ def sleep():
      for project in projects:
              projectreport(project, sessions, True)
      calendar_output(os.path.dirname(os.path.abspath(__file__))+"/Sleep.ics",sessions)
+     print "hi"
 
 
 

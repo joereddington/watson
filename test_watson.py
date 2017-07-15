@@ -65,20 +65,6 @@ class watsonTest(TestCase):
                 watson.projectreport(project, sessions, True)
         self.assertEqual(len(sessions),140)
 
-    def test_invert_sessions2(self):
-        TF = "%d-%b-%Y %H:%M"
-        pre=watson.max_dist_between_logs
-        watson.max_dist_between_logs=90
-        atoms=watson.read_watch_heartrate("testinputs/HealthData.csv")
-        sessions=watson.get_sessions(atoms,TF)
-        print "XXX{}".format(sessions[0])
-        sessions=watson.invert_sessions(sessions)
-        watson.max_dist_between_logs=pre
-        projects = list(set([entry.project for entry in sessions]))
-        for project in projects:
-                watson.projectreport(project, sessions, True)
-
-        self.assertEqual(len(sessions),140)
 
 
 if __name__=="__main__":
