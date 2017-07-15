@@ -183,6 +183,22 @@ def read_watch_heartrate(filename):
       #  print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
     return atoms
 
+
+def get_atom_clusters(atomsin):
+    atoms=[]
+    watch_TF = "%d-%b-%Y %H:%M"
+    lastatom=atomsin[0]
+    for atom in atomsin:
+        difference=get_s(atom,watch_TF)-get_s(lastatom,watch_TF)
+        if difference<datetime.timedelta(minutes=1):
+            #print "Reading"
+            #print atom
+            #print difference
+            atom['title']="Exercise"
+            atoms.append(atom)
+
+        lastatom=atom
+    return atoms
 # From SE
 # http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
 

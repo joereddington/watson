@@ -66,6 +66,28 @@ class watsonTest(TestCase):
         self.assertEqual(len(sessions),140)
 
 
+    def test_get_exercise_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+      #  for atom in atoms:
+      #      print atom
+        self.assertEqual(len(atoms),140)
+
+
+
+    def test_get_exercise_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+        sessions=watson.get_sessions(atoms,TF)
+        projects = list(set([entry.project for entry in sessions]))
+        for project in projects:
+                watson.projectreport(project, sessions, True)
+        self.assertEqual(len(sessions),58)
+
+
+
 
 if __name__=="__main__":
     unittest.main()
