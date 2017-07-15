@@ -99,6 +99,7 @@ def get_sessions(atoms,TF=__TIME_FORMAT):
         grouped_timevalues=[]
         current_group=[]
         for current in atoms:
+                print current
                 difference=get_s(current,TF)-last
                 if ((get_s(current,TF)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
@@ -191,9 +192,6 @@ def get_atom_clusters(atomsin):
     for atom in atomsin:
         difference=get_s(atom,watch_TF)-get_s(lastatom,watch_TF)
         if difference<datetime.timedelta(minutes=1):
-            #print "Reading"
-            #print atom
-            #print difference
             atom['title']="Exercise"
             atoms.append(atom)
 
@@ -235,6 +233,18 @@ def make_email_file():
     sessions=get_sessions(atoms)
     graph_out(sessions,"email")
     return sessions
+
+
+def make_exercise_file():
+     TF = "%d-%b-%Y %H:%M"
+     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms.pop(0) #to get rid of the column titles
+     atoms=get_atom_clusters(atoms)
+     sessions=get_sessions(atoms,TF)
+     return sessions
+
+
+
 
 def make_projects_file():
     atoms=[]
@@ -324,49 +334,49 @@ def calendar_output(filename,sessions):
 
 
 
-def sleep():
-     print "hello"
+def make_sleep_file():
      TF = "%d-%b-%Y %H:%M"
      global max_dist_between_logs
+     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms.pop(0) #to get rid of the column titles
      pre=max_dist_between_logs
      pre2=min_session_size = 15  # in minutes
      min_session_size = 240  # in minutes
      max_dist_between_logs=240
-     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
-     atoms.pop(0) #to get rid of the column titles
      sessions=get_sessions(atoms,TF)
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
      min_session_size = pre2
-     print sessions
-     projects = list(set([entry.project for entry in sessions]))
-     for project in projects:
-             projectreport(project, sessions, True)
-     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/Sleep.ics",sessions)
-     print "hi"
+     return sessions
 
 
 
 def do():
 
-  if args.action == "sleep":
-        sleep()
-  else:
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
-    jurgen_sessions=make_jurgen_file()
+#    jurgen_sessions=make_jurgen_file()
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
+    exercise_sessions=make_exercise_file()
+    sleep_sessions=make_sleep_file()
     sessions.extend(pacesetter_sessions)
-    sessions.extend(jurgen_sessions)
+#    sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
+    sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+#    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",exercise_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
+            sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
 
-    output_sessions_as_projects(sessions)
+    if args.action == "sleep":
+        output_sessions_as_projects(sessions)
+    else:
+        output_sessions_as_projects(sessions)
 
