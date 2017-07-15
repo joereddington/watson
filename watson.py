@@ -10,14 +10,17 @@ import time
 import datetime
 import argparse
 import os
+import json
 
 __TIME_FORMAT = "%d/%m/%y %H:%M"
 
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
+config = json.loads(open(os.path.dirname(os.path.abspath(__file__))+'/config.json').read())
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
+watch_file=config["heart"]
 
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
@@ -112,6 +115,7 @@ def get_sessions(atoms,TF=__TIME_FORMAT):
                 if (get_s(current,TF) <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
+		last = get_e(current,TF)
                 current_group.append(current)
         grouped_timevalues.append(current_group)
         sessions = []
@@ -247,7 +251,7 @@ def make_email_file():
 
 def make_exercise_file():
      TF = "%d-%b-%Y %H:%M"
-     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms=read_watch_heartrate(watch_file)
      atoms.pop(0) #to get rid of the column titles
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms,TF)
@@ -327,6 +331,7 @@ def write_to_javascript(total_time,running_mean,slug):
 
 
 def invert_sessions(sessions):
+   # print sessions
     lastsession=sessions[0]
     new_sessions=[]
     for session in sessions:
@@ -347,13 +352,15 @@ def calendar_output(filename,sessions):
 def make_sleep_file():
      TF = "%d-%b-%Y %H:%M"
      global max_dist_between_logs
-     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms=read_watch_heartrate(watch_file)
      atoms.pop(0) #to get rid of the column titles
      pre=max_dist_between_logs
      pre2=min_session_size = 15  # in minutes
      min_session_size = 240  # in minutes
      max_dist_between_logs=240
+    
      sessions=get_sessions(atoms,TF)
+     
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
      min_session_size = pre2
@@ -372,6 +379,7 @@ def do():
     projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file()
     sleep_sessions=make_sleep_file()
+    meeting_sessions=make_meetings_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
