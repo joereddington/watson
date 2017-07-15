@@ -16,8 +16,9 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
+
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
-#pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/temp.md'
+
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
 class Session(object):
@@ -83,10 +84,10 @@ def output_sessions_as_projects(sessions):
                 projectreport(project, sessions, args.verbatim)
         print "Total project time".ljust(45)+str(total_time)
 
-def get_e(atom):
+def get_e(atom,TF):
         total_date=atom['date']+" "+atom['end']
 	try:
-		returnvalue= datetime.datetime.strptime(total_date,__TIME_FORMAT)
+		returnvalue= datetime.datetime.strptime(total_date,TF)
 		return returnvalue
 	except ValueError:
 		print "Value error!"
@@ -94,28 +95,38 @@ def get_e(atom):
 		return 0
 
 
-def get_s(atom):
+def get_s(atom,TF):
         total_date=atom['date']+" "+atom['start']
-        return datetime.datetime.strptime(total_date,__TIME_FORMAT)
+        return datetime.datetime.strptime(total_date,TF)
 
-def get_sessions(atoms):
-        last= datetime.datetime.strptime(
-            "11/07/10 10:00", __TIME_FORMAT)
-        current = get_e(atoms[0])
+def get_sessions(atoms,TF=__TIME_FORMAT):
+        last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
+        current = get_e(atoms[0],TF)
         grouped_timevalues=[]
         current_group=[]
+<<<<<<< HEAD
         for current in atoms: 
 
 	   try:
                 difference=get_s(current)-last
                 if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
+=======
+        for current in atoms:
+                print current
+                difference=get_s(current,TF)-last
+                if ((get_s(current,TF)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
+>>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (get_s(current) <last): #preventing negative times being approved...
+                if (get_s(current,TF) <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
+<<<<<<< HEAD
                 last = get_e(current)
 
+=======
+                last = get_e(current,TF)
+>>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
                 current_group.append(current)
 	   except:
 	      traceback.print_exc()
@@ -127,9 +138,9 @@ def get_sessions(atoms):
         sessions = []
         for i in grouped_timevalues:
             if i:
-                if ((get_e(i[-1])-get_s(i[0]))> datetime.timedelta(minutes=min_session_size)):
+                if ((get_e(i[-1],TF)-get_s(i[0],TF))> datetime.timedelta(minutes=min_session_size)):
 #                    print "{} {} {}".format(i[0]['title'],get_s(i[0]),get_e(i[-1]),i)
-                    sessions.append(Session(i[0]['title'],get_s(i[0]),get_e(i[-1]),i))
+                    sessions.append(Session(i[0]['title'],get_s(i[0],TF),get_e(i[-1],TF),i))
         return sessions
 
 def read_log_file(filename, title=None):
@@ -177,6 +188,40 @@ def read_log_file(filename, title=None):
     return atoms
 
 
+def read_watch_heartrate(filename):
+    #01-May-2017 23:46,01-May-2017 23:46,69.0
+    timestamplength=len("01-May-2017 23:46")
+    datelength=len("01-May-2017")
+    content=icalhelper.get_content(filename)
+    atoms=[]
+    atom={}
+    atom['content']="alive"
+    atom['title']="Heartrate"
+#    content.pop(0)#remove header low.
+    for a in content:
+        start=a[datelength+1:timestamplength]
+        date=a[:datelength]
+        end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
+        atom['start']=start
+        atom['end']=end
+        atom['date']=date
+        atoms.append(atom.copy())
+      #  print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
+    return atoms
+
+
+def get_atom_clusters(atomsin):
+    atoms=[]
+    watch_TF = "%d-%b-%Y %H:%M"
+    lastatom=atomsin[0]
+    for atom in atomsin:
+        difference=get_s(atom,watch_TF)-get_s(lastatom,watch_TF)
+        if difference<datetime.timedelta(minutes=1):
+            atom['title']="Exercise"
+            atoms.append(atom)
+
+        lastatom=atom
+    return atoms
 # From SE
 # http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
 
@@ -219,6 +264,18 @@ def make_email_file():
     sessions=get_sessions(atoms)
     graph_out(sessions,"email")
     return sessions
+
+
+def make_exercise_file():
+     TF = "%d-%b-%Y %H:%M"
+     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms.pop(0) #to get rid of the column titles
+     atoms=get_atom_clusters(atoms)
+     sessions=get_sessions(atoms,TF)
+     return sessions
+
+
+
 
 def make_projects_file():
     atoms=[]
@@ -290,6 +347,15 @@ def write_to_javascript(total_time,running_mean,slug):
 #args = setup_argument_list()
 
 
+def invert_sessions(sessions):
+    lastsession=sessions[0]
+    new_sessions=[]
+    for session in sessions:
+        final= lastsession.end
+        new_sessions.append(Session(session.project,final,session.start,session.content))
+        lastsession=session
+    return new_sessions
+
 
 def calendar_output(filename,sessions):
         cal = icalhelper.get_cal()
@@ -299,44 +365,56 @@ def calendar_output(filename,sessions):
 
 
 
+def make_sleep_file():
+     TF = "%d-%b-%Y %H:%M"
+     global max_dist_between_logs
+     atoms=read_watch_heartrate("/Users/josephreddington/Dropbox/Heart Rate.csv")
+     atoms.pop(0) #to get rid of the column titles
+     pre=max_dist_between_logs
+     pre2=min_session_size = 15  # in minutes
+     min_session_size = 240  # in minutes
+     max_dist_between_logs=240
+     sessions=get_sessions(atoms,TF)
+     sessions=invert_sessions(sessions)
+     max_dist_between_logs=pre
+     min_session_size = pre2
+     return sessions
+
+
 
 def do():
-    if args.action == "now":
+if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT) 
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
     jurgen_sessions=make_jurgen_file()
-    meeting_sessions=make_meetings_file()
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
+    exercise_sessions=make_exercise_file()
+    sleep_sessions=make_sleep_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
+    sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
     sessions.extend(meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/meetings.ics",meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+>>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",exercise_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
-    output_sessions_as_projects(sessions)
-    if args.action == "print": 
-	atoms=[]
-	atoms=read_log_file(os.path.dirname(os.path.abspath(__file__)    )+'/../../Jurgen/livenotes.md')
-	atoms.extend(read_log_file(pacesetter_file, "Pacesetter"))
-	atoms=sorted(atoms, key=get_s)
-        for atom in atoms:
-	    s=get_s(atom)
-	    e=get_e(atom)
-	    difference=e-s
-	    if (difference>datetime.timedelta( minutes=1)):
-		    print difference
-		    print "###### {} {} to {}:".format(atom['date'],atom['start'],atom['end'])
-	    else:
-		    print "###### {} {}:".format(atom['date'],atom['start'])
-	    print atom['content']
+            sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
+
+    if args.action == "sleep":
+        output_sessions_as_projects(sessions)
+    else:
+        output_sessions_as_projects(sessions)
 
 

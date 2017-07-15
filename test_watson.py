@@ -28,5 +28,66 @@ class watsonTest(TestCase):
         atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
         self.assertEqual(atoms[0]['title'],"safe")
 
+
+    def test_make_sessions(self):
+        atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),2)
+
+    def test_read_heartrate_file(self):
+        atoms=watson.read_watch_heartrate("testinputs/heart.csv")
+        self.assertEqual(len(atoms),164868)
+
+    def test_count_awake_sessions(self):
+        TF = "%d-%b-%Y %H:%M"
+        pre=watson.max_dist_between_logs
+        watson.max_dist_between_logs=90
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        sessions=watson.get_sessions(atoms,TF)
+        watson.max_dist_between_logs=pre
+        projects = list(set([entry.project for entry in sessions]))
+       # for project in projects:
+       #         watson.projectreport(project, sessions, True)
+
+        self.assertEqual(len(sessions),140)
+
+    def test_invert_sessions(self):
+        TF = "%d-%b-%Y %H:%M"
+        pre=watson.max_dist_between_logs
+        watson.max_dist_between_logs=90
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        sessions=watson.get_sessions(atoms,TF)
+        print "XXX{}".format(sessions[0])
+        sessions=watson.invert_sessions(sessions)
+        watson.max_dist_between_logs=pre
+        projects = list(set([entry.project for entry in sessions]))
+        for project in projects:
+                watson.projectreport(project, sessions, True)
+        self.assertEqual(len(sessions),140)
+
+
+    def test_get_exercise_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+      #  for atom in atoms:
+      #      print atom
+        self.assertEqual(len(atoms),140)
+
+
+
+    def test_get_exercise_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+        sessions=watson.get_sessions(atoms,TF)
+        projects = list(set([entry.project for entry in sessions]))
+        for project in projects:
+                watson.projectreport(project, sessions, True)
+        self.assertEqual(len(sessions),58)
+
+
+
+
 if __name__=="__main__":
     unittest.main()
