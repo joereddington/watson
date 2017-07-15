@@ -104,36 +104,15 @@ def get_sessions(atoms,TF=__TIME_FORMAT):
         current = get_e(atoms[0],TF)
         grouped_timevalues=[]
         current_group=[]
-<<<<<<< HEAD
-        for current in atoms: 
-
-	   try:
-                difference=get_s(current)-last
-                if ((get_s(current)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
-=======
         for current in atoms:
-                print current
                 difference=get_s(current,TF)-last
                 if ((get_s(current,TF)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
->>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
                     grouped_timevalues.append(current_group)
                     current_group=[current]
                 if (get_s(current,TF) <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-<<<<<<< HEAD
-                last = get_e(current)
-
-=======
-                last = get_e(current,TF)
->>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
                 current_group.append(current)
-	   except:
-	      traceback.print_exc()
-              print current
-
-
-	      sys.exit()
         grouped_timevalues.append(current_group)
         sessions = []
         for i in grouped_timevalues:
@@ -383,7 +362,7 @@ def make_sleep_file():
 
 
 def do():
-if args.action == "now":
+    if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT) 
 	sys.exit()
     sessions=[]
@@ -403,7 +382,6 @@ if args.action == "now":
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/meetings.ics",meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
->>>>>>> 33afb72269de7b1a4e993876f6dd0d3571ee29d4
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
