@@ -21,6 +21,7 @@ vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
 watch_file=config["heart"]
+pacesetter_file=config["pacesetter"]
 
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
@@ -236,11 +237,19 @@ def make_jurgen_file():
     graph_out(sessions,"jurgen")
     return sessions
 
+def make_project_file(filename,name):
+    atoms=[]
+    atoms.extend(read_log_file(filename))
+    sessions=get_sessions(atoms)
+    graph_out(sessions,name)
+    return sessions
+
 def make_meetings_file():
     atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../vision/meeting.md')
     sessions=get_sessions(atoms)
     graph_out(sessions,"meetings")
     return sessions
+
 
 def make_email_file():
     atoms=read_tracking_file()
@@ -265,18 +274,9 @@ def make_projects_file():
     for file in glob.glob(vision_dir+"/*.md"):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
-    #for session in sessions:
-#        if "entirely" in session.project:
-#            print session
     graph_out(sessions,"projects")
     return sessions
 
-def make_project_file(filename):
-    atoms=[]
-    atoms.extend(read_log_file(filename))
-    sessions=get_sessions(atoms)
-    graph_out(sessions,"projects")
-    return sessions
 
 
 
@@ -358,9 +358,9 @@ def make_sleep_file():
      pre2=min_session_size = 15  # in minutes
      min_session_size = 240  # in minutes
      max_dist_between_logs=240
-    
+
      sessions=get_sessions(atoms,TF)
-     
+
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
      min_session_size = pre2
@@ -370,7 +370,7 @@ def make_sleep_file():
 
 def do():
     if args.action == "now":
-	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT) 
+	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
