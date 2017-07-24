@@ -4,7 +4,7 @@ import argparse
 
 
 watson.args=watson.setup_argument_list()
-watson.do()
+watson.full_detect()
 
 
 

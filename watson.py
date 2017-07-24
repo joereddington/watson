@@ -22,8 +22,8 @@ vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
 watch_file=config["heart"]
 pacesetter_file=config["pacesetter"]
-
-email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
+jurgen_file=config["livenotes"]
+email_file = config["desktop"]
 
 class Session(object):
         project = "Unknown"
@@ -244,11 +244,6 @@ def make_project_file(filename,name):
     graph_out(sessions,name)
     return sessions
 
-def make_meetings_file():
-    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../vision/meeting.md')
-    sessions=get_sessions(atoms)
-    graph_out(sessions,"meetings")
-    return sessions
 
 
 def make_email_file():
@@ -368,26 +363,23 @@ def make_sleep_file():
 
 
 
-def do():
+def full_detect():
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_pacesetter_file()
-    jurgen_sessions=make_jurgen_file()
+    jurgen_sessions=make_project_file(jurgen_file,"jurgen")
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file()
     sleep_sessions=make_sleep_file()
-    meeting_sessions=make_meetings_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
-    sessions.extend(meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/meetings.ics",meeting_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
@@ -403,4 +395,8 @@ def do():
     else:
         output_sessions_as_projects(sessions)
 
+def mrslandingham_detect():
+    sessions=make_project_file("../mrslandingham/log_files/ml_log_desktop.md","Mrs Landingham")
+    sessions = [i for i in sessions if days_old(i)<int(args.d)]
+    output_sessions_as_projects(sessions)
 
