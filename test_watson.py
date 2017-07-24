@@ -13,26 +13,18 @@ class watsonTest(TestCase):
          self.assertEqual(3,3)
 
     def test_read_log_file(self):
-        atoms=watson.read_log_file("inputfiles/test.md")
-        self.assertEqual(len(atoms),13)
+        atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
+        self.assertEqual(len(atoms),582)
 
     def test_read_log_file_title1(self):
-        atoms=watson.read_log_file("inputfiles/test.md")
-        self.assertEqual(atoms[0]['title'],"inputfiles/test.md")
-
-    def test_read_log_file_title2(self):
-        atoms=watson.read_log_file("inputfiles/test.md", "hope")
-        self.assertEqual(atoms[0]['title'],"hope")
-
-    def test_read_log_file_title2(self):
-        atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
-        self.assertEqual(atoms[0]['title'],"safe")
+        atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
+        self.assertEqual(atoms[0]['title'],"testinputs/regressions/livenotes.md")
 
 
     def test_make_sessions(self):
-        atoms=watson.read_log_file("inputfiles/withtitle.md", "hope")
+        atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
         sessions=watson.get_sessions(atoms)
-        self.assertEqual(len(sessions),2)
+        self.assertEqual(len(sessions),36)
 
     def test_read_heartrate_file(self):
         atoms=watson.read_watch_heartrate("testinputs/heart.csv")
