@@ -28,7 +28,7 @@ class watsonTest(TestCase):
 
     def test_read_heartrate_file(self):
         atoms=watson.read_watch_heartrate("testinputs/heart.csv")
-        self.assertEqual(len(atoms),164868)
+        self.assertEqual(len(atoms),164867)
 
     def test_count_awake_sessions(self):
         TF = "%d-%b-%Y %H:%M"

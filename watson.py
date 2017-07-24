@@ -11,6 +11,7 @@ import datetime
 import argparse
 import os
 import json
+import timechart
 
 __TIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -41,11 +42,25 @@ class Session(object):
                 return "    {} to {} ({})".format(
                     self.start.strftime("%d/%m/%y %H:%M"), self.end.strftime("%H:%M"), str(self.length())[:-3])
 
+class Atom(object):
+
+        def __init__(self, start,end, date,title, TF):
+            self.content=start
+            self.start=end
+            self.title=title
+            self.end=end
+            self.date=date
+            self.TF=TF
+
+        def get_S():
+            total_date=self.date+" "+self.start
+            return datetime.datetime.strptime(total_date,TF)
+
+
 
 def setup_argument_list():
     "creates and parses the argument list for Watson"
-    parser = argparse.ArgumentParser(
-        description="manages Watson")
+    parser = argparse.ArgumentParser( description="manages Watson")
     parser.add_argument("action", help="What to do/display: options are 'graph', 'info', and 'calendar'")
     parser.add_argument('-c', nargs="?", help="if context_filter is activated then only actions in the relevant contexts (contexts are generally in 'bgthop0ry') are counted")
     parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
@@ -123,7 +138,6 @@ def get_sessions(atoms,TF=__TIME_FORMAT):
         for i in grouped_timevalues:
             if i:
                 if ((get_e(i[-1],TF)-get_s(i[0],TF))> datetime.timedelta(minutes=min_session_size)):
-#                    print "{} {} {}".format(i[0]['title'],get_s(i[0]),get_e(i[-1]),i)
                     sessions.append(Session(i[0]['title'],get_s(i[0],TF),get_e(i[-1],TF),i))
         return sessions
 
@@ -181,7 +195,6 @@ def read_watch_heartrate(filename):
     atom={}
     atom['content']="alive"
     atom['title']="Heartrate"
-#    content.pop(0)#remove header low.
     for a in content:
         start=a[datelength+1:timestamplength]
         date=a[:datelength]
@@ -190,7 +203,7 @@ def read_watch_heartrate(filename):
         atom['end']=end
         atom['date']=date
         atoms.append(atom.copy())
-      #  print "X{}X to Z{}Z on Y{}Y".format(start, end,date)
+    atoms.pop()#remove column tiles
     return atoms
 
 
@@ -209,75 +222,55 @@ def get_atom_clusters(atomsin):
 # From SE
 # http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
 
-# Running mean/Moving average
-def get_running_mean(l, N):
-        sum = 0
-        result = list(0 for x in l)
-
-        for i in range(0, N):
-                sum = sum + l[i]
-                result[i] = sum / (i+1)
-
-        for i in range(N, len(l)):
-                sum = sum - l[i-N] + l[i]
-                result[i] = sum / N
-
-        return result
-
-def make_pacesetter_file():
-    atoms=read_log_file(pacesetter_file, "Pacesetter")
-    sessions=get_sessions(atoms)
-    graph_out(sessions,"pacesetter")
-    return sessions
-
-
-def make_jurgen_file():
-    atoms=read_log_file(os.path.dirname(os.path.abspath(__file__))+'/../../Jurgen/livenotes.md')
-    sessions=get_sessions(atoms)
-    graph_out(sessions,"jurgen")
-    return sessions
 
 def make_project_file(filename,name):
     atoms=[]
     atoms.extend(read_log_file(filename))
     sessions=get_sessions(atoms)
-    graph_out(sessions,name)
+    timechart.graph_out(sessions,name)
     return sessions
-
-
 
 def make_email_file():
     atoms=read_tracking_file()
     sessions=get_sessions(atoms)
-    graph_out(sessions,"email")
+    timechart.graph_out(sessions,"email")
     return sessions
 
 
 def make_exercise_file():
      TF = "%d-%b-%Y %H:%M"
      atoms=read_watch_heartrate(watch_file)
-     atoms.pop(0) #to get rid of the column titles
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms,TF)
      return sessions
 
+def make_sleep_file():
+     TF = "%d-%b-%Y %H:%M"
+     global max_dist_between_logs
+     atoms=read_watch_heartrate(watch_file)
+     pre=max_dist_between_logs
+     pre2=min_session_size
+     min_session_size = 240  # in minutes
+     max_dist_between_logs=240
 
+     sessions=get_sessions(atoms,TF)
 
+     sessions=invert_sessions(sessions)
+     max_dist_between_logs=pre
+     min_session_size = pre2
+     return sessions
 
 def make_projects_file():
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
-    graph_out(sessions,"projects")
+    timechart.graph_out(sessions,"projects")
     return sessions
-
-
-
 
 def read_tracking_file():
     content=icalhelper.get_content(email_file)
-    matchingcontent=  [line for line in content if ("mail" in line )]
+    matchingcontent= [line for line in content if ("mail" in line )]
     atoms=[]
     for line in matchingcontent:
         atom={}
@@ -290,48 +283,15 @@ def read_tracking_file():
     return atoms
 
 
-
-def graph_out(sessions,slug):
-        DAY_COUNT = 26
-        total_time = []
-        for single_date in (
-                datetime.datetime.today() - datetime.timedelta(days=n)
-                for n in range(DAY_COUNT)):
-                single_date_sessions = [
-                    entry for entry in sessions if (
-                        entry.start.date() == single_date.date())]
-                element = int(
-                              sum(
-                                  [entry.length()
-                                   for entry in single_date_sessions],
-                                  datetime.timedelta()).total_seconds() / 60)
-                total_time = [element]+total_time
-        running_mean = get_running_mean(total_time, 7)
-        write_to_javascript(total_time,running_mean,slug)
-
 def days_old(session):
         delta = datetime.datetime.now() - session.start
 	return delta.days
 
-def write_to_javascript(total_time,running_mean,slug):
-        f = open(vision_dir+"../../watson/javascript/"+slug+".js", 'wb')
-        f.write(slug+"sessions=["+",".join(str(x) for x in total_time)+"];\n")
-        f.write(slug+"running_mean=["+",".join(str(x) for x in running_mean)+"]")
-        f.close()
-
-
-
-
-#args = setup_argument_list()
-
-
 def invert_sessions(sessions):
-   # print sessions
     lastsession=sessions[0]
     new_sessions=[]
     for session in sessions:
-        final= lastsession.end
-        new_sessions.append(Session(session.project,final,session.start,session.content))
+        new_sessions.append(Session(session.project,lastsession.end,session.start,session.content))
         lastsession=session
     return new_sessions
 
@@ -343,32 +303,12 @@ def calendar_output(filename,sessions):
         icalhelper.write_cal(filename,cal)
 
 
-
-def make_sleep_file():
-     TF = "%d-%b-%Y %H:%M"
-     global max_dist_between_logs
-     atoms=read_watch_heartrate(watch_file)
-     atoms.pop(0) #to get rid of the column titles
-     pre=max_dist_between_logs
-     pre2=min_session_size = 15  # in minutes
-     min_session_size = 240  # in minutes
-     max_dist_between_logs=240
-
-     sessions=get_sessions(atoms,TF)
-
-     sessions=invert_sessions(sessions)
-     max_dist_between_logs=pre
-     min_session_size = pre2
-     return sessions
-
-
-
 def full_detect():
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
-    pacesetter_sessions=make_pacesetter_file()
+    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
     jurgen_sessions=make_project_file(jurgen_file,"jurgen")
     email_sessions=make_email_file()
     projects_sessions=make_projects_file()
