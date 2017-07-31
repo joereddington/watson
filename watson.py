@@ -44,7 +44,7 @@ class Session(object):
 
 class Atom(object):
 
-        def __init__(self, start,end, date,title, TF):
+        def __init__(self, start="",end="", date="",title="", content="", TF="%d/%m/%y %H:%M"):
             self.content=start
             self.start=end
             self.title=title
@@ -52,10 +52,16 @@ class Atom(object):
             self.date=date
             self.TF=TF
 
-        def get_S():
+        def get_S(self):
             total_date=self.date+" "+self.start
-            return datetime.datetime.strptime(total_date,TF)
+            return datetime.datetime.strptime(total_date,self.TF)
 
+        def get_E(self):
+            total_date=self.date+" "+self.end
+            return datetime.datetime.strptime(total_date,self.TF)
+
+        def __str__(self):
+            return "{}, from {} to {} on {}".format(self.title,self.start,self.end,self.date)
 
 
 def setup_argument_list():
@@ -103,42 +109,27 @@ def output_sessions_as_projects(sessions):
                 projectreport(project, sessions, args.verbatim)
         print "Total project time".ljust(45)+str(total_time)
 
-def get_e(atom,TF):
-        total_date=atom['date']+" "+atom['end']
-	try:
-		returnvalue= datetime.datetime.strptime(total_date,TF)
-		return returnvalue
-	except ValueError:
-		print "Value error!"
-		print total_date
-		return 0
-
-
-def get_s(atom,TF):
-        total_date=atom['date']+" "+atom['start']
-        return datetime.datetime.strptime(total_date,TF)
-
-def get_sessions(atoms,TF=__TIME_FORMAT):
+def get_sessions(atoms):
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
-        current = get_e(atoms[0],TF)
+        current = atoms[0].get_E()
         grouped_timevalues=[]
         current_group=[]
         for current in atoms:
-                difference=get_s(current,TF)-last
-                if ((get_s(current,TF)-last) > datetime.timedelta( minutes=max_dist_between_logs)):
+                difference=current.get_S()-last
+                if ((current.get_S()-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (get_s(current,TF) <last): #preventing negative times being approved...
+                if (current.get_S() <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-		last = get_e(current,TF)
+		last = current.get_E()
                 current_group.append(current)
         grouped_timevalues.append(current_group)
         sessions = []
         for i in grouped_timevalues:
             if i:
-                if ((get_e(i[-1],TF)-get_s(i[0],TF))> datetime.timedelta(minutes=min_session_size)):
-                    sessions.append(Session(i[0]['title'],get_s(i[0],TF),get_e(i[-1],TF),i))
+                if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
+                    sessions.append(Session(i[0].title,i[0].get_S(),i[-1].get_E(),i))
         return sessions
 
 def read_log_file(filename, title=None):
@@ -149,15 +140,14 @@ def read_log_file(filename, title=None):
         title=content[0][7:].strip()
     entries="\n".join(content).split("######")
     atoms=[]
-    atom={}
     lastdate="01/01/10"
     date=""
     entries=entries[1:]
     for e in entries:
+        atom=Atom()
         lines=e.split("\n")
-        atom['content']="\n".join(lines[1:]).strip()+"\n"
-        atom['start']=""
-        atom['title']=title
+        atom.content="\n".join(lines[1:]).strip()+"\n"
+        atom.title=title
         date= e.split("\n")[0]
         date=date.replace("2016-","16 ")
         date=date.replace("2017-","17 ")
@@ -166,57 +156,49 @@ def read_log_file(filename, title=None):
         date=re.sub(r"to [0-9][0-9]/../..","to",date)
         if date.find("/")>0: #Then we have both date and time.
             newdate=date[:9].strip()
-            atom['start']=date[9:len(date)].strip()
-            atom['date']=newdate
+            atom.start=date[9:len(date)].strip()
+            atom.date=newdate
             lastdate=newdate
         else:
-            atom['start']=date.strip()
-            atom['date']=lastdate
-        if len(atom['start'])>6:
+            atom.start=date.strip()
+            atom.date=lastdate
+        if len(atom.start)>6:
             #Then it was a 'to' construct and has a start and end time
-            atom['end'] = atom['start'][9:]
-            atom['start'] = atom['start'][:5]
+            atom.end = atom.start[9:]
+            atom.start = atom.start[:5]
         else:
-            atom['end']=atom['start']
-        atom['start']=atom['start'][:5]
-        atom['end']=atom['end'][:5]
-        atoms.append(atom.copy())
+            atom.end=atom.start
+        atom.start=atom.start[:5]
+        atom.end=atom.end[:5]
+        atoms.append(atom)
 
-    previous_date=""
     return atoms
 
 
 def read_watch_heartrate(filename):
     #01-May-2017 23:46,01-May-2017 23:46,69.0
+    TF = "%d-%b-%Y %H:%M"
     timestamplength=len("01-May-2017 23:46")
     datelength=len("01-May-2017")
     content=icalhelper.get_content(filename)
     atoms=[]
-    atom={}
-    atom['content']="alive"
-    atom['title']="Heartrate"
     for a in content:
         start=a[datelength+1:timestamplength]
         date=a[:datelength]
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
-        atom['start']=start
-        atom['end']=end
-        atom['date']=date
-        atoms.append(atom.copy())
+        atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
     atoms.pop()#remove column tiles
     return atoms
 
 
 def get_atom_clusters(atomsin):
     atoms=[]
-    watch_TF = "%d-%b-%Y %H:%M"
     lastatom=atomsin[0]
     for atom in atomsin:
-        difference=get_s(atom,watch_TF)-get_s(lastatom,watch_TF)
+        difference=atom.get_S()-lastatom.get_S()
         if difference<datetime.timedelta(minutes=1):
-            atom['title']="Exercise"
+            atom.title="Exercise"
             atoms.append(atom)
-
         lastatom=atom
     return atoms
 # From SE
