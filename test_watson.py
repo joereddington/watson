@@ -16,6 +16,20 @@ class watsonTest(TestCase):
         atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
         self.assertEqual(len(atoms),582)
 
+
+    def test_read_desktop_log_file(self):
+        atoms=watson.read_tracking_file("testinputs/desktop.md")
+        self.assertEqual(len(atoms),66)
+
+
+    def test_make_email_sessions(self):
+        atoms=watson.read_tracking_file("testinputs/desktop.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),6)
+
+
+
+
     def test_read_log_file_title1(self):
         atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
         self.assertEqual(atoms[0].title,"testinputs/regressions/livenotes.md")
@@ -62,8 +76,6 @@ class watsonTest(TestCase):
         atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
         atoms=watson.get_atom_clusters(atoms)
         self.assertEqual(len(atoms),33064)
-
-
 
     def test_get_exercise_sessions(self):
         TF = "%d-%b-%Y %H:%M"

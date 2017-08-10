@@ -73,6 +73,7 @@ def setup_argument_list():
     parser.add_argument( '-n', nargs="?", help="reverse context filter, eliminates certain contexts from the count")
     parser.add_argument( '-s', action='store_true', help="use if called by a script or cron")
     parser.add_argument( '-v', dest='verbatim', action='store_true', help='Verbose mode')
+    parser.add_argument( '-e', dest='excelmode', action='store_true', help='Output for excel')
     parser.add_argument( "target", nargs='?', help='displays only files containing this search string.')
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
@@ -213,7 +214,7 @@ def make_project_file(filename,name):
     return sessions
 
 def make_email_file():
-    atoms=read_tracking_file()
+    atoms=read_tracking_file(email_file)
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"email")
     return sessions
@@ -250,9 +251,9 @@ def make_projects_file():
     timechart.graph_out(sessions,"projects")
     return sessions
 
-def read_tracking_file():
-    content=icalhelper.get_content(email_file)
-    matchingcontent= [line for line in content if ("mail" in line )]
+def read_tracking_file(filename,tag="mail"):
+    content=icalhelper.get_content(filename)
+    matchingcontent= [line for line in content if (tag in line )]
     atoms=[]
     for line in matchingcontent:
         atom={}
@@ -306,7 +307,7 @@ def full_detect():
     sessions=[]
     pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
     jurgen_sessions=make_project_file(jurgen_file,"jurgen")
-    email_sessions=make_email_file()
+    email_sessions=make_email_file(email_file)
     projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file()
     sleep_sessions=make_sleep_file()
@@ -326,6 +327,8 @@ def full_detect():
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
             sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
 
+
+
     if args.action == "sleep":
         output_sessions_as_projects(sessions)
     else:
@@ -335,4 +338,5 @@ def mrslandingham_detect():
     sessions=make_project_file("../mrslandingham/log_files/ml_log_desktop.md","Mrs Landingham")
     sessions = [i for i in sessions if days_old(i)<int(args.d)]
     output_sessions_as_projects(sessions)
+
 
