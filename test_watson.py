@@ -76,7 +76,13 @@ class watsonTest(TestCase):
         self.assertEqual(len(sessions),58)
 
 
-
+    def test_time_split(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        start="02-Jan-2017 12:27"
+        end="02-Jan-2017 16:27"
+        atoms=watson.cut(atoms,start,end)
+        self.assertEqual(len(atoms),1036)
 
 if __name__=="__main__":
     unittest.main()

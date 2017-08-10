@@ -278,6 +278,20 @@ def invert_sessions(sessions):
     return new_sessions
 
 
+def cut(atoms,start,end):
+    TF = "%d-%b-%Y %H:%M"
+    start_time= datetime.datetime.strptime( start, TF)
+    end_time= datetime.datetime.strptime( end, TF)
+    return_atoms=[]
+    for current in atoms:
+            if (current.get_S() > start_time):
+                if (current.get_S() < end_time):
+                    return_atoms.append(current)
+    return return_atoms
+
+
+
+
 def calendar_output(filename,sessions):
         cal = icalhelper.get_cal()
         for entry in sessions:
