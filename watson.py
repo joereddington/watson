@@ -335,7 +335,7 @@ def full_detect():
 
 
     if args.action == "sleep":
-        output_sessions_as_projects(sessions)
+        output_sessions_as_projects(sleep_sessions)
     else:
         output_sessions_as_projects(sessions)
 
