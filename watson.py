@@ -188,7 +188,13 @@ def read_watch_heartrate(filename):
         date=a[:datelength]
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
         atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
-    atoms.pop()#remove column tiles
+    print "ZZZ"
+    print atoms[0]
+    print "XXXX"
+    print atoms.pop(0)#remove column tiles
+    print "YYYX"
+    print atoms[0]
+    print "XXXX"
     return atoms
 
 
@@ -213,30 +219,29 @@ def make_project_file(filename,name):
     timechart.graph_out(sessions,name)
     return sessions
 
-def make_email_file():
-    atoms=read_tracking_file(email_file)
+def make_email_file(filename):
+    atoms=read_tracking_file(filename)
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"email")
     return sessions
 
 
 def make_exercise_file():
-     TF = "%d-%b-%Y %H:%M"
      atoms=read_watch_heartrate(watch_file)
      atoms=get_atom_clusters(atoms)
-     sessions=get_sessions(atoms,TF)
+     sessions=get_sessions(atoms)
      return sessions
 
 def make_sleep_file():
-     TF = "%d-%b-%Y %H:%M"
      global max_dist_between_logs
+     global min_session_size
      atoms=read_watch_heartrate(watch_file)
      pre=max_dist_between_logs
      pre2=min_session_size
      min_session_size = 240  # in minutes
      max_dist_between_logs=240
 
-     sessions=get_sessions(atoms,TF)
+     sessions=get_sessions(atoms)
 
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
@@ -254,15 +259,15 @@ def make_projects_file():
 def read_tracking_file(filename,tag="mail"):
     content=icalhelper.get_content(filename)
     matchingcontent= [line for line in content if (tag in line )]
+    TF = "%d/%m/%y %H:%M"
+
     atoms=[]
     for line in matchingcontent:
-        atom={}
-        atom['content']=line[19:]
-        atom['start']=line[11:16]
-        atom['title']="mail"
-        atom['end']=line[11:16]
-        atom['date']=line[8:10]+"/"+line[5:7]+"/"+line[2:4]
-        atoms.append(atom.copy())
+        content=line[19:]
+        start=line[11:16]
+        end=line[11:16]
+        date=line[8:10]+"/"+line[5:7]+"/"+line[2:4]
+        atoms.append(Atom(start,end,date,"mail",content,TF))
     return atoms
 
 

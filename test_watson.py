@@ -25,7 +25,7 @@ class watsonTest(TestCase):
     def test_make_email_sessions(self):
         atoms=watson.read_tracking_file("testinputs/desktop.md")
         sessions=watson.get_sessions(atoms)
-        self.assertEqual(len(sessions),6)
+        self.assertEqual(len(sessions),2)
 
 
 
