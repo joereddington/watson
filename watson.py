@@ -391,7 +391,7 @@ def full_detect():
             sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
 
     if args.action == "sleep":
-        output_sessions_as_projects(sessions)
+        output_sessions_as_projects(sleep_sessions)
     else:
         output_sessions_as_projects(sessions)
 
