@@ -51,14 +51,22 @@ class Atom(object):
             self.end=end
             self.date=date
             self.TF=TF
+            self.s=0
+            self.e=0
 
         def get_S(self):
             total_date=self.date+" "+self.start
-            return datetime.datetime.strptime(total_date,self.TF)
+            types=str(type(self.s))
+            if "date" not in types:
+                self.s= datetime.datetime.strptime(total_date,self.TF)
+            return self.s
 
         def get_E(self):
             total_date=self.date+" "+self.end
-            return datetime.datetime.strptime(total_date,self.TF)
+            types=str(type(self.e))
+            if "date" not in types:
+                self.e= datetime.datetime.strptime(total_date,self.TF)
+            return self.e
 
         def __str__(self):
             return "{}, from {} to {} on {}".format(self.title,self.start,self.end,self.date)
