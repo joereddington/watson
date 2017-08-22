@@ -210,10 +210,11 @@ def get_atom_clusters(atomsin):
     atoms=[]
     lastatom=atomsin[0]
     for atom in atomsin:
-        difference=atom.get_S()-lastatom.get_S()
-        if difference<datetime.timedelta(minutes=1):
-            atom.title="Exercise"
-            atoms.append(atom)
+        if atom.start[:4]== lastatom.start[:4]:
+            difference=atom.get_S()-lastatom.get_S()
+            if difference<datetime.timedelta(minutes=1):
+                atom.title="Exercise"
+                atoms.append(atom)
         lastatom=atom
     return atoms
 # From SE
@@ -234,16 +235,25 @@ def make_email_file(filename):
     return sessions
 
 
-def make_exercise_file():
+def make_exercise_file(args):
      atoms=read_watch_heartrate(watch_file)
+     if (args.d):
+        if args.d:
+            index=int(args.d)*1500
+            atoms=atoms[:index]
+
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms)
      return sessions
 
-def make_sleep_file():
+def make_sleep_file(args):
      global max_dist_between_logs
      global min_session_size
      atoms=read_watch_heartrate(watch_file)
+     if (args.d):
+        if args.d:
+            index=int(args.d)*1500
+            atoms=atoms[:index]
      pre=max_dist_between_logs
      pre2=min_session_size
      min_session_size = 240  # in minutes
@@ -322,8 +332,8 @@ def full_detect():
     jurgen_sessions=make_project_file(jurgen_file,"jurgen")
     email_sessions=make_email_file(email_file)
     projects_sessions=make_projects_file()
-    exercise_sessions=make_exercise_file()
-    sleep_sessions=make_sleep_file()
+    exercise_sessions=make_exercise_file(args)
+    sleep_sessions=make_sleep_file(args)
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
