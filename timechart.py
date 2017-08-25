@@ -1,4 +1,5 @@
 import datetime
+import os
 
 # Running mean/Moving average
 def get_running_mean(l, N):
@@ -34,7 +35,7 @@ def graph_out(sessions,slug):
         write_to_javascript(total_time,running_mean,slug)
 
 def write_to_javascript(total_time,running_mean,slug):
-        f = open("javascript/"+slug+".js", 'wb')
+        f = open(os.path.dirname(os.path.abspath(__file__))+"/javascript/"+slug+".js", 'wb')
         f.write(slug+"sessions=["+",".join(str(x) for x in total_time)+"];\n")
         f.write(slug+"running_mean=["+",".join(str(x) for x in running_mean)+"]")
         f.close()
