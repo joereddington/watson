@@ -240,10 +240,11 @@ def make_exercise_file(args):
      if (args.d):
         if args.d:
             index=int(args.d)*1500
-            atoms=atoms[:index]
+            atoms=atoms[index:]
 
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms)
+     timechart.graph_out(sessions,"exercise")
      return sessions
 
 def make_sleep_file(args):
@@ -333,6 +334,8 @@ def full_detect():
     email_sessions=make_email_file(email_file)
     projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file(args)
+    for session in exercise_sessions:
+	print session
     sleep_sessions=make_sleep_file(args)
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
@@ -345,7 +348,7 @@ def full_detect():
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",exercise_sessions)
+    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",sleep_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
             sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
