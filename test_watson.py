@@ -24,7 +24,7 @@ class watsonTest(TestCase):
     def test_read_log_file_problem(self):
         atoms=watson.read_log_file("testinputs/problem.md")
         sessions=watson.get_sessions(atoms)
-        self.assertEqual(len(sessions),2)
+        self.assertEqual(len(sessions),0)
 
 
 

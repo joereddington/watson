@@ -163,15 +163,16 @@ def read_log_file(filename, title=None):
         date=re.sub(r":[0-9][0-9] GMT","",date)
         date=re.sub(r":[0-9][0-9] BST","",date)
         date=re.sub(r"to [0-9][0-9]/../..","to",date)
+        print date
         if date.find("/")>0: #Then we have both date and time.
             newdate=date[:9].strip()
-            atom.start=date[9:len(date)].strip()
+            atom.start=date[9:9+15].strip()
             atom.date=newdate
             lastdate=newdate
         else:
             atom.start=date.strip()
             atom.date=lastdate
-        if len(atom.start)>6:
+        if "to" in atom.start:
             #Then it was a 'to' construct and has a start and end time
             atom.end = atom.start[9:]
             atom.start = atom.start[:5]
