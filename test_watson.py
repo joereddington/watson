@@ -16,6 +16,18 @@ class watsonTest(TestCase):
         atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
         self.assertEqual(len(atoms),582)
 
+    def test_read_log_file_inline(self):
+        atoms=watson.read_log_file("testinputs/regressions/livenotesinline.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(atoms),582)
+
+    def test_read_log_file_problem(self):
+        atoms=watson.read_log_file("testinputs/problem.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),2)
+
+
+
 
     def test_read_desktop_log_file(self):
         atoms=watson.read_tracking_file("testinputs/desktop.md")
