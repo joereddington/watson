@@ -18,6 +18,7 @@
 <script src="javascript/email.js"></script>
 <script src="javascript/jurgen.js"></script>
 <script src="javascript/pacesetter.js"></script>
+<script src="javascript/exercise.js"></script>
 <script>
 </script>
 
@@ -26,6 +27,7 @@
         <canvas id="canvas"></canvas>
     </div>
     <script>
+//refactoring :most of this should be in the individual javascript files
 	number_of_days=15
 //email
         emailrunning_mean = emailrunning_mean.slice(Math.max(emailrunning_mean.length - number_of_days, 1))
@@ -41,6 +43,11 @@
         jurgenrunning_mean.push((jurgensessions[6] + jurgenrunning_mean[6]) / 2) //to give some idea of where we go from here...
 //
 
+
+        exerciserunning_mean = exerciserunning_mean.slice(Math.max(exerciserunning_mean.length - number_of_days, 1))
+        exerciserunning_mean.push((exercisesessions[6] + exerciserunning_mean[6]) / 2) //to give some idea of where we go from here...
+        exercisesessions = exercisesessions.slice(Math.max(exercisesessions.length - number_of_days, 1))
+//
         pacesetterrunning_mean = pacesetterrunning_mean.slice(Math.max(pacesetterrunning_mean.length - number_of_days, 1))
         pacesetterrunning_mean.push((pacesettersessions[6] + pacesetterrunning_mean[6]) / 2) //to give some idea of where we go from here...
         pacesettersessions = pacesettersessions.slice(Math.max(pacesettersessions.length - number_of_days, 1))
@@ -52,7 +59,7 @@ for(var i = 0; i < pacesetterrunning_mean.length; i++){
 	//console.log("V:"+running_mean[i]+" J:"+jurgenrunning_mean[i]);
    //sum.push(jurgenrunning_mean[i] + visionrunning_mean[i]+emailrunning_mean[i]);
    //sum.push(pacesetterrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
-   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
+   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+exerciserunning_mean[i]+projectsrunning_mean[i]);
 }
 
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
@@ -75,6 +82,12 @@ for(var i = 0; i < pacesetterrunning_mean.length; i++){
                     backgroundColor: "rgba(0,0,0,0.25)",
                     data: pacesettersessions
                 }, 
+                {
+                    type: 'bar',
+                    label: 'Exercise',
+                    backgroundColor: "rgba(0,0,24,0.35)",
+                    data: exercisesessions
+                },
                 {
                     type: 'bar',
                     label: 'Logged Next Actions Work',
