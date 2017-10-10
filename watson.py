@@ -163,7 +163,7 @@ def read_log_file(filename, title=None):
         date=re.sub(r":[0-9][0-9] GMT","",date)
         date=re.sub(r":[0-9][0-9] BST","",date)
         date=re.sub(r"to [0-9][0-9]/../..","to",date)
-        print date
+        #print date
         if date.find("/")>0: #Then we have both date and time.
             newdate=date[:9].strip()
             atom.start=date[9:9+15].strip()
@@ -197,13 +197,13 @@ def read_watch_heartrate(filename):
         date=a[:datelength]
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
         atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
-    print "ZZZ"
-    print atoms[0]
-    print "XXXX"
-    print atoms.pop(0)#remove column tiles
-    print "YYYX"
-    print atoms[0]
-    print "XXXX"
+    #print "ZZZ"
+    #print atoms[0]
+    #print "XXXX"
+    atoms.pop(0)#remove column tiles
+    #print "YYYX"
+    #print atoms[0]
+    #print "XXXX"
     return atoms
 
 
@@ -335,8 +335,8 @@ def full_detect():
     email_sessions=make_email_file(email_file)
     projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file(args)
-    for session in exercise_sessions:
-	print session
+#    for session in exercise_sessions:
+#	print session
     sleep_sessions=make_sleep_file(args)
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
