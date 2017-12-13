@@ -23,12 +23,17 @@
 </script>
 
 <body>
-    <div id="container" style="width: 75%;">
+    <div id="container" style="width: 87%;">
         <canvas id="canvas"></canvas>
     </div>
     <script>
+
+setTimeout(function(){
+   window.location.reload(1);
+}, 30000);
+
 //refactoring :most of this should be in the individual javascript files
-	number_of_days=15
+	number_of_days=7
 //email
         emailrunning_mean = emailrunning_mean.slice(Math.max(emailrunning_mean.length - number_of_days, 1))
        emailrunning_mean.push((emailsessions[6] + emailrunning_mean[6]) / 2) //to give some idea of where we go from here...
@@ -163,6 +168,8 @@ stacked: true,
 
         };
     </script>
+<IMG src="http://joereddington.com/stress/priority.png">
+
 </body>
 
 </html>

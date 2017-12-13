@@ -22,6 +22,7 @@ vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
 watch_file=config["heart"]
+delores_file=config["delores"]
 pacesetter_file=config["pacesetter"]
 jurgen_file=config["livenotes"]
 email_file = config["desktop"]
@@ -265,6 +266,7 @@ def make_sleep_file(args):
 def make_projects_file():
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
+	print file
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"projects")
@@ -325,24 +327,39 @@ def full_detect():
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
+    print "a"
     jurgen_sessions=make_project_file(jurgen_file,"jurgen")
+    print "b"
     email_sessions=make_email_file(email_file)
+    print "c"
     projects_sessions=make_projects_file()
+    print "d"
     exercise_sessions=make_exercise_file(args)
     for session in exercise_sessions:
 	print session
     sleep_sessions=make_sleep_file(args)
+    print "e"
+    projects_sessions=make_projects_file()
+    print "f"
+    projects_sessions=make_projects_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
+    print "1"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
+    print "2"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+    print "3"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+    print "4"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
+    print "5"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
+    print "6"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
+    print "7"
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",sleep_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
