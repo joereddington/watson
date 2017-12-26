@@ -266,7 +266,7 @@ def make_sleep_file(args):
 def make_projects_file():
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
-	print file
+	#print file
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"projects")
@@ -332,8 +332,8 @@ def full_detect():
     email_sessions=make_email_file(email_file) 
     projects_sessions=make_projects_file() 
     exercise_sessions=make_exercise_file(args)
-    for session in exercise_sessions:
-	print session
+#    for session in exercise_sessions:
+#	print session
     sleep_sessions=make_sleep_file(args) 
     projects_sessions=make_projects_file() 
     projects_sessions=make_projects_file()
