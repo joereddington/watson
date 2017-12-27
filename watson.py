@@ -263,6 +263,19 @@ def make_sleep_file(args):
      min_session_size = pre2
      return sessions
 
+
+
+def make_journal_files():
+    atoms=[]
+    for file in glob.glob("/home/joereddington/Gromit/*.md"):
+	#print file
+        atoms.extend(read_log_file(file))
+    atoms.extend(read_log_file(jurgen_file))
+    sessions=get_sessions(atoms)
+    timechart.graph_out(sessions,"jurgen")
+    return sessions
+
+
 def make_projects_file():
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
@@ -327,7 +340,7 @@ def full_detect():
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter") 
-    jurgen_sessions=make_project_file(jurgen_file,"jurgen")
+    jurgen_sessions=make_journal_files()
     delores_sessions=make_project_file(delores_file,"DELORES") 
     email_sessions=make_email_file(email_file) 
     projects_sessions=make_projects_file() 
@@ -335,7 +348,6 @@ def full_detect():
 #    for session in exercise_sessions:
 #	print session
     sleep_sessions=make_sleep_file(args) 
-    projects_sessions=make_projects_file() 
     projects_sessions=make_projects_file()
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
