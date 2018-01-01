@@ -118,6 +118,7 @@ def output_sessions_as_projects(sessions):
         for project in projects:
                 projectreport(project, sessions, args.verbatim)
         print "Total project time".ljust(45)+str(total_time)
+        return total_time
 
 def get_sessions(atoms):
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
@@ -372,9 +373,9 @@ def full_detect():
 
 
     if args.action == "sleep":
-        output_sessions_as_projects(sleep_sessions)
+        return output_sessions_as_projects(sleep_sessions)
     else:
-        output_sessions_as_projects(sessions)
+       return  output_sessions_as_projects(sessions)
 
 
 

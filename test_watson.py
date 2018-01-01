@@ -118,6 +118,12 @@ class watsonTest(TestCase):
         self.maxDiff = None
         self.assertMultiLineEqual(open('testoutputs/exerciseSelective.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
 
+    def test_fullregression(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',None)
+        setattr(watson.args, 'verbatim',None)
+        self.assertEqual(watson.full_detect(),datetime.timedelta(85, 47940))
 
     def test_time_split(self):
         TF = "%d-%b-%Y %H:%M"
@@ -126,6 +132,9 @@ class watsonTest(TestCase):
         end="02-Jan-2017 16:27"
         atoms=watson.cut(atoms,start,end)
         self.assertEqual(len(atoms),1036)
+
+
+
 
 if __name__=="__main__":
     unittest.main()
