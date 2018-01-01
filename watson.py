@@ -104,6 +104,11 @@ class Atom(object):
             total_date=self.date+" "+self.end
             if not self.e:
                 self.e= fastStrptime(total_date,self.TF)
+            types=str(type(self.e))
+            if "date" not in types:
+                self.e= fastStrptime(total_date,self.TF)
+#                self.e= datetime.datetime.strptime(total_date,self.TF)
+            #print self.e
             return self.e
 
         def __str__(self):
@@ -173,7 +178,10 @@ def get_sessions(atoms):
 		last = current.get_E()
                 current_group.append(current)
         grouped_timevalues.append(current_group)
-        sessions = []
+        return filter_by_session_size(grouped_timevalues)
+
+def filter_by_session_size(grouped_timevalues):
+        sessions=[]
         for i in grouped_timevalues:
             if i:
                 if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
@@ -232,8 +240,9 @@ def read_watch_heartrate(filename):
     if (args.d):
         if args.d:
             index=int(args.d)*1500
-            content=content[index:]
-#    print "This is {}".format(index)
+            content=content[len(content)-index:]
+ #           print "This is {}".format(index)
+ #           print "Length of content is {}".format(len(content))
     atoms=[]
     for a in content:
         start=a[datelength+1:timestamplength]
@@ -241,7 +250,7 @@ def read_watch_heartrate(filename):
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
         atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
     atoms.pop(0)
-#    print "Atoms: {}".format(index)
+ #   print "Atoms: {}".format(len(atoms))
     return atoms
 
 
