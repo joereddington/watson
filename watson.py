@@ -251,11 +251,12 @@ def make_sleep_file(args):
             atoms=atoms[:index]
      pre=max_dist_between_logs
      pre2=min_session_size
-     min_session_size = 240  # in minutes
+     min_session_size = 60  # in minutes
      max_dist_between_logs=240
 
      sessions=get_sessions(atoms)
-
+     #for x in sessions:
+     #   print x
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
      min_session_size = pre2
@@ -290,6 +291,9 @@ def days_old(session):
 
 def invert_sessions(sessions):
     lastsession=sessions[0]
+    #endsession=sessions[-1]
+    #print endsession
+    #sessions.append(Session(endsession.project,endsession.start+datetime.timedelta(days=2),endsession.end+datetime.timedelta(days=2),endsession.content))
     new_sessions=[]
     for session in sessions:
         new_sessions.append(Session(session.project,lastsession.end,session.start,session.content))
@@ -358,5 +362,6 @@ def mrslandingham_detect():
     sessions=make_project_file("../mrslandingham/log_files/ml_log_desktop.md","Mrs Landingham")
     sessions = [i for i in sessions if days_old(i)<int(args.d)]
     output_sessions_as_projects(sessions)
+
 
 
