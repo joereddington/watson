@@ -22,6 +22,7 @@ vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
 watch_file=config["heart"]
+delores_file=config["delores"]
 pacesetter_file=config["pacesetter"]
 jurgen_file=config["livenotes"]
 email_file = config["desktop"]
@@ -262,9 +263,23 @@ def make_sleep_file(args):
      min_session_size = pre2
      return sessions
 
+
+
+def make_journal_files():
+    atoms=[]
+    for file in glob.glob("/home/joereddington/Gromit/*.md"):
+	#print file
+        atoms.extend(read_log_file(file))
+    atoms.extend(read_log_file(jurgen_file))
+    sessions=get_sessions(atoms)
+    timechart.graph_out(sessions,"jurgen")
+    return sessions
+
+
 def make_projects_file():
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
+	#print file
         atoms.extend(read_log_file(file))
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"projects")
@@ -327,16 +342,16 @@ def full_detect():
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
-    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
-    jurgen_sessions=make_project_file(jurgen_file,"jurgen")
-    email_sessions=make_email_file(email_file)
-    projects_sessions=make_projects_file()
+    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter") 
+    jurgen_sessions=make_journal_files()
+    delores_sessions=make_project_file(delores_file,"DELORES") 
+    email_sessions=make_email_file(email_file) 
+    projects_sessions=make_projects_file() 
     exercise_sessions=make_exercise_file(args)
-#    for session in exercise_sessions:
-#	print session
     sleep_sessions=make_sleep_file(args)
     sessions.extend(pacesetter_sessions)
     sessions.extend(jurgen_sessions)
+    sessions.extend(delores_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
