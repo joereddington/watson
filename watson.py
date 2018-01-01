@@ -243,12 +243,28 @@ def commandline_file_to_atoms(filename):
         start=line[16:21]
         end=line[16:21]
         date=line[7:9]+"/"+line[10:12]+"/"+line[13:15]
-        atoms.append(Atom(start,end,date,"Command line",content,TF))
-        print "X{}X".format(content)
-        print Atom(start,end,date,"Command line",content,TF)
+        atoms.append(Atom(start,end,date,"Command line","    "+ content,TF))
     return atoms
 
     pass
+
+
+def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/*"):
+    TF = "%d/%m/%y %H:%M"
+    #print "here"
+    #print targetdir
+    import os.path, time
+    atoms=[]
+    for file in glob.glob(targetdir):
+        creation_date= datetime.datetime.fromtimestamp(os.path.getctime(file))
+        print file
+        print("created: %s" % creation_date)
+        print creation_date.strftime('%H:%M:%S')
+        print creation_date.strftime('%Y-%m-%d')
+        atoms.append(Atom(creation_date.strftime("%H:%M"),creation_date.strftime("%H:%M"),creation_date.strftime("%d/%m/%y"),"Image",file,TF))
+
+    return atoms
+
 
 
 # Output
@@ -267,10 +283,10 @@ def print_original(atoms):
     #  if atom.date==previous_date:
     #    print "###### "+atom.start+ "Where is the end time???"
     #  else:
-        print "###### "+atom.date+ " "+ atom.start+ "Where is the end time???"
+        print "###### "+atom.date+ " "+ atom.start+ " to "+atom.end
         previous_date=atom.date
-        print "X{}X".format(atom.content)
-        print "____________________________________________________________________________"
+        print "{}".format(atom.content)
+      #  print "____________________________________________________________________________"
 
 
 
@@ -280,17 +296,18 @@ def print_original(atoms):
 
 
 def pink_slime(config_file='/config.json'):
-    print "Hello"
+  #  print "Hello"
     cwd=os.path.dirname(os.path.abspath(__file__))
     atoms=[]
     atoms.extend(log_file_to_atoms("/Users/josephreddington/Dropbox/git/flow/gromit/journal_2018-01-01.md"))
     atoms.extend(commandline_file_to_atoms(cwd+'/testinputs/commandline.txt'))
+    atoms.extend(camera_uploads_to_atoms())
+    atoms=cut(atoms,"01-Jan-2018 00:00","01-Jan-2018 23:59")
     temp=sorted(atoms,key=lambda x: x.get_S(), reverse=False)
     sessions=get_sessions(temp)
   #  print_original(temp)
-    for session in sessions:
-        print session
-
+    # for session in sessions:
+    #     print session
 
 def full_detect(config_file='/config.json'):
  #   pink_slime()
