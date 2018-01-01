@@ -234,6 +234,20 @@ def desktop_tracking_file_to_atoms(filename,tag="mail"):
 
 
 def commandline_file_to_atoms(filename):
+    filecontent=icalhelper.get_content(filename)
+    TF = "%d/%m/%y %H:%M"
+
+    atoms=[]
+    for line in filecontent:
+        content=line[25:].strip()
+        start=line[16:21]
+        end=line[16:21]
+        date=line[7:9]+"/"+line[10:12]+"/"+line[13:15]
+        atoms.append(Atom(start,end,date,"Command line",content,TF))
+        print "X{}X".format(content)
+        print Atom(start,end,date,"Command line",content,TF)
+    return atoms
+
     pass
 
 
@@ -250,19 +264,37 @@ def calendar_output(filename,sessions, matchString=None):
 def print_original(atoms):
     previous_date=""
     for atom in atoms:
-      if atom['date']==previous_date:
-        print "###### "+atom['start']+ "Where is the end time???"
-      else:
-        print "###### "+atom['date']+ " "+ atom['start']+ "Where is the end time???"
-        previous_date=atom['date']
-      print atom['content']
-      print "____________________________________________________________________________"
+    #  if atom.date==previous_date:
+    #    print "###### "+atom.start+ "Where is the end time???"
+    #  else:
+        print "###### "+atom.date+ " "+ atom.start+ "Where is the end time???"
+        previous_date=atom.date
+        print "X{}X".format(atom.content)
+        print "____________________________________________________________________________"
+
 
 
 
 # Driver files.
 
+
+
+def pink_slime(config_file='/config.json'):
+    print "Hello"
+    cwd=os.path.dirname(os.path.abspath(__file__))
+    atoms=[]
+    atoms.extend(log_file_to_atoms("/Users/josephreddington/Dropbox/git/flow/gromit/journal_2018-01-01.md"))
+    atoms.extend(commandline_file_to_atoms(cwd+'/testinputs/commandline.txt'))
+    temp=sorted(atoms,key=lambda x: x.get_S(), reverse=False)
+    sessions=get_sessions(temp)
+  #  print_original(temp)
+    for session in sessions:
+        print session
+
+
 def full_detect(config_file='/config.json'):
+ #   pink_slime()
+ #   return
     cwd=os.path.dirname(os.path.abspath(__file__))
     config = json.loads(open(cwd+config_file).read())
     vision_dir = cwd+'/../vision/issues/'

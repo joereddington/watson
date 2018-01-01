@@ -47,7 +47,7 @@ class watsonTest(TestCase):
 
     def test_commandline_file_to_atoms(self):
         atoms=watson.commandline_file_to_atoms("testinputs/commandline.txt")
-        self.assertEqual(len(atoms),582)
+        self.assertEqual(len(atoms),6475)
 
     def test_log_file_to_atoms_problem(self):
         atoms=watson.log_file_to_atoms("testinputs/problem.md")
