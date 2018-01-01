@@ -106,6 +106,19 @@ class watsonTest(TestCase):
         self.maxDiff = None
         self.assertMultiLineEqual(open('testoutputs/exercise.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
 
+    def test_selective_calendar_write(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+        sessions=watson.get_sessions(atoms)
+        email_atoms=watson.read_tracking_file("testinputs/desktop.md")
+        email_sessions=watson.get_sessions(email_atoms)
+        sessions.extend(email_sessions)
+        watson.calendar_output('testoutputs/exerciseSelective.ics',sessions, 'exercise')
+        self.maxDiff = None
+        self.assertMultiLineEqual(open('testoutputs/exerciseSelective.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
+
+
 
 
 

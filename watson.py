@@ -330,11 +330,13 @@ def cut(atoms,start,end):
 
 
 
-def calendar_output(filename,sessions):
+def calendar_output(filename,sessions, matchString=None):
         cal = icalhelper.get_cal()
         for entry in sessions:
                 icalhelper.add_event(cal, entry.project, entry.start, entry.end)
         icalhelper.write_cal(filename,cal)
+
+
 
 
 def full_detect():
