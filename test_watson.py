@@ -4,6 +4,7 @@ import watson
 import urllib
 import json
 import os
+import datetime
 from urllib2 import urlopen, Request
 
 
@@ -123,7 +124,17 @@ class watsonTest(TestCase):
         setattr(watson.args, 'action', 'sort')
         setattr(watson.args, 'd',None)
         setattr(watson.args, 'verbatim',None)
-        self.assertEqual(watson.full_detect(),datetime.timedelta(85, 47940))
+        self.assertEqual(watson.full_detect(),datetime.timedelta(53, 18600))
+
+
+    def test_fullregression2018_01_01(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',None)
+        setattr(watson.args, 'verbatim',None)
+        self.assertEqual(watson.full_detect('/testinputs/full2018-01-01/config.json'),datetime.timedelta(53, 18600))
+
+
 
     def test_time_split(self):
         TF = "%d-%b-%Y %H:%M"

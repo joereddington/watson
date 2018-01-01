@@ -17,15 +17,6 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
-config = json.loads(open(os.path.dirname(os.path.abspath(__file__))+'/config.json').read())
-vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
-
-pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
-watch_file=config["heart"]
-delores_file=config["delores"]
-pacesetter_file=config["pacesetter"]
-jurgen_file=config["livenotes"]
-email_file = config["desktop"]
 
 class Session(object):
         project = "Unknown"
@@ -231,7 +222,7 @@ def make_email_file(filename):
     return sessions
 
 
-def make_exercise_file(args):
+def make_exercise_file(args,watch_file):
      atoms=read_watch_heartrate(watch_file)
      if (args.d):
         if args.d:
@@ -243,7 +234,7 @@ def make_exercise_file(args):
      timechart.graph_out(sessions,"exercise")
      return sessions
 
-def make_sleep_file(args):
+def make_sleep_file(args,watch_file):
      global max_dist_between_logs
      global min_session_size
      atoms=read_watch_heartrate(watch_file)
@@ -271,13 +262,13 @@ def make_journal_files():
     for file in glob.glob("/home/joereddington/Gromit/*.md"):
 	#print file
         atoms.extend(read_log_file(file))
-    atoms.extend(read_log_file(jurgen_file))
+#    atoms.extend(read_log_file(jurgen_file))
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"jurgen")
     return sessions
 
 
-def make_projects_file():
+def make_projects_file(vision_dir):
     atoms=[]
     for file in glob.glob(vision_dir+"/*.md"):
 	#print file
@@ -341,27 +332,37 @@ def calendar_output(filename,sessions, matchString=None):
 
 
 
-def full_detect():
+def full_detect(config_file='/config.json'):
+    config = json.loads(open(os.path.dirname(os.path.abspath(__file__))+config_file).read())
+    vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
+
+    pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
+    watch_file=config["heart"]
+    delores_file=config["delores"]
+    pacesetter_file=config["pacesetter"]
+    jurgen_file=config["livenotes"]
+    email_file = config["desktop"]
+
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
     pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
-    jurgen_sessions=make_journal_files()
+#    jurgen_sessions=make_journal_files()
     delores_sessions=make_project_file(delores_file,"DELORES")
     email_sessions=make_email_file(email_file)
-    projects_sessions=make_projects_file()
-    exercise_sessions=make_exercise_file(args)
-    sleep_sessions=make_sleep_file(args)
+    projects_sessions=make_projects_file(vision_dir)
+    exercise_sessions=make_exercise_file(args,watch_file)
+    sleep_sessions=make_sleep_file(args,watch_file)
     sessions.extend(pacesetter_sessions)
-    sessions.extend(jurgen_sessions)
+#    sessions.extend(jurgen_sessions)
     sessions.extend(delores_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+#    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
+#    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
