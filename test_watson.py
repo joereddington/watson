@@ -10,6 +10,26 @@ from urllib2 import urlopen, Request
 
 class watsonTest(TestCase):
 
+
+    def test_fast_strptime(self):
+        test1="02/07/17 15:22"
+        TIME_FORMAT = "%d/%m/%y %H:%M"
+        result=watson.fastStrptime(test1,TIME_FORMAT)
+        otherresult=datetime.datetime.strptime(test1,TIME_FORMAT)
+
+        self.assertEqual(result,otherresult)
+
+
+    def test_fast_strptime_from_watch(self):
+        test1="01-Jan-2018 07:22"
+        TIME_FORMAT = "%d-%b-%Y %H:%M"
+        result=watson.fastStrptime(test1,TIME_FORMAT)
+        otherresult=datetime.datetime.strptime(test1,TIME_FORMAT)
+
+        self.assertEqual(result,otherresult)
+
+
+
     def test_download_repo_json(self):
          self.assertEqual(3,3)
 

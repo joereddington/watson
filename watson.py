@@ -18,6 +18,63 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
 
+import calendar
+dict((v,k) for k,v in enumerate(calendar.month_abbr))
+
+
+def month_string_to_number(string): #from https://stackoverflow.com/a/33736132/170243 (upvoted)
+    m = {
+        'jan': 1,
+        'feb': 2,
+        'mar': 3,
+        'apr':4,
+         'may':5,
+         'jun':6,
+         'jul':7,
+         'aug':8,
+         'sep':9,
+         'oct':10,
+         'nov':11,
+         'dec':12
+        }
+    s = string.strip()[:3].lower()
+
+    try:
+        out = m[s]
+        return out
+    except:
+        raise ValueError('Not a month')
+
+def fastStrptime(val, format):
+# from http://ze.phyr.us/faster-strptime/
+    l = len(val)
+    if format == '%d/%m/%y %H:%M' and (l == 14):
+        temp= datetime.datetime(
+            2000+int(val[6:8]), # %Y
+            int(val[3:5]), # %m
+            int(val[0:2]), # %d
+            int(val[9:11]), # %H
+            int(val[12:14]), # %M
+            0, # %s
+            0, # %f
+        )
+        return temp
+    # The watch
+    if format == "%d-%b-%Y %H:%M" and (l == 17):
+        temp= datetime.datetime(
+            int(val[7:11]), # %Y
+            month_string_to_number(val[3:6]), # %m
+            int(val[0:2]), # %d
+            int(val[12:14]), # %H
+            int(val[15:17]), # %M
+            0, # %s
+            0, # %f
+        )
+        return temp
+    # Default to the native strptime for other formats.
+    print "falling through {} {} {}".format(val, format, l)
+    return datetime.datetime.strptime(val, format)
+
 class Session(object):
         project = "Unknown"
         start = ""
@@ -50,14 +107,17 @@ class Atom(object):
             total_date=self.date+" "+self.start
             types=str(type(self.s))
             if "date" not in types:
-                self.s= datetime.datetime.strptime(total_date,self.TF)
+                self.s= fastStrptime(total_date,self.TF)
+                #self.s= datetime.datetime.strptime(total_date,self.TF)
             return self.s
 
         def get_E(self):
             total_date=self.date+" "+self.end
             types=str(type(self.e))
             if "date" not in types:
-                self.e= datetime.datetime.strptime(total_date,self.TF)
+                self.e= fastStrptime(total_date,self.TF)
+#                self.e= datetime.datetime.strptime(total_date,self.TF)
+            #print self.e
             return self.e
 
         def __str__(self):
@@ -260,9 +320,8 @@ def make_sleep_file(args,watch_file):
 def make_journal_files():
     atoms=[]
     for file in glob.glob("/home/joereddington/Gromit/*.md"):
-	#print file
+
         atoms.extend(read_log_file(file))
-#    atoms.extend(read_log_file(jurgen_file))
     sessions=get_sessions(atoms)
     timechart.graph_out(sessions,"jurgen")
     return sessions
@@ -319,9 +378,6 @@ def cut(atoms,start,end):
                     return_atoms.append(current)
     return return_atoms
 
-
-
-
 def calendar_output(filename,sessions, matchString=None):
         cal = icalhelper.get_cal()
         for entry in sessions:
@@ -331,42 +387,33 @@ def calendar_output(filename,sessions, matchString=None):
 
 
 
-
 def full_detect(config_file='/config.json'):
-    config = json.loads(open(os.path.dirname(os.path.abspath(__file__))+config_file).read())
-    vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
-
-    pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
-    watch_file=config["heart"]
-    delores_file=config["delores"]
-    pacesetter_file=config["pacesetter"]
-    jurgen_file=config["livenotes"]
-    email_file = config["desktop"]
+    cwd=os.path.dirname(os.path.abspath(__file__))
+    config = json.loads(open(cwd+config_file).read())
+    vision_dir = cwd+'/../vision/issues/'
 
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
-    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
-#    jurgen_sessions=make_journal_files()
-    delores_sessions=make_project_file(delores_file,"DELORES")
-    email_sessions=make_email_file(email_file)
+    pacesetter_sessions=make_project_file(config["pacesetter"],"Pacesetter")
+    delores_sessions=make_project_file(config["delores"],"DELORES")
+    email_sessions=make_email_file(config["desktop"])
     projects_sessions=make_projects_file(vision_dir)
-    exercise_sessions=make_exercise_file(args,watch_file)
-    sleep_sessions=make_sleep_file(args,watch_file)
+    exercise_sessions=make_exercise_file(args,config["heart"])
+    sleep_sessions=make_sleep_file(args,config["heart"])
+
     sessions.extend(pacesetter_sessions)
-#    sessions.extend(jurgen_sessions)
     sessions.extend(delores_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
-#    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
-#    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",sleep_sessions)
+
+    calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
+    calendar_output(cwd+"/calendars/email.ics",email_sessions)
+    calendar_output(cwd+"/calendars/projects.ics",projects_sessions)
+    calendar_output(cwd+"/calendars/Exercise.ics",exercise_sessions)
+    calendar_output(cwd+"/calendars/Sleep.ics",sleep_sessions)
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
             sleep_sessions = [i for i in sleep_sessions if days_old(i)<int(args.d)]
