@@ -13,6 +13,8 @@ from urllib2 import urlopen, Request
 class watsonTest(TestCase):
 
 
+
+
     def test_fast_strptime(self):
         test1="02/07/17 15:22"
         TIME_FORMAT = "%d/%m/%y %H:%M"
@@ -41,7 +43,10 @@ class watsonTest(TestCase):
 
     def test_log_file_to_atoms_inline(self):
         atoms=watson.log_file_to_atoms("testinputs/regressions/livenotesinline.md")
-        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(atoms),582)
+
+    def test_commandline_file_to_atoms(self):
+        atoms=watson.commandline_file_to_atoms("testinputs/commandline.txt")
         self.assertEqual(len(atoms),582)
 
     def test_log_file_to_atoms_problem(self):

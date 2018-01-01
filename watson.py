@@ -218,9 +218,6 @@ def heartrate_to_atoms(filename):
     atoms.pop(0)
     return atoms
 
-# From SE
-# http://stackoverflow.com/questions/13728392/moving-average-or-running-mean
-
 def desktop_tracking_file_to_atoms(filename,tag="mail"):
     content=icalhelper.get_content(filename)
     matchingcontent= [line for line in content if (tag in line )]
@@ -236,6 +233,9 @@ def desktop_tracking_file_to_atoms(filename,tag="mail"):
     return atoms
 
 
+def commandline_file_to_atoms(filename):
+    pass
+
 
 # Output
 
@@ -245,9 +245,6 @@ def calendar_output(filename,sessions, matchString=None):
             if (matchString==None) or (matchString==entry.project):
                 icalhelper.add_event(cal, entry.project, entry.start, entry.end)
         icalhelper.write_cal(filename,cal)
-
-
-
 
 
 def print_original(atoms):
@@ -304,10 +301,10 @@ def full_detect(config_file='/config.json'):
        time=  output_sessions_as_projects(sessions)
 
 
-  #  calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
-  #  calendar_output(cwd+"/calendars/email.ics",email_sessions)
-  #  calendar_output(cwd+"/calendars/projects.ics",projects_sessions)
-  #  calendar_output(cwd+"/calendars/Exercise.ics",exercise_sessions)
-  #  calendar_output(cwd+"/calendars/Sleep.ics",sleep_sessions)
+    calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
+    calendar_output(cwd+"/calendars/email.ics",email_sessions)
+    calendar_output(cwd+"/calendars/projects.ics",projects_sessions)
+    calendar_output(cwd+"/calendars/Exercise.ics",exercise_sessions)
+    calendar_output(cwd+"/calendars/Sleep.ics",sleep_sessions)
     return time
 
