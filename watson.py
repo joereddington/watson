@@ -342,11 +342,11 @@ def full_detect():
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
 	sys.exit()
     sessions=[]
-    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter") 
+    pacesetter_sessions=make_project_file(pacesetter_file,"Pacesetter")
     jurgen_sessions=make_journal_files()
-    delores_sessions=make_project_file(delores_file,"DELORES") 
-    email_sessions=make_email_file(email_file) 
-    projects_sessions=make_projects_file() 
+    delores_sessions=make_project_file(delores_file,"DELORES")
+    email_sessions=make_email_file(email_file)
+    projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file(args)
     sleep_sessions=make_sleep_file(args)
     sessions.extend(pacesetter_sessions)
@@ -373,10 +373,6 @@ def full_detect():
     else:
         output_sessions_as_projects(sessions)
 
-def mrslandingham_detect():
-    sessions=make_project_file("../mrslandingham/log_files/ml_log_desktop.md","Mrs Landingham")
-    sessions = [i for i in sessions if days_old(i)<int(args.d)]
-    output_sessions_as_projects(sessions)
 
 
 

@@ -26,13 +26,9 @@ class watsonTest(TestCase):
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),0)
 
-
-
-
     def test_read_desktop_log_file(self):
         atoms=watson.read_tracking_file("testinputs/desktop.md")
         self.assertEqual(len(atoms),66)
-
 
     def test_make_email_sessions(self):
         atoms=watson.read_tracking_file("testinputs/desktop.md")
@@ -42,10 +38,13 @@ class watsonTest(TestCase):
 
 
 
-    def test_read_log_file_title1(self):
+    def test_read_log_file_blanktitle(self):
         atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
         self.assertEqual(atoms[0].title,"testinputs/regressions/livenotes.md")
 
+    def test_read_log_file_proper_title(self):
+        atoms=watson.read_log_file("testinputs/regressions/bug-with-markdown-links.md")
+        self.assertEqual(atoms[0].title,"Bug with markdown links")
 
     def test_make_sessions(self):
         atoms=watson.read_log_file("testinputs/regressions/livenotes.md")
@@ -54,7 +53,7 @@ class watsonTest(TestCase):
 
     def test_read_heartrate_file(self):
         atoms=watson.read_watch_heartrate("testinputs/heart.csv")
-        self.assertEqual(len(atoms),164867)
+        self.assertEqual(len(atoms),164866)
 
     def test_count_awake_sessions(self):
         TF = "%d-%b-%Y %H:%M"
@@ -94,10 +93,20 @@ class watsonTest(TestCase):
         atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
         atoms=watson.get_atom_clusters(atoms)
         sessions=watson.get_sessions(atoms)
-        projects = list(set([entry.project for entry in sessions]))
-        for project in projects:
-                watson.projectreport(project, sessions, True)
         self.assertEqual(len(sessions),58)
+
+
+    def test_calendar_write(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
+        atoms=watson.get_atom_clusters(atoms)
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),58)
+        watson.calendar_output('testoutputs/exercise.ics',sessions)
+        self.maxDiff = None
+        self.assertMultiLineEqual(open('testoutputs/exercise.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
+
+
 
 
     def test_time_split(self):
