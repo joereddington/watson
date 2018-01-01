@@ -258,8 +258,12 @@ def get_atom_clusters(atomsin):
     lastatom=atomsin[0]
     for atom in atomsin:
         if atom.start[:4]== lastatom.start[:4]:
-            difference=atom.get_S()-lastatom.get_S()
-            if difference<datetime.timedelta(minutes=1):
+        #    print atom.start[:4]
+        #    print atom.start
+            atom_minutes=int(atom.start[0:2])*60+int(atom.start[3:5])
+            lastatom_minutes=int(lastatom.start[0:2])*60+int(lastatom.start[3:5])
+            difference=atom_minutes-lastatom_minutes
+            if difference<1:
                 atom.title="Exercise"
                 atoms.append(atom)
         lastatom=atom
@@ -308,8 +312,6 @@ def make_sleep_file(args,watch_file):
      max_dist_between_logs=240
 
      sessions=get_sessions(atoms)
-     #for x in sessions:
-     #   print x
      sessions=invert_sessions(sessions)
      max_dist_between_logs=pre
      min_session_size = pre2
