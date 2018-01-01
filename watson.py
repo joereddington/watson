@@ -18,32 +18,23 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
 
-import calendar
-dict((v,k) for k,v in enumerate(calendar.month_abbr))
+m = {
+'Jan': 1,
+'Feb': 2,
+'Mar': 3,
+'Apr':4,
+ 'May':5,
+ 'Jun':6,
+ 'Jul':7,
+ 'Aug':8,
+ 'Sep':9,
+ 'Oct':10,
+ 'Nov':11,
+ 'Dec':12
+}
 
 
-def month_string_to_number(string): #from https://stackoverflow.com/a/33736132/170243 (upvoted)
-    m = {
-        'jan': 1,
-        'feb': 2,
-        'mar': 3,
-        'apr':4,
-         'may':5,
-         'jun':6,
-         'jul':7,
-         'aug':8,
-         'sep':9,
-         'oct':10,
-         'nov':11,
-         'dec':12
-        }
-    s = string.strip()[:3].lower()
 
-    try:
-        out = m[s]
-        return out
-    except:
-        raise ValueError('Not a month')
 
 def fastStrptime(val, format):
 # from http://ze.phyr.us/faster-strptime/
@@ -63,7 +54,7 @@ def fastStrptime(val, format):
     if format == "%d-%b-%Y %H:%M" and (l == 17):
         temp= datetime.datetime(
             int(val[7:11]), # %Y
-            month_string_to_number(val[3:6]), # %m
+            m[val[3:6]], # %m
             int(val[0:2]), # %d
             int(val[12:14]), # %H
             int(val[15:17]), # %M
@@ -100,24 +91,19 @@ class Atom(object):
             self.end=end
             self.date=date
             self.TF=TF
-            self.s=0
-            self.e=0
+            self.s=None
+            self.e=None
 
         def get_S(self):
             total_date=self.date+" "+self.start
-            types=str(type(self.s))
-            if "date" not in types:
+            if not self.s:
                 self.s= fastStrptime(total_date,self.TF)
-                #self.s= datetime.datetime.strptime(total_date,self.TF)
             return self.s
 
         def get_E(self):
             total_date=self.date+" "+self.end
-            types=str(type(self.e))
-            if "date" not in types:
+            if not self.e:
                 self.e= fastStrptime(total_date,self.TF)
-#                self.e= datetime.datetime.strptime(total_date,self.TF)
-            #print self.e
             return self.e
 
         def __str__(self):
@@ -243,6 +229,11 @@ def read_watch_heartrate(filename):
     timestamplength=len("01-May-2017 23:46")
     datelength=len("01-May-2017")
     content=icalhelper.get_content(filename)
+    if (args.d):
+        if args.d:
+            index=int(args.d)*1500
+            content=content[index:]
+#    print "This is {}".format(index)
     atoms=[]
     for a in content:
         start=a[datelength+1:timestamplength]
@@ -250,6 +241,7 @@ def read_watch_heartrate(filename):
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
         atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
     atoms.pop(0)
+#    print "Atoms: {}".format(index)
     return atoms
 
 
@@ -258,8 +250,6 @@ def get_atom_clusters(atomsin):
     lastatom=atomsin[0]
     for atom in atomsin:
         if atom.start[:4]== lastatom.start[:4]:
-        #    print atom.start[:4]
-        #    print atom.start
             atom_minutes=int(atom.start[0:2])*60+int(atom.start[3:5])
             lastatom_minutes=int(lastatom.start[0:2])*60+int(lastatom.start[3:5])
             difference=atom_minutes-lastatom_minutes
@@ -286,26 +276,15 @@ def make_email_file(filename):
     return sessions
 
 
-def make_exercise_file(args,watch_file):
-     atoms=read_watch_heartrate(watch_file)
-     if (args.d):
-        if args.d:
-            index=int(args.d)*1500
-            atoms=atoms[index:]
-
+def make_exercise_file(args,atoms):
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms)
      timechart.graph_out(sessions,"exercise")
      return sessions
 
-def make_sleep_file(args,watch_file):
+def make_sleep_file(args,atoms):
      global max_dist_between_logs
      global min_session_size
-     atoms=read_watch_heartrate(watch_file)
-     if (args.d):
-        if args.d:
-            index=int(args.d)*1500
-            atoms=atoms[:index]
      pre=max_dist_between_logs
      pre2=min_session_size
      min_session_size = 60  # in minutes
@@ -402,8 +381,9 @@ def full_detect(config_file='/config.json'):
     delores_sessions=make_project_file(config["delores"],"DELORES")
     email_sessions=make_email_file(config["desktop"])
     projects_sessions=make_projects_file(vision_dir)
-    exercise_sessions=make_exercise_file(args,config["heart"])
-    sleep_sessions=make_sleep_file(args,config["heart"])
+    watch_atoms=read_watch_heartrate(config['heart'])
+    exercise_sessions=make_exercise_file(args,watch_atoms)
+    sleep_sessions=make_sleep_file(args,watch_atoms)
 
     sessions.extend(pacesetter_sessions)
     sessions.extend(delores_sessions)

@@ -77,6 +77,10 @@ class watsonTest(TestCase):
         self.assertEqual(len(atoms),164866)
 
     def test_count_awake_sessions(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',None)
+        setattr(watson.args, 'verbatim',None)
         TF = "%d-%b-%Y %H:%M"
         pre=watson.max_dist_between_logs
         watson.max_dist_between_logs=90
@@ -118,6 +122,11 @@ class watsonTest(TestCase):
 
 
     def test_calendar_write(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',None)
+        setattr(watson.args, 'verbatim',None)
+
         TF = "%d-%b-%Y %H:%M"
         atoms=watson.read_watch_heartrate("testinputs/heartshort.csv")
         atoms=watson.get_atom_clusters(atoms)
