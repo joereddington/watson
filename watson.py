@@ -315,6 +315,7 @@ def full_detect(config_file='/config.json'):
     cwd=os.path.dirname(os.path.abspath(__file__))
     config = json.loads(open(cwd+config_file).read())
     vision_dir = cwd+'/../vision/issues/'
+    gromit_dir = cwd+'/../gromit/'
 
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
@@ -325,18 +326,20 @@ def full_detect(config_file='/config.json'):
     watch_atoms=heartrate_to_atoms(config['heart'])
     exercise_sessions=make_exercise_file(args,watch_atoms)
     sleep_sessions=make_sleep_file(args,watch_atoms)
-
     delores_sessions=get_sessions(log_file_to_atoms(config["delores"]))
     projects_sessions=make_projects_file(vision_dir, "projects")
+    gromit_sessions=make_projects_file(gromit_dir, "Journals")
     timechart.graph_out(email_sessions,"email")
     timechart.graph_out(pacesetter_sessions,"Pacesetter")
     timechart.graph_out(delores_sessions,"DELORES")
+    timechart.graph_out(gromit_sessions,"journals")
 
     sessions.extend(pacesetter_sessions)
     sessions.extend(delores_sessions)
     sessions.extend(email_sessions)
     sessions.extend(exercise_sessions)
     sessions.extend(projects_sessions)
+    sessions.extend(gromit_sessions)
 
     if args.d:
             sessions = [i for i in sessions if days_old(i)<int(args.d)]
