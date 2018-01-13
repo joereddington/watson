@@ -67,6 +67,8 @@ def days_old(session):
 
 ########## Processing ##########
 def get_sessions(atoms):
+        if len(atoms)==0:
+            return []
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
         current = atoms[0].get_E()
         grouped_timevalues=[]
@@ -314,8 +316,8 @@ def full_detect(config_file='/config.json'):
  #   return
     cwd=os.path.dirname(os.path.abspath(__file__))
     config = json.loads(open(cwd+config_file).read())
-    vision_dir = cwd+'/../vision/issues/'
-    gromit_dir = cwd+'/../gromit/'
+    vision_dir = config["projects"]
+    gromit_dir = config["journals"]
 
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
