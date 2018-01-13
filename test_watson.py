@@ -63,6 +63,10 @@ class watsonTest(TestCase):
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),2)
 
+    def test_get_sessions_works_with_no_atoms(self):
+        atoms=[]
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),0)
 
 
 
