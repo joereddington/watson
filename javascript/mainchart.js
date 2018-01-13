@@ -19,18 +19,18 @@
         exerciserunning_mean.push((exercisesessions[6] + exerciserunning_mean[6]) / 2) //to give some idea of where we go from here...
         exercisesessions = exercisesessions.slice(Math.max(exercisesessions.length - number_of_days, 1))
 //
-        pacesetterrunning_mean = pacesetterrunning_mean.slice(Math.max(pacesetterrunning_mean.length - number_of_days, 1))
-        pacesetterrunning_mean.push((pacesettersessions[6] + pacesetterrunning_mean[6]) / 2) //to give some idea of where we go from here...
-        pacesettersessions = pacesettersessions.slice(Math.max(pacesettersessions.length - number_of_days, 1))
+        journalsrunning_mean = journalsrunning_mean.slice(Math.max(journalsrunning_mean.length - number_of_days, 1))
+        journalsrunning_mean.push((journalssessions[6] + journalsrunning_mean[6]) / 2) //to give some idea of where we go from here...
+        journalssessions = journalssessions.slice(Math.max(journalssessions.length - number_of_days, 1))
 //
 sum=[]
 //console.log("Jlength"+jurgenrunning_mean.length)
 //console.log("Vlength"+running_mean.length)
-for(var i = 0; i < pacesetterrunning_mean.length; i++){
+for(var i = 0; i < journalsrunning_mean.length; i++){
 	//console.log("V:"+running_mean[i]+" J:"+jurgenrunning_mean[i]);
    //sum.push(jurgenrunning_mean[i] + visionrunning_mean[i]+emailrunning_mean[i]);
-   //sum.push(pacesetterrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
-   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+exerciserunning_mean[i]+projectsrunning_mean[i]);
+   //sum.push(journalsrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
+   sum.push(journalsrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+exerciserunning_mean[i]+projectsrunning_mean[i]);
 }
 
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
@@ -51,7 +51,7 @@ for(var i = 0; i < pacesetterrunning_mean.length; i++){
                     type: 'bar',
                     label: 'Unlabeled Work',
                     backgroundColor: "rgba(0,0,0,0.25)",
-                    data: pacesettersessions
+                    data: journalssessions
                 }, 
                 {
                     type: 'bar',
