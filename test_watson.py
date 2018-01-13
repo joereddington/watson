@@ -155,12 +155,6 @@ class watsonTest(TestCase):
         self.maxDiff = None
         self.assertMultiLineEqual(open('testoutputs/exerciseSelective.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
 
-    def test_fullregression(self):
-        watson.args =lambda:None
-        setattr(watson.args, 'action', 'sort')
-        setattr(watson.args, 'd',None)
-        setattr(watson.args, 'verbatim',None)
-        self.assertEqual(watson.full_detect(),datetime.timedelta(53, 18600))
 
 
     def test_fullregression2018_01_01(self):
