@@ -178,6 +178,10 @@ class watsonTest(TestCase):
         atoms=watson.cut(atoms,start,end)
         self.assertEqual(len(atoms),1036)
 
+    def test_journal_bug(self):
+        atoms=watson.log_file_to_atoms("testinputs/strange.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),2)
 
 
 
