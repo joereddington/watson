@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import re
 import sys
+import math
 import traceback
 import pytz
 import calendar_helper_functions as icalhelper
@@ -46,6 +47,7 @@ def output_sessions_as_projects(sessions):
         print "Total project time".ljust(45)+str(total_time)
         return total_time
 
+
 def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
         total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
@@ -56,6 +58,43 @@ def projectreport(name, sessions, verbose):
         else:
                 print "{}: {}".format(name.strip().ljust(45), total_time)
         return total_time
+
+def sleep_report(project_sessions):
+        for entry in project_sessions:
+                        print entry
+        total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
+        average_time = avg_time([entry.length() for entry in project_sessions])
+        st_dev_length = st_dev([entry.length() for entry in project_sessions])
+
+        print "\n\nTotal Sleep Time: {}".format(str(total_time)[:-3])
+        print "Average Sleep Time: {}".format(str(average_time)[:-7])
+        print "ST-dev for average: {}".format(str(st_dev_length)[:-7])
+
+        return total_time
+
+
+def avg_time(datetimes):
+    print type(datetimes[0])
+    total = sum(dt.total_seconds() for dt in datetimes)
+    avg = total / len(datetimes)
+    #Now for standard devation
+    #For each datapoint, find the square of it's difference from the mean and sum them.
+
+    step1 = sum((dt.total_seconds()-avg)*(dt.total_seconds()-avg) for dt in datetimes)
+    step2 = step1/len(datetimes)
+    step3 = math.sqrt(step2)
+    print "Standard devation is: {}".format(datetime.timedelta(seconds=step3))
+    return datetime.timedelta(seconds=avg);
+
+def st_dev(datetimes):
+    total = sum(dt.total_seconds() for dt in datetimes)
+    avg = total / len(datetimes)
+    #Now for standard devation
+    #For each datapoint, find the square of it's difference from the mean and sum them.
+    step1 = sum((dt.total_seconds()-avg)*(dt.total_seconds()-avg) for dt in datetimes)
+    step2 = step1/len(datetimes)
+    step3 = math.sqrt(step2)
+    return datetime.timedelta(seconds=step3);
 
 
 def days_old(session):
@@ -350,7 +389,7 @@ def full_detect(config_file='/config.json'):
 
     time =0
     if args.action == "sleep":
-        time= output_sessions_as_projects(sleep_sessions)
+        time= sleep_report(sleep_sessions)
     else:
        time=  output_sessions_as_projects(sessions)
 

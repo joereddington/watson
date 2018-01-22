@@ -181,7 +181,7 @@ class watsonTest(TestCase):
     def test_journal_bug(self):
         atoms=watson.log_file_to_atoms("testinputs/strange.md")
         sessions=watson.get_sessions(atoms)
-        self.assertEqual(len(sessions),2)
+        self.assertEqual(len(sessions),1)
 
 
 
