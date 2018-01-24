@@ -184,6 +184,11 @@ class watsonTest(TestCase):
         self.assertEqual(len(sessions),1)
 
 
+    def test_midnight_bug(self):
+        atoms=watson.log_file_to_atoms("testinputs/midnight.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),1)
+
 
 if __name__=="__main__":
     unittest.main()

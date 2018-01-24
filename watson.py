@@ -74,16 +74,8 @@ def sleep_report(project_sessions):
 
 
 def avg_time(datetimes):
-    print type(datetimes[0])
     total = sum(dt.total_seconds() for dt in datetimes)
     avg = total / len(datetimes)
-    #Now for standard devation
-    #For each datapoint, find the square of it's difference from the mean and sum them.
-
-    step1 = sum((dt.total_seconds()-avg)*(dt.total_seconds()-avg) for dt in datetimes)
-    step2 = step1/len(datetimes)
-    step3 = math.sqrt(step2)
-    print "Standard devation is: {}".format(datetime.timedelta(seconds=step3))
     return datetime.timedelta(seconds=avg);
 
 def st_dev(datetimes):
