@@ -189,6 +189,14 @@ class watsonTest(TestCase):
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),1)
 
+    def test_print_original_identity(self):
+        atoms=watson.log_file_to_atoms("testinputs/strange.md")
+        strange_text=watson.atoms_to_text(atoms)
+        strange_text=strange_text.replace("\n\n","\n")
+        self.maxDiff = None
+        print strange_text
+        self.assertMultiLineEqual(open('testinputs/strange.md').read().strip(),strange_text)
+
 
 if __name__=="__main__":
     unittest.main()

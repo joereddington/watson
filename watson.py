@@ -202,8 +202,9 @@ def log_file_to_atoms(filename, title=None):
     entries=entries[1:]
     for e in entries:
         atom=Atom()
-        lines=e.split("\n")
-        atom.content="\n".join(lines[1:]).strip()+"\n"
+        lines=e.split("\n",1)
+  #      atom.content="\n".join(lines[1:]).strip()+"\n"
+        atom.content=lines[1]
         atom.title=title
         date= e.split("\n")[0]
         date=date.replace("2016-","16 ")
@@ -311,17 +312,18 @@ def calendar_output(filename,sessions, matchString=None):
 
 
 def print_original(atoms):
-    previous_date=""
     for atom in atoms:
-    #  if atom.date==previous_date:
-    #    print "###### "+atom.start+ "Where is the end time???"
-    #  else:
         print "###### "+atom.date+ " "+ atom.start+ " to "+atom.end
-        previous_date=atom.date
         print "{}".format(atom.content)
-      #  print "____________________________________________________________________________"
 
 
+def atoms_to_text(atoms):
+    returntext=""
+    for atom in atoms:
+        returntext+= "###### "+atom.date+ " "+ atom.start+ " to "+atom.end+":"
+        returntext+= "{}".format(atom.content)
+
+    return returntext
 
 
 # Driver files.
