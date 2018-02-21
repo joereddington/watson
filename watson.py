@@ -319,8 +319,18 @@ def print_original(atoms):
 
 def atoms_to_text(atoms):
     returntext=""
+    lastdate=""
+
     for atom in atoms:
-        returntext+= "###### "+atom.date+ " "+ atom.start+ " to "+atom.end+":"
+        if lastdate==atom.date:
+            datestring=""
+        else:
+            datestring=" "+atom.date
+            lastdate=atom.date
+        if atom.start==atom.end:
+            returntext+= "######"+datestring+ " "+ atom.start+":"
+        else:
+            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+":"
         returntext+= "{}".format(atom.content)
 
     return returntext
