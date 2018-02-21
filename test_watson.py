@@ -130,6 +130,16 @@ class watsonTest(TestCase):
         atoms=watson.camera_uploads_to_atoms("testinputs/images/")
         self.assertEqual(len(atoms),5)
 
+    def test_output_image_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.camera_uploads_to_atoms("testinputs/images/")
+        image_text=watson.atoms_to_text(atoms)
+        image_text=image_text.replace("\n\n","\n")
+        self.maxDiff = None
+        print image_text
+        self.assertMultiLineEqual(open('testoutputs/image.md').read().strip(),image_text.strip())
+
+        self.assertEqual(len(atoms),5)
 
     def test_get_exercise_sessions(self):
         TF = "%d-%b-%Y %H:%M"

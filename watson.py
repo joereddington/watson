@@ -285,17 +285,14 @@ def commandline_file_to_atoms(filename):
 
 def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/"):
     TF = "%d/%m/%y %H:%M"
-    print "here"
-    print targetdir
     import os.path, time
     atoms=[]
     for file in glob.glob(targetdir+"*"):
-        creation_date= datetime.datetime.fromtimestamp(os.path.getctime(file))
-        print file
-        print("created: %s" % creation_date)
-        print creation_date.strftime('%H:%M:%S')
-        print creation_date.strftime('%Y-%m-%d')
-        atoms.append(Atom(creation_date.strftime("%H:%M"),creation_date.strftime("%H:%M"),creation_date.strftime("%d/%m/%y"),"Image",file,TF))
+        modified_date= datetime.datetime.fromtimestamp(os.path.getmtime(file))
+        #content = "\n![Imported Image]({})\n".format(file.replace(" ","\ "))
+        content = '\n\n<img alt="Imported Image" src="{}" height=160/></p>\n\n'.format(file)
+        atoms.append(Atom(modified_date.strftime("%H:%M"),modified_date.strftime("%H:%M"),modified_date.strftime("%d/%m/%y"),"Image",content,TF))
+
 
     return atoms
 
