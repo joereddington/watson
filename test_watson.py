@@ -141,6 +141,22 @@ class watsonTest(TestCase):
 
         self.assertEqual(len(atoms),5)
 
+
+    def test_combination(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.camera_uploads_to_atoms("testinputs/images/")
+        atoms.extend(watson.log_file_to_atoms("testinputs/augment1.md"))
+        sorted_atoms=sorted(atoms,key=lambda x: x.get_S(), reverse=False)
+
+        image_text=watson.atoms_to_text(sorted_atoms)
+        image_text=image_text.replace("\n\n","\n")
+        self.maxDiff = None
+        print image_text
+        self.assertMultiLineEqual(open('testoutputs/augment1result.md').read().strip(),image_text.strip())
+
+
+
+
     def test_get_exercise_sessions(self):
         TF = "%d-%b-%Y %H:%M"
         atoms=watson.heartrate_to_atoms("testinputs/heartshort.csv")
