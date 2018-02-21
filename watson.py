@@ -283,13 +283,13 @@ def commandline_file_to_atoms(filename):
     pass
 
 
-def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/*"):
+def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/"):
     TF = "%d/%m/%y %H:%M"
-    #print "here"
-    #print targetdir
+    print "here"
+    print targetdir
     import os.path, time
     atoms=[]
-    for file in glob.glob(targetdir):
+    for file in glob.glob(targetdir+"*"):
         creation_date= datetime.datetime.fromtimestamp(os.path.getctime(file))
         print file
         print("created: %s" % creation_date)

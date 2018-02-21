@@ -124,6 +124,13 @@ class watsonTest(TestCase):
         atoms=watson.get_atom_clusters(atoms)
         self.assertEqual(len(atoms),33064)
 
+
+    def test_get_image_atoms(self):
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.camera_uploads_to_atoms("testinputs/images/")
+        self.assertEqual(len(atoms),5)
+
+
     def test_get_exercise_sessions(self):
         TF = "%d-%b-%Y %H:%M"
         atoms=watson.heartrate_to_atoms("testinputs/heartshort.csv")
