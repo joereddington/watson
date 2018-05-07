@@ -131,6 +131,7 @@ class watsonTest(TestCase):
         self.assertEqual(len(atoms),5)
 
     def test_output_image_atoms(self):
+        #Sorting is based on last modified time, which on macs is done to the minute, event if the filename is done to the second, hence this can look like it' in the wrong order.
         TF = "%d-%b-%Y %H:%M"
         atoms=watson.camera_uploads_to_atoms("testinputs/images/")
         image_text=watson.atoms_to_text(atoms)
