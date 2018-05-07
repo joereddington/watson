@@ -67,8 +67,8 @@ def sleep_report(project_sessions):
         st_dev_length = st_dev([entry.length() for entry in project_sessions])
 
         print "\n\nTotal Sleep Time: {}".format(str(total_time)[:-3])
-        print "Average Sleep Time: {}".format(str(average_time)[:-7])
-        print "ST-dev for average: {}".format(str(st_dev_length)[:-7])
+        print "Average Sleep Time: {}".format(str(average_time))
+        print "ST-dev for average: {}".format(str(st_dev_length))
 
         return total_time
 
