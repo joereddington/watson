@@ -118,8 +118,6 @@ def get_sessions(atoms):
         sessions=[]
         for i in grouped_timevalues:
             if i:
-                print "Time is"
-                print i[-1].get_E()-i[0].get_S()
                 if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
                     sessions.append(Session(i[0].title,i[0].get_S(),i[-1].get_E(),i))
         return sessions
