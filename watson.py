@@ -64,13 +64,39 @@ def sleep_report(project_sessions):
                         print entry
         total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
         average_time = avg_time([entry.length() for entry in project_sessions])
+        wake_list = [str(entry.end)[11:] for entry in project_sessions]
+#        print wake_list
+#        print  mean_time(wake_list)
         st_dev_length = st_dev([entry.length() for entry in project_sessions])
-
+#        print wake_time
         print "\n\nTotal Sleep Time: {}".format(str(total_time)[:-3])
         print "Average Sleep Time: {}".format(str(average_time))
+        print "Average Wake Time: {}".format(mean_time(wake_list))
         print "ST-dev for average: {}".format(str(st_dev_length))
 
         return total_time
+
+from cmath import rect, phase
+from math import radians, degrees
+
+def mean_angle(deg):
+    return degrees(phase(sum(rect(1, radians(d)) for d in deg)/len(deg)))
+
+
+
+def mean_time(times):
+    t = (time.split(':') for time in times)
+    seconds = ((float(s) + int(m) * 60 + int(h) * 3600)
+               for h, m, s in t)
+    day = 24 * 60 * 60
+    to_angles = [s * 360. / day for s in seconds]
+    mean_as_angle = mean_angle(to_angles)
+    mean_seconds = mean_as_angle * day / 360.
+    if mean_seconds < 0:
+        mean_seconds += day
+    h, m = divmod(mean_seconds, 3600)
+    m, s = divmod(m, 60)
+    return '%02i:%02i:%02i' % (h, m, s)
 
 
 def avg_time(datetimes):
@@ -248,7 +274,7 @@ def heartrate_to_atoms(filename):
         start=a[datelength+1:timestamplength]
         date=a[:datelength]
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
-        atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
+        atoms.append(Atom(start,end,date,"Sleep","Alive",TF))#labeling it sleep is wrong, but it keep the same name for the inversion.
     atoms.pop(0)
     return atoms
 

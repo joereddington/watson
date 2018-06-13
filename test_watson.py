@@ -12,9 +12,6 @@ from urllib2 import urlopen, Request
 
 class watsonTest(TestCase):
 
-
-
-
     def test_fast_strptime(self):
         test1="02/07/17 15:22"
         TIME_FORMAT = "%d/%m/%y %H:%M"
@@ -67,8 +64,6 @@ class watsonTest(TestCase):
         atoms=[]
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),0)
-
-
 
     def test_log_file_to_atoms_blanktitle(self):
         atoms=watson.log_file_to_atoms("testinputs/regressions/livenotes.md")
@@ -180,6 +175,19 @@ class watsonTest(TestCase):
         watson.calendar_output('testoutputs/exercise.ics',sessions)
         self.maxDiff = None
         self.assertMultiLineEqual(open('testoutputs/exercise.ics').read().strip(),open('testinputs/exercise.ics').read().strip(),)
+
+    def test_sleep_regression(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',None)
+        setattr(watson.args, 'verbatim',None)
+        TF = "%d-%b-%Y %H:%M"
+        atoms=watson.heartrate_to_atoms("testinputs/heart.csv")
+        atoms=watson.get_atom_clusters(atoms)
+        sessions=watson.get_sessions(atoms)
+        watson.calendar_output('testoutputs/sleepregression.ics',sessions)
+        self.maxDiff = None
+        self.assertMultiLineEqual(open('testoutputs/sleepregression.ics').read().strip(),open('testinputs/sleepregression.ics').read().strip(),)
 
     def test_selective_calendar_write(self):
         TF = "%d-%b-%Y %H:%M"
