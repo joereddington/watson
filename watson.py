@@ -24,14 +24,9 @@ min_session_size = 15  # in minutes
 def setup_argument_list():
     "creates and parses the argument list for Watson"
     parser = argparse.ArgumentParser( description="manages Watson")
-    parser.add_argument("action", help="What to do/display: options are 'graph', 'info', and 'calendar'")
-    parser.add_argument('-c', nargs="?", help="if context_filter is activated then only actions in the relevant contexts (contexts are generally in 'bgthop0ry') are counted")
+    parser.add_argument("action", help="What to do/display: options are 'graph', 'info', 'sleep' and 'calendar'")
     parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
-    parser.add_argument( '-n', nargs="?", help="reverse context filter, eliminates certain contexts from the count")
-    parser.add_argument( '-s', action='store_true', help="use if called by a script or cron")
     parser.add_argument( '-v', dest='verbatim', action='store_true', help='Verbose mode')
-    parser.add_argument( '-e', dest='excelmode', action='store_true', help='Output for excel')
-    parser.add_argument( "target", nargs='?', help='displays only files containing this search string.')
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
 
@@ -372,9 +367,6 @@ def pink_slime(config_file='/config.json'):
     atoms=cut(atoms,"01-Jan-2018 00:00","01-Jan-2018 23:59")
     temp=sorted(atoms,key=lambda x: x.get_S(), reverse=False)
     sessions=get_sessions(temp)
-  #  print_original(temp)
-    # for session in sessions:
-    #     print session
 
 def full_detect(config_file='/config.json'):
  #   pink_slime()
