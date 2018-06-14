@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import re
 import sys
+import math
 import traceback
 import pytz
 import calendar_helper_functions as icalhelper
@@ -46,6 +47,7 @@ def output_sessions_as_projects(sessions):
         print "Total project time".ljust(45)+str(total_time)
         return total_time
 
+
 def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
         total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
@@ -56,6 +58,61 @@ def projectreport(name, sessions, verbose):
         else:
                 print "{}: {}".format(name.strip().ljust(45), total_time)
         return total_time
+
+def sleep_report(project_sessions):
+        for entry in project_sessions:
+                        print entry
+        total_time = sum([entry.length() for entry in project_sessions], datetime.timedelta())
+        average_time = avg_time([entry.length() for entry in project_sessions])
+        wake_list = [str(entry.end)[11:] for entry in project_sessions]
+#        print wake_list
+#        print  mean_time(wake_list)
+        st_dev_length = st_dev([entry.length() for entry in project_sessions])
+#        print wake_time
+        print "\n\nTotal Sleep Time: {}".format(str(total_time)[:-3])
+        print "Average Sleep Time: {}".format(str(average_time))
+        print "Average Wake Time: {}".format(mean_time(wake_list))
+        print "ST-dev for average: {}".format(str(st_dev_length))
+
+        return total_time
+
+from cmath import rect, phase
+from math import radians, degrees
+
+def mean_angle(deg):
+    return degrees(phase(sum(rect(1, radians(d)) for d in deg)/len(deg)))
+
+
+
+def mean_time(times):
+    t = (time.split(':') for time in times)
+    seconds = ((float(s) + int(m) * 60 + int(h) * 3600)
+               for h, m, s in t)
+    day = 24 * 60 * 60
+    to_angles = [s * 360. / day for s in seconds]
+    mean_as_angle = mean_angle(to_angles)
+    mean_seconds = mean_as_angle * day / 360.
+    if mean_seconds < 0:
+        mean_seconds += day
+    h, m = divmod(mean_seconds, 3600)
+    m, s = divmod(m, 60)
+    return '%02i:%02i:%02i' % (h, m, s)
+
+
+def avg_time(datetimes):
+    total = sum(dt.total_seconds() for dt in datetimes)
+    avg = total / len(datetimes)
+    return datetime.timedelta(seconds=avg);
+
+def st_dev(datetimes):
+    total = sum(dt.total_seconds() for dt in datetimes)
+    avg = total / len(datetimes)
+    #Now for standard devation
+    #For each datapoint, find the square of it's difference from the mean and sum them.
+    step1 = sum((dt.total_seconds()-avg)*(dt.total_seconds()-avg) for dt in datetimes)
+    step2 = step1/len(datetimes)
+    step3 = math.sqrt(step2)
+    return datetime.timedelta(seconds=step3);
 
 
 def days_old(session):
@@ -171,8 +228,9 @@ def log_file_to_atoms(filename, title=None):
     entries=entries[1:]
     for e in entries:
         atom=Atom()
-        lines=e.split("\n")
-        atom.content="\n".join(lines[1:]).strip()+"\n"
+        lines=e.split("\n",1)
+  #      atom.content="\n".join(lines[1:]).strip()+"\n"
+        atom.content=lines[1]
         atom.title=title
         date= e.split("\n")[0]
         date=date.replace("2016-","16 ")
@@ -216,7 +274,7 @@ def heartrate_to_atoms(filename):
         start=a[datelength+1:timestamplength]
         date=a[:datelength]
         end=a[timestamplength+1+datelength+1:(timestamplength*2)+1]
-        atoms.append(Atom(start,end,date,"Heartrate","Alive",TF))
+        atoms.append(Atom(start,end,date,"Sleep","Alive",TF))#labeling it sleep is wrong, but it keep the same name for the inversion.
     atoms.pop(0)
     return atoms
 
@@ -251,21 +309,17 @@ def commandline_file_to_atoms(filename):
     pass
 
 
-def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/*"):
+def camera_uploads_to_atoms(targetdir=r"/Users/josephreddington/Dropbox/Camera Uploads/"):
     TF = "%d/%m/%y %H:%M"
-    #print "here"
-    #print targetdir
     import os.path, time
     atoms=[]
-    for file in glob.glob(targetdir):
-        creation_date= datetime.datetime.fromtimestamp(os.path.getctime(file))
-        print file
-        print("created: %s" % creation_date)
-        print creation_date.strftime('%H:%M:%S')
-        print creation_date.strftime('%Y-%m-%d')
-        atoms.append(Atom(creation_date.strftime("%H:%M"),creation_date.strftime("%H:%M"),creation_date.strftime("%d/%m/%y"),"Image",file,TF))
+    for file in glob.glob(targetdir+"*"):
+        modified_date= datetime.datetime.fromtimestamp(os.path.getmtime(file))
+        #content = "\n![Imported Image]({})\n".format(file.replace(" ","\ "))
+        content = '\n\n<img alt="Imported Image" src="{}" height=160/></p>\n\n'.format(file)
+        atoms.append(Atom(modified_date.strftime("%H:%M"),modified_date.strftime("%H:%M"),modified_date.strftime("%d/%m/%y"),"Image",content,TF))
+    return sorted(atoms,key=lambda x: x.get_S(), reverse=False)
 
-    return atoms
 
 
 
@@ -280,17 +334,28 @@ def calendar_output(filename,sessions, matchString=None):
 
 
 def print_original(atoms):
-    previous_date=""
     for atom in atoms:
-    #  if atom.date==previous_date:
-    #    print "###### "+atom.start+ "Where is the end time???"
-    #  else:
         print "###### "+atom.date+ " "+ atom.start+ " to "+atom.end
-        previous_date=atom.date
         print "{}".format(atom.content)
-      #  print "____________________________________________________________________________"
 
 
+def atoms_to_text(atoms):
+    returntext=""
+    lastdate=""
+
+    for atom in atoms:
+        if lastdate==atom.date:
+            datestring=""
+        else:
+            datestring=" "+atom.date
+            lastdate=atom.date
+        if atom.start==atom.end:
+            returntext+= "######"+datestring+ " "+ atom.start+":"
+        else:
+            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+":"
+        returntext+= "{}".format(atom.content)
+
+    return returntext
 
 
 # Driver files.
@@ -350,7 +415,7 @@ def full_detect(config_file='/config.json'):
 
     time =0
     if args.action == "sleep":
-        time= output_sessions_as_projects(sleep_sessions)
+        time= sleep_report(sleep_sessions)
     else:
        time=  output_sessions_as_projects(sessions)
 
