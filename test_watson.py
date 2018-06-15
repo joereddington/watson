@@ -210,6 +210,18 @@ class watsonTest(TestCase):
         setattr(watson.args, 'verbatim',None)
         self.assertEqual(watson.full_detect('/testinputs/full2018-01-01/config.json'),datetime.timedelta(53, 18600))
 
+    def test_fullcoverage2018_01_01(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',30000000)
+        setattr(watson.args, 'verbatim',None)
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+        setattr(watson.args, 'action', 'sleep')
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+        setattr(watson.args, 'action', 'now')
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+
+
 
 
     def test_time_split(self):

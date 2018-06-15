@@ -21,7 +21,7 @@ min_session_size = 15  # in minutes
 def setup_argument_list():
     "creates and parses the argument list for Watson"
     parser = argparse.ArgumentParser( description="manages Watson")
-    parser.add_argument("action", help="What to do/display: options are 'graph', 'info', 'sleep' and 'calendar'")
+    parser.add_argument("action", help="What to do/display: options are 'sort', 'now', and 'sleep'")
     parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
     parser.add_argument( '-v', dest='verbatim', action='store_true', help='Verbose mode')
     parser.set_defaults(verbatim=False)
@@ -375,7 +375,7 @@ def full_detect(config_file='/config.json'):
 
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
-	sys.exit()
+	return
     sessions=[]
     pacesetter_sessions=get_sessions(log_file_to_atoms(config["pacesetter"]))
     email_sessions=get_sessions(desktop_tracking_file_to_atoms(config["desktop"]))
