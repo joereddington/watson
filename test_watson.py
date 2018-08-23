@@ -45,9 +45,10 @@ class watsonTest(TestCase):
 
     def test_log_file_to_atoms_inline_wrong(self):
         atoms=watson.log_file_to_atoms("testinputs/wrong.md")
+        print atoms[0]
         sessions=watson.get_sessions(atoms)
 
-        self.assertEqual(len(atoms),582)
+        self.assertEqual(len(atoms),1)
 
 
     def test_commandline_file_to_atoms(self):

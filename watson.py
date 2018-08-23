@@ -228,7 +228,13 @@ def log_file_to_atoms(filename, title=None):
   #      atom.content="\n".join(lines[1:]).strip()+"\n"
         atom.content=lines[1]
         atom.title=title
-        date= e.split("\n")[0]
+        datetitle= e.split("\n")[0]
+        date= datetitle.split(",")[0]
+        if(len( datetitle.split(","))>1):
+            print len(datetitle.split(","))
+            postitle= datetitle.split(",")[1]
+            if len(postitle)>2:
+                atom.title=postitle
         date=date.replace("2016-","16 ")
         date=date.replace("2017-","17 ")
         date=re.sub(r":[0-9][0-9] GMT","",date)
@@ -253,6 +259,11 @@ def log_file_to_atoms(filename, title=None):
         atoms.append(atom)
 
     return atoms
+
+
+
+
+
 
 
 def heartrate_to_atoms(filename):

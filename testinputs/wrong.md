@@ -1,3 +1,3 @@
 
-###### 09:15: (A) 1. Check Calendar @singleton
+###### 09:15, (A) 1. Check Calendar @singleton
 
