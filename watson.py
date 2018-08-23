@@ -43,6 +43,22 @@ def output_sessions_as_projects(sessions):
         print "Total project time".ljust(45)+str(total_time)
         return total_time
 
+def output_sessions_as_account(sessions):
+        total_time = sum([entry.length()
+                          for entry in sessions], datetime.timedelta())
+        projects = {}
+        for session in sessions:
+            if session.project in projects:
+               projects[session.project]+=session.length()
+            else:
+               projects[session.project]=session.length()
+
+        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
+            print "%s: %s" % (value, key)
+
+
+        print "Total project time".ljust(45)+str(total_time)
+        return total_time
 
 def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
@@ -241,7 +257,7 @@ def log_file_to_atoms(filename, title=None):
         datetitle= e.split("\n")[0]
         date= datetitle.split(",")[0]
         if(len( datetitle.split(","))>1):
-            print len(datetitle.split(","))
+            #print len(datetitle.split(","))
             postitle= datetitle.split(",")[1]
             if len(postitle)>2:
                 atom.title=postitle
@@ -428,9 +444,11 @@ def full_detect(config_file='/config.json'):
     time =0
     if args.action == "sleep":
         time= sleep_report(sleep_sessions)
-    else:
+    if args.action == "sort":
        time=  output_sessions_as_projects(sessions)
 
+    if args.action == "account":
+        time=output_sessions_as_account(sessions)
 
     calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
     calendar_output(cwd+"/calendars/email.ics",email_sessions)
