@@ -13,6 +13,10 @@ import timechart
 from session import Session
 from atom import Atom
 
+
+#Todo:
+# (C) log file to atoms should take content rather than a filename
+
 __TIME_FORMAT = "%d/%m/%y %H:%M"
 
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.

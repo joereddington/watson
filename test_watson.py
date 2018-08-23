@@ -42,6 +42,14 @@ class watsonTest(TestCase):
         atoms=watson.log_file_to_atoms("testinputs/regressions/livenotesinline.md")
         self.assertEqual(len(atoms),582)
 
+
+    def test_log_file_to_atoms_inline_wrong(self):
+        atoms=watson.log_file_to_atoms("testinputs/wrong.md")
+        sessions=watson.get_sessions(atoms)
+
+        self.assertEqual(len(atoms),582)
+
+
     def test_commandline_file_to_atoms(self):
         atoms=watson.commandline_file_to_atoms("testinputs/commandline.txt")
         self.assertEqual(len(atoms),6475)
