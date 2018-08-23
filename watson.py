@@ -120,24 +120,34 @@ def days_old(session):
 
 ########## Processing ##########
 def get_sessions(atoms):
+#This has two phases
         if len(atoms)==0:
             return []
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
+        lasttitle=atoms[0].title
         current = atoms[0].get_E()
         grouped_timevalues=[]
         current_group=[]
+    #Step1: group all atoms into the largest groups such that every start time but one is within 15 minutes of an end time of another
+    #Oh- that's NOT*actually* what this does...this does 'within 15 minutes of the *last*'
         for current in atoms:
                 difference=current.get_S()-last
+
                 if ((current.get_S()-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
                 if (current.get_S() <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
+                if (current.title != lasttitle): #preventing negative times being approved...
+                    grouped_timevalues.append(current_group)
+                    current_group=[current]
 		last = current.get_E()
+                lasttitle=current.title
                 current_group.append(current)
         grouped_timevalues.append(current_group)
         sessions=[]
+        #Step 2 - return those groups that are bigger than a set value.
         for i in grouped_timevalues:
             if i:
                 if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
@@ -357,9 +367,9 @@ def atoms_to_text(atoms):
             datestring=" "+atom.date
             lastdate=atom.date
         if atom.start==atom.end:
-            returntext+= "######"+datestring+ " "+ atom.start+":"
+            returntext+= "######"+datestring+ " "+ atom.start+","
         else:
-            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+":"
+            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+","
         returntext+= "{}".format(atom.content)
 
     return returntext
@@ -381,8 +391,6 @@ def pink_slime(config_file='/config.json'):
     sessions=get_sessions(temp)
 
 def full_detect(config_file='/config.json'):
- #   pink_slime()
- #   return
     cwd=os.path.dirname(os.path.abspath(__file__))
     config = json.loads(open(cwd+config_file).read())
     vision_dir = config["projects"]

@@ -60,6 +60,13 @@ class watsonTest(TestCase):
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),0)
 
+
+    def test_split_on_title(self):
+        atoms=watson.log_file_to_atoms("testinputs/splitontitle.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),10)
+
+
     def test_read_desktop_log_file(self):
         atoms=watson.desktop_tracking_file_to_atoms("testinputs/desktop.md")
         self.assertEqual(len(atoms),66)
@@ -217,7 +224,7 @@ class watsonTest(TestCase):
         setattr(watson.args, 'action', 'sort')
         setattr(watson.args, 'd',None)
         setattr(watson.args, 'verbatim',None)
-        self.assertEqual(watson.full_detect('/testinputs/full2018-01-01/config.json'),datetime.timedelta(53, 18600))
+        self.assertEqual(watson.full_detect('/testinputs/full2018-01-01/config.json'),datetime.timedelta(53, 22200))
 
     def test_fullcoverage2018_01_01(self):
         watson.args =lambda:None
