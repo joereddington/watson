@@ -72,6 +72,13 @@ class watsonTest(TestCase):
         total=watson.total_duration(entries)
         self.assertEqual(total,868)
 
+    def test_sleep_total(self):
+        entries=[]
+        content=icalhelper.get_content('testinputs/entrytest.txt')
+        for line in content:
+            entries.append(Entry(line))
+        total=watson.total_duration(entries,"+Sleep")
+        self.assertEqual(total,868)
 
 if __name__=="__main__":
     unittest.main()
