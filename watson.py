@@ -14,6 +14,19 @@ from session import Session
 from atom import Atom
 
 
+
+# Whole new THING
+
+def propagate_dates(entries):
+    current_date=None
+    for entry in entries:
+        if entry.date!=None:
+            current_date=entry.date
+        else:
+            entry.date=current_date
+
+
+
 #Todo:
 # (C) log file to atoms should take content rather than a filename
 

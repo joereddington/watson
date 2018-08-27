@@ -9,7 +9,7 @@ class Entry(object):
             self.input_string=input_string
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:
-                self.date = datetime.datetime.strptime(match.group(), '%y/%m/%d').date()
+                self.date = datetime.datetime.strptime(match.group(), '%d/%m/%y').date()
             else:
                 self.date = None
             self.start=None
@@ -44,3 +44,8 @@ class Entry(object):
             FMT = '%H:%M'
             tdelta = datetime.strptime(self.end, FMT) - datetime.strptime(self.start, FMT)
             return tdelta.total_seconds()/60 #returns in minutes
+
+
+        def __str__(self):
+            return self.input_string
+

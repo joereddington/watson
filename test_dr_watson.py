@@ -39,10 +39,18 @@ class watsonTest(TestCase):
         entry=Entry("###### 15:17, Making Watson great again.")
         entry.end="15:33"
         self.assertEqual(entry.get_duration(),16)
+
+    def test_adding_dates(self):
+        entries=[]
+        content=icalhelper.get_content('testinputs/entrytest.txt')
+        for line in content:
+            entries.append(Entry(line))
+        watson.propagate_dates(entries)
+        self.assertEqual(entries[-1].date.day,29)
+
     def test_parse_line_batch(self):
         content=icalhelper.get_content('testinputs/entrytest.txt')
         for line in content:
-            print line
             entry=Entry(line)
         self.assertEqual(1,1)
 
