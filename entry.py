@@ -22,7 +22,6 @@ class Entry(object):
             self.title =match.group("title").strip()
 
 
-
           except AttributeError as err:
             print "Exception! On this line:"
             print input_string
