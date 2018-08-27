@@ -33,8 +33,6 @@ class Entry(object):
             raise err
 
 
-        def get_title(self):
-            return self.title
 
         def get_duration(self):
             if self.end==None:
@@ -44,6 +42,7 @@ class Entry(object):
             FMT = '%H:%M'
             tdelta = datetime.strptime(self.end, FMT) - datetime.strptime(self.start, FMT)
             return tdelta.total_seconds()/60 #returns in minutes
+
 
 
         def __str__(self):

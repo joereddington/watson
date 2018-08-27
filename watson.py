@@ -30,9 +30,17 @@ def propagate_endings(entries,max_minutes):
     for entry in reversed(entries):
         if entry.end==None:
             entry.end=laststart
-            if entry.get_duration()>15:
+            if entry.get_duration()>max_minutes:
                 entry.end=None
         laststart=entry.start
+
+def total_duration(entries,matchtext=""):
+    running_total=0
+    for entry in entries:
+        if matchtext in entry.title:
+            running_total+=entry.get_duration()
+    return running_total
+
 
 
 #Todo:

@@ -21,11 +21,11 @@ class watsonTest(TestCase):
 
     def test_parse_line(self):
         entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
-        self.assertEqual(entry.get_title(),"+Sleep")
+        self.assertEqual(entry.title,"+Sleep")
 
     def test_parse_line_without_date(self):
         entry=Entry("###### 15:17, Making Watson great again.")
-        self.assertEqual(entry.get_title(),"Making Watson great again.")
+        self.assertEqual(entry.title,"Making Watson great again.")
 
     def test_get_duration(self):
         entry=Entry("###### 15:17 to 15:30, Making Watson great again.")
@@ -64,6 +64,13 @@ class watsonTest(TestCase):
             entry=Entry(line)
         self.assertEqual(1,1)
 
+    def test_running_total(self):
+        entries=[]
+        content=icalhelper.get_content('testinputs/entrytest.txt')
+        for line in content:
+            entries.append(Entry(line))
+        total=watson.total_duration(entries)
+        self.assertEqual(total,868)
 
 
 if __name__=="__main__":
