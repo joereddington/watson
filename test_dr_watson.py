@@ -4,6 +4,8 @@ import watson
 import urllib
 import json
 import os
+import calendar_helper_functions as icalhelper
+
 import atom
 import session
 from entry import Entry
@@ -24,6 +26,13 @@ class watsonTest(TestCase):
     def test_parse_line_without_date(self):
         entry=Entry("###### 15:17, Making Watson great again.")
         self.assertEqual(entry.get_title(),"Making Watson great again.")
+
+
+    def test_parse_line_batch(self):
+        content=icalhelper.get_content('testinputs/entrytest.txt')
+        for line in content:
+            entry=Entry(line)
+        self.assertEqual(1,1)
 
 
 if __name__=="__main__":
