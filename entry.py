@@ -35,7 +35,6 @@ class Entry(object):
             raise err
 
 
-
         def get_duration(self):
             if self.end==None:
                 return 0

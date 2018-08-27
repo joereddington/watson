@@ -53,6 +53,7 @@ min_session_size = 15  # in minutes
 def setup_argument_list():
     "creates and parses the argument list for Watson"
     parser = argparse.ArgumentParser( description="manages Watson")
+    parser.add_argument('filename')
     parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
@@ -77,14 +78,10 @@ def output_sessions_as_account(sessions):
 
 
 def days_old(session):
-        delta = datetime.datetime.now() - session.start.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+        delta = datetime.datetime.now() - session.date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 	return delta.days
 
 def report_on_day(file):
-    print file
-    print file
-    print file
-    print file
     print file
     entries=[]
     content=icalhelper.get_content(file)
@@ -95,15 +92,24 @@ def report_on_day(file):
     propagate_endings(entries,15)
     if entries:
         print "Date: {}".format(entries[0].date)
-        print "Ordered list of topics"
+        print ""
+        print "# Ordered list of topics"
         projects={}
         for entry in entries:
             if entry.title in projects:
                projects[entry.title]+=entry.get_duration()
             else:
                projects[entry.title]=entry.get_duration()
-            for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
-                print "%s: %s" % (value, key)
+        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
+            print "%s: %s" % (value, key)
+        print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
+        print "Including"
+        print "+Sleep  {}".format(total_duration(entries,"+Sleep"))
+        print "+Family {}".format(total_duration(entries,"+Family"))
+        print "+Faff   {}".format(total_duration(entries,"+Faff"))
+        print "+EQT    {}".format(total_duration(entries,"+EQT"))
+        print "+WWW    {}".format(total_duration(entries,"+WWW"))
+
 
 
 
@@ -116,9 +122,5 @@ def full_detect(config_file='/config.json'):
 
     print "Watson v2.0"
     print "------------------------------"
-    cwd=os.path.dirname(os.path.abspath(__file__))
-    config = json.loads(open(cwd+config_file).read())
-    for file in glob.glob(config["journals"]+"/*.md"):
-        report_on_day(file)
-
+    report_on_day(args.filename)
 
