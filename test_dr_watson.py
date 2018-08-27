@@ -82,5 +82,11 @@ class watsonTest(TestCase):
         for line in content:
             entries.append(Entry(line))
 
+
+    def test_bug1(self):
+        entry=Entry("###### 13:05: ")
+        self.assertEqual(entry.title,None)
+
+
 if __name__=="__main__":
     unittest.main()

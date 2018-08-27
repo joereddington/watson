@@ -24,7 +24,9 @@ class Entry(object):
                     self.start = match.group('start')
                 self.end=None
             match = re.search(r',\s*(?P<title>.*)', input_string)
-            self.title =match.group("title").strip()
+            self.title=None
+            if match:
+                self.title =match.group("title").strip()
 
 
           except AttributeError as err:
