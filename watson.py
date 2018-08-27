@@ -92,6 +92,7 @@ def full_detect(config_file='/config.json'):
 
     print "Watson v2.0"
     print "------------------------------"
+    config = json.loads(open(cwd+config_file).read())
     for file in glob.glob(config["journals"]+"/*.md"):
         report_on_day(file)
 
