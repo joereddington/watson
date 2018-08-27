@@ -22,9 +22,17 @@ def propagate_dates(entries):
     for entry in entries:
         if entry.date!=None:
             current_date=entry.date
-        else:
-            entry.date=current_date
+        entry.date=current_date
 
+
+def propagate_endings(entries,max_minutes):
+    laststart=None
+    for entry in reversed(entries):
+        if entry.end==None:
+            entry.end=laststart
+            if entry.get_duration()>15:
+                entry.end=None
+        laststart=entry.start
 
 
 #Todo:

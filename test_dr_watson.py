@@ -48,11 +48,22 @@ class watsonTest(TestCase):
         watson.propagate_dates(entries)
         self.assertEqual(entries[-1].date.day,29)
 
+    def test_adding_end_times(self):
+        entries=[]
+        content=icalhelper.get_content('testinputs/entrytest.txt')
+        for line in content:
+            entries.append(Entry(line))
+        watson.propagate_endings(entries,15)
+        for entry in entries:
+            print "{}: {}".format(entry.end,entry.input_string.strip())
+        self.assertEqual(entries[2].end,"08:15")
+
     def test_parse_line_batch(self):
         content=icalhelper.get_content('testinputs/entrytest.txt')
         for line in content:
             entry=Entry(line)
         self.assertEqual(1,1)
+
 
 
 if __name__=="__main__":
