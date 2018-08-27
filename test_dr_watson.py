@@ -33,7 +33,12 @@ class watsonTest(TestCase):
 
     def test_get_duration_without_end(self):
         entry=Entry("###### 15:17, Making Watson great again.")
-        self.assertEqual(entry.get_duration(),13)
+        self.assertEqual(entry.get_duration(),0)
+
+    def test_adding_end_later(self):
+        entry=Entry("###### 15:17, Making Watson great again.")
+        entry.end="15:33"
+        self.assertEqual(entry.get_duration(),16)
     def test_parse_line_batch(self):
         content=icalhelper.get_content('testinputs/entrytest.txt')
         for line in content:

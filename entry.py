@@ -18,6 +18,11 @@ class Entry(object):
             if match:
                 self.start = match.group('start')
                 self.end = match.group('end')
+            else:
+                match = re.search(r'(?P<start>\d{2}:\d{2})', input_string)
+                if match:
+                    self.start = match.group('start')
+                self.end=None
             match = re.search(r',\s*(?P<title>.*)', input_string)
             self.title =match.group("title").strip()
 
@@ -32,6 +37,8 @@ class Entry(object):
             return self.title
 
         def get_duration(self):
+            if self.end==None:
+                return 0
             #from https://stackoverflow.com/a/3096984/170243
             from datetime import datetime
             FMT = '%H:%M'
