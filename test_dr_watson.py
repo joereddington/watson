@@ -27,6 +27,9 @@ class watsonTest(TestCase):
         entry=Entry("###### 15:17, Making Watson great again.")
         self.assertEqual(entry.get_title(),"Making Watson great again.")
 
+    def test_get_duration(self):
+        entry=Entry("###### 15:17 to 15:30, Making Watson great again.")
+        self.assertEqual(entry.get_duration(),13)
 
     def test_parse_line_batch(self):
         content=icalhelper.get_content('testinputs/entrytest.txt')
