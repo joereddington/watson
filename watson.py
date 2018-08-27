@@ -93,16 +93,17 @@ def report_on_day(file):
             entries.append(Entry(line))
     propagate_dates(entries)
     propagate_endings(entries,15)
-    print "Date: {}".format(entries[0].date)
-    print "Ordered list of topics"
-    projects={}
-    for entry in entries:
-        if entry.title in projects:
-           projects[entry.title]+=entry.get_duration()
-        else:
-           projects[entry.title]=entry.get_duration()
-        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
-            print "%s: %s" % (value, key)
+    if entries:
+        print "Date: {}".format(entries[0].date)
+        print "Ordered list of topics"
+        projects={}
+        for entry in entries:
+            if entry.title in projects:
+               projects[entry.title]+=entry.get_duration()
+            else:
+               projects[entry.title]=entry.get_duration()
+            for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
+                print "%s: %s" % (value, key)
 
 
 
