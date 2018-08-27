@@ -31,6 +31,7 @@ class watsonTest(TestCase):
     def test_parse_line_batch(self):
         content=icalhelper.get_content('testinputs/entrytest.txt')
         for line in content:
+            print line
             entry=Entry(line)
         self.assertEqual(1,1)
 
