@@ -115,12 +115,8 @@ def make_projects_file(vision_dir, name):
 ########## Input ##########
 
 
-def log_file_to_atoms(filename, title=None):
-    if title==None:
-	title=filename
+def log_file_to_atoms(filename):
     content=icalhelper.get_content(filename)
-    if "title" in content[0]:
-        title=content[0][7:].strip()
     entries="\n".join(content).split("######")
     atoms=[]
     lastdate="01/01/10"
@@ -129,7 +125,6 @@ def log_file_to_atoms(filename, title=None):
     for e in entries:
         atom=Atom()
         lines=e.split("\n",1)
-  #      atom.content="\n".join(lines[1:]).strip()+"\n"
         atom.content=lines[1]
         atom.title=title
         datetitle= e.split("\n")[0]

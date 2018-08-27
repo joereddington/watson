@@ -39,6 +39,7 @@ def fastStrptime(val, format):
 
 class Atom(object):
 
+
         def __init__(self, start="",end="", date="",title="", content="", TF="%d/%m/%y %H:%M"):
             self.content=content
             self.start=start
