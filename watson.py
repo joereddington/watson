@@ -48,6 +48,9 @@ def output_sessions_as_account(sessions):
                           for entry in sessions], datetime.timedelta())
         projects = {}
         for session in sessions:
+            print session
+        for session in sessions:
+            print projects
             if session.project in projects:
                projects[session.project]+=session.length()
             else:
@@ -141,34 +144,49 @@ def get_sessions(atoms):
             return []
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
         lasttitle=atoms[0].title
-        current = atoms[0].get_E()
+        current = atoms[0].get_S()
         grouped_timevalues=[]
         current_group=[]
     #Step1: group all atoms into the largest groups such that every start time but one is within 15 minutes of an end time of another
     #Oh- that's NOT*actually* what this does...this does 'within 15 minutes of the *last*'
         for current in atoms:
-                difference=current.get_S()-last
-
                 if ((current.get_S()-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (current.get_S() <last): #preventing negative times being approved...
+                elif (current.get_S() <last): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (current.title != lasttitle): #preventing negative times being approved...
+                elif (current.title != lasttitle): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
 		last = current.get_E()
                 lasttitle=current.title
                 current_group.append(current)
         grouped_timevalues.append(current_group)
-        sessions=[]
         #Step 2 - return those groups that are bigger than a set value.
+        sessions=[]
         for i in grouped_timevalues:
             if i:
-                if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
-                    sessions.append(Session(i[0].title,i[0].get_S(),i[-1].get_E(),i))
+                if ((get_latest_end(i)-get_earliest_start(i)) >datetime.timedelta(minutes=min_session_size)):
+                    sessions.append(Session(i[0].title,get_earliest_start(i),get_latest_end(i),i))
         return sessions
+
+
+def get_latest_end(atoms):
+    max=atoms[0].get_E()
+    for atom in atoms:
+        if atom.get_E()>max:
+            max=atom.get_E()
+    return max
+
+
+def get_earliest_start(atoms):
+    min=atoms[0].get_S()
+    for atom in atoms:
+        if atom.get_S()<min:
+            min=atom.get_E()
+    return min
+
 
 
 def get_atom_clusters(atomsin):
@@ -257,7 +275,6 @@ def log_file_to_atoms(filename, title=None):
         datetitle= e.split("\n")[0]
         date= datetitle.split(",")[0]
         if(len( datetitle.split(","))>1):
-            #print len(datetitle.split(","))
             postitle= datetitle.split(",")[1]
             if len(postitle)>2:
                 atom.title=postitle
