@@ -48,9 +48,6 @@ def output_sessions_as_account(sessions):
                           for entry in sessions], datetime.timedelta())
         projects = {}
         for session in sessions:
-            print session
-        for session in sessions:
-            print projects
             if session.project in projects:
                projects[session.project]+=session.length()
             else:
@@ -131,7 +128,7 @@ def st_dev(datetimes):
 
 
 def days_old(session):
-        delta = datetime.datetime.now() - session.start
+        delta = datetime.datetime.now() - session.start.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 	return delta.days
 
 
