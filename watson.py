@@ -91,6 +91,7 @@ def report_on_day(file):
     propagate_dates(entries)
     propagate_endings(entries,15)
     if entries:
+        big_time=total_duration(entries)
         print "Date: {}".format(entries[0].date)
         print ""
         print "# Ordered list of topics"
@@ -104,15 +105,25 @@ def report_on_day(file):
             print "%s: %s" % (value, key)
         print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
         print "Including"
-        print "+Sleep  {}".format(total_duration(entries,"+Sleep"))
-        print "+Family {}".format(total_duration(entries,"+Family"))
-        print "+Faff   {}".format(total_duration(entries,"+Faff"))
-        print "+EQT    {}".format(total_duration(entries,"+EQT"))
-        print "+WWW    {}".format(total_duration(entries,"+WWW"))
+        catagories=["+Bed","+Family","+Faff","+EQT", "+WWW", "+Overhead", "+Health"]
+        catagory_time=0
+        for cat in catagories:
+            print "{}".format(format_report(entries,cat))
+            catagory_time+=total_duration(entries,cat)
+        print "Total time {}".format(minutes_to_string(big_time,"all"))
+        print "Catagory time {}".format(minutes_to_string(catagory_time,"catagories"))
 
 
 
 
+def format_report(entires,slug):
+    minutes=total_duration(entires,slug)
+    return minutes_to_string(minutes,slug)
+
+def minutes_to_string(minutes,slug):
+    hours=int(minutes/60)
+    minutes_left=int(minutes%60)
+    return "{:>2}:{:0>2} for {}".format(hours,minutes_left,slug)
 
 
 
