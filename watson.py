@@ -3,7 +3,6 @@ import re
 import sys
 import math
 import pytz
-import calendar_helper_functions as icalhelper
 import glob
 import datetime
 import argparse
@@ -11,6 +10,13 @@ import os
 import json
 import timechart
 from entry import Entry
+
+
+
+def get_content(infilename):
+        with open(infilename) as f:
+                content = f.readlines()
+        return content
 
 
 
@@ -84,7 +90,7 @@ def days_old(session):
 def report_on_day(file):
     print file
     entries=[]
-    content=icalhelper.get_content(file)
+    content=get_content(file)
     for line in content:
         if "#####" in line:
             entries.append(Entry(line))
@@ -105,7 +111,7 @@ def report_on_day(file):
             print "%s: %s" % (value, key)
         print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
         print "Including"
-        catagories=["+Bed","+Family","+Faff","+EQT", "+WWW", "+Overhead", "+Health"]
+        catagories=["+Bed","+Family","+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+Personal"]
         catagory_time=0
         for cat in catagories:
             print "{}".format(format_report(entries,cat))
