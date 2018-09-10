@@ -92,7 +92,7 @@ def report_on_day(file):
     entries=[]
     content=get_content(file)
     for line in content:
-        if "#####" in line:
+        if "###" in line:
             entries.append(Entry(line))
     propagate_dates(entries)
     propagate_endings(entries,15)

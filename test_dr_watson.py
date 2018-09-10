@@ -4,7 +4,6 @@ import watson
 import urllib
 import json
 import os
-import calendar_helper_functions as icalhelper
 
 import atom
 import session
@@ -12,6 +11,11 @@ from entry import Entry
 import datetime
 from urllib2 import urlopen, Request
 
+
+def get_content(infilename):
+        with open(infilename) as f:
+                content = f.readlines()
+        return content
 
 
 
@@ -42,7 +46,7 @@ class watsonTest(TestCase):
 
     def test_adding_dates(self):
         entries=[]
-        content=icalhelper.get_content('testinputs/entrytest.txt')
+        content=get_content('testinputs/entrytest.txt')
         for line in content:
             entries.append(Entry(line))
         watson.propagate_dates(entries)
@@ -50,7 +54,7 @@ class watsonTest(TestCase):
 
     def test_adding_end_times(self):
         entries=[]
-        content=icalhelper.get_content('testinputs/entrytest.txt')
+        content=get_content('testinputs/entrytest.txt')
         for line in content:
             entries.append(Entry(line))
         watson.propagate_endings(entries,15)
@@ -59,14 +63,14 @@ class watsonTest(TestCase):
         self.assertEqual(entries[2].end,"08:15")
 
     def test_parse_line_batch(self):
-        content=icalhelper.get_content('testinputs/entrytest.txt')
+        content=get_content('testinputs/entrytest.txt')
         for line in content:
             entry=Entry(line)
         self.assertEqual(1,1)
 
     def test_running_total(self):
         entries=[]
-        content=icalhelper.get_content('testinputs/entrytest.txt')
+        content=get_content('testinputs/entrytest.txt')
         for line in content:
             entries.append(Entry(line))
         total=watson.total_duration(entries)
@@ -78,7 +82,7 @@ class watsonTest(TestCase):
 
     def test_sleep_total(self):
         entries=[]
-        content=icalhelper.get_content('testinputs/entrytest.txt')
+        content=get_content('testinputs/entrytest.txt')
         for line in content:
             entries.append(Entry(line))
 
@@ -86,6 +90,17 @@ class watsonTest(TestCase):
     def test_bug1(self):
         entry=Entry("###### 13:05: ")
         self.assertEqual(entry.title,None)
+
+    def test_bug2(self):
+        content=get_content('testinputs/bug2.txt')
+	entries=[]
+        for line in content:
+            entries.append(Entry(line))
+        total=watson.total_duration(entries,"+Sleep")
+        self.assertEqual(total,472)
+        total=watson.total_duration(entries,"+Faff")
+        self.assertEqual(total,46)
+
 
 
 if __name__=="__main__":
