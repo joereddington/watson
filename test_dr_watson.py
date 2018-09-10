@@ -95,7 +95,11 @@ class watsonTest(TestCase):
         content=get_content('testinputs/bug2.txt')
 	entries=[]
         for line in content:
+	 if "###" in line:
             entries.append(Entry(line))
+	for entry in entries:
+
+	    print "X{}".format(entry)
         total=watson.total_duration(entries,"+Sleep")
         self.assertEqual(total,472)
         total=watson.total_duration(entries,"+Faff")
