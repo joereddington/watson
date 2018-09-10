@@ -29,8 +29,6 @@ class Entry(object):
             self.title=None
             if match:
                 self.title =match.group("title").strip()
-	    print "A {}".format(self.start)
-
 
           except AttributeError as err:
             print "Exception! On this line:"

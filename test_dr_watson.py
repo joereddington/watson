@@ -97,9 +97,6 @@ class watsonTest(TestCase):
         for line in content:
 	 if "###" in line:
             entries.append(Entry(line))
-	for entry in entries:
-
-	    print "X{}".format(entry)
 	self.assertRaises(ValueError,watson.total_duration, entries)
 
 

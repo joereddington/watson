@@ -42,7 +42,6 @@ def propagate_endings(entries,max_minutes):
 def total_duration(entries,matchtext=""):
     running_total=0
     for entry in entries:
-	print "Y{}, {}".format(entry,matchtext)
         if matchtext in entry.title:
             running_total+=entry.get_duration()
     return running_total
