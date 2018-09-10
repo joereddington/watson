@@ -100,10 +100,7 @@ class watsonTest(TestCase):
 	for entry in entries:
 
 	    print "X{}".format(entry)
-        total=watson.total_duration(entries,"+Sleep")
-        self.assertEqual(total,472)
-        total=watson.total_duration(entries,"+Faff")
-        self.assertEqual(total,46)
+	self.assertRaises(ValueError,watson.total_duration, entries)
 
 
 

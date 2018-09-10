@@ -22,11 +22,14 @@ class Entry(object):
                 match = re.search(r'(?P<start>\d{2}:\d{2})', input_string)
                 if match:
                     self.start = match.group('start')
+		else:
+		   raise ValueError("No Start value found on: {}".format(input_string))
                 self.end=None
             match = re.search(r',\s*(?P<title>.*)', input_string)
             self.title=None
             if match:
                 self.title =match.group("title").strip()
+	    print "A {}".format(self.start)
 
 
           except AttributeError as err:
