@@ -50,12 +50,17 @@ class Atom(object):
             self.e=None
 
         def get_S(self):
+          try:
             total_date=self.date+" "+self.start
             if not self.s:
                 self.s= fastStrptime(total_date,self.TF)
             return self.s
+          except ValueError:
+            print "Exception:"
+            print self
 
         def get_E(self):
+          try:
             total_date=self.date+" "+self.end
             if not self.e:
                 self.e= fastStrptime(total_date,self.TF)
@@ -66,6 +71,9 @@ class Atom(object):
 #                self.e= datetime.datetime.strptime(total_date,self.TF)
             #print self.e
             return self.e
+          except ValueError:
+            print "Exception in E:"
+            print self
 
         def __str__(self):
             return "{}, from {} to {} on {}".format(self.title,self.start,self.end,self.date)

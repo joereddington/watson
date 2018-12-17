@@ -42,6 +42,15 @@ class watsonTest(TestCase):
         atoms=watson.log_file_to_atoms("testinputs/regressions/livenotesinline.md")
         self.assertEqual(len(atoms),582)
 
+
+    def test_log_file_to_atoms_inline_wrong(self):
+        atoms=watson.log_file_to_atoms("testinputs/wrong.md")
+        print atoms[0]
+        sessions=watson.get_sessions(atoms)
+
+        self.assertEqual(len(atoms),1)
+
+
     def test_commandline_file_to_atoms(self):
         atoms=watson.commandline_file_to_atoms("testinputs/commandline.txt")
         self.assertEqual(len(atoms),6475)
@@ -50,6 +59,13 @@ class watsonTest(TestCase):
         atoms=watson.log_file_to_atoms("testinputs/problem.md")
         sessions=watson.get_sessions(atoms)
         self.assertEqual(len(sessions),0)
+
+
+    def test_split_on_title(self):
+        atoms=watson.log_file_to_atoms("testinputs/splitontitle.md")
+        sessions=watson.get_sessions(atoms)
+        self.assertEqual(len(sessions),9)
+
 
     def test_read_desktop_log_file(self):
         atoms=watson.desktop_tracking_file_to_atoms("testinputs/desktop.md")
@@ -209,6 +225,18 @@ class watsonTest(TestCase):
         setattr(watson.args, 'd',None)
         setattr(watson.args, 'verbatim',None)
         self.assertEqual(watson.full_detect('/testinputs/full2018-01-01/config.json'),datetime.timedelta(53, 18600))
+
+    def test_fullcoverage2018_01_01(self):
+        watson.args =lambda:None
+        setattr(watson.args, 'action', 'sort')
+        setattr(watson.args, 'd',30000000)
+        setattr(watson.args, 'verbatim',None)
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+        setattr(watson.args, 'action', 'sleep')
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+        setattr(watson.args, 'action', 'now')
+        watson.full_detect('/testinputs/full2018-01-01/config.json')
+
 
 
 

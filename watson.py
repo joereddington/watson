@@ -2,12 +2,9 @@
 import re
 import sys
 import math
-import traceback
 import pytz
 import calendar_helper_functions as icalhelper
 import glob
-import sys
-import time
 import datetime
 import argparse
 import os
@@ -15,6 +12,10 @@ import json
 import timechart
 from session import Session
 from atom import Atom
+
+
+#Todo:
+# (C) log file to atoms should take content rather than a filename
 
 __TIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -24,14 +25,9 @@ min_session_size = 15  # in minutes
 def setup_argument_list():
     "creates and parses the argument list for Watson"
     parser = argparse.ArgumentParser( description="manages Watson")
-    parser.add_argument("action", help="What to do/display: options are 'graph', 'info', and 'calendar'")
-    parser.add_argument('-c', nargs="?", help="if context_filter is activated then only actions in the relevant contexts (contexts are generally in 'bgthop0ry') are counted")
+    parser.add_argument("action", help="What to do/display: options are 'sort', 'now', and 'sleep'")
     parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
-    parser.add_argument( '-n', nargs="?", help="reverse context filter, eliminates certain contexts from the count")
-    parser.add_argument( '-s', action='store_true', help="use if called by a script or cron")
     parser.add_argument( '-v', dest='verbatim', action='store_true', help='Verbose mode')
-    parser.add_argument( '-e', dest='excelmode', action='store_true', help='Output for excel')
-    parser.add_argument( "target", nargs='?', help='displays only files containing this search string.')
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
 
@@ -47,6 +43,22 @@ def output_sessions_as_projects(sessions):
         print "Total project time".ljust(45)+str(total_time)
         return total_time
 
+def output_sessions_as_account(sessions):
+        total_time = sum([entry.length()
+                          for entry in sessions], datetime.timedelta())
+        projects = {}
+        for session in sessions:
+            if session.project in projects:
+               projects[session.project]+=session.length()
+            else:
+               projects[session.project]=session.length()
+
+        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
+            print "%s: %s" % (value, key)
+
+
+        print "Total project time".ljust(45)+str(total_time)
+        return total_time
 
 def projectreport(name, sessions, verbose):
         project_sessions = [ entry for entry in sessions if ( entry.project == name)]
@@ -116,7 +128,7 @@ def st_dev(datetimes):
 
 
 def days_old(session):
-        delta = datetime.datetime.now() - session.start
+        delta = datetime.datetime.now() - session.start.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 	return delta.days
 
 
@@ -124,29 +136,54 @@ def days_old(session):
 
 ########## Processing ##########
 def get_sessions(atoms):
+#This has two phases
         if len(atoms)==0:
             return []
         last= datetime.datetime.strptime( "11/07/10 10:00", __TIME_FORMAT)
-        current = atoms[0].get_E()
+        lasttitle=atoms[0].title
+        current = atoms[0].get_S()
         grouped_timevalues=[]
         current_group=[]
+    #Step1: group all atoms into the largest groups such that every start time but one is within 15 minutes of an end time of another
+    #Oh- that's NOT*actually* what this does...this does 'within 15 minutes of the *last*'
         for current in atoms:
-                difference=current.get_S()-last
                 if ((current.get_S()-last) > datetime.timedelta( minutes=max_dist_between_logs)):
                     grouped_timevalues.append(current_group)
                     current_group=[current]
-                if (current.get_S() <last): #preventing negative times being approved...
+                elif (current.get_S() <last): #preventing negative times being approved...
+                    grouped_timevalues.append(current_group)
+                    current_group=[current]
+                elif (current.title != lasttitle): #preventing negative times being approved...
                     grouped_timevalues.append(current_group)
                     current_group=[current]
 		last = current.get_E()
+                lasttitle=current.title
                 current_group.append(current)
         grouped_timevalues.append(current_group)
+        #Step 2 - return those groups that are bigger than a set value.
         sessions=[]
         for i in grouped_timevalues:
             if i:
-                if (i[-1].get_E()-i[0].get_S())> datetime.timedelta(minutes=min_session_size):
-                    sessions.append(Session(i[0].title,i[0].get_S(),i[-1].get_E(),i))
+                if ((get_latest_end(i)-get_earliest_start(i)) >datetime.timedelta(minutes=min_session_size)):
+                    sessions.append(Session(i[0].title,get_earliest_start(i),get_latest_end(i),i))
         return sessions
+
+
+def get_latest_end(atoms):
+    max=atoms[0].get_E()
+    for atom in atoms:
+        if atom.get_E()>max:
+            max=atom.get_E()
+    return max
+
+
+def get_earliest_start(atoms):
+    min=atoms[0].get_S()
+    for atom in atoms:
+        if atom.get_S()<min:
+            min=atom.get_E()
+    return min
+
 
 
 def get_atom_clusters(atomsin):
@@ -232,7 +269,12 @@ def log_file_to_atoms(filename, title=None):
   #      atom.content="\n".join(lines[1:]).strip()+"\n"
         atom.content=lines[1]
         atom.title=title
-        date= e.split("\n")[0]
+        datetitle= e.split("\n")[0]
+        date= datetitle.split(",")[0]
+        if(len( datetitle.split(","))>1):
+            postitle= datetitle.split(",")[1]
+            if len(postitle)>2:
+                atom.title=postitle
         date=date.replace("2016-","16 ")
         date=date.replace("2017-","17 ")
         date=re.sub(r":[0-9][0-9] GMT","",date)
@@ -257,6 +299,11 @@ def log_file_to_atoms(filename, title=None):
         atoms.append(atom)
 
     return atoms
+
+
+
+
+
 
 
 def heartrate_to_atoms(filename):
@@ -350,9 +397,9 @@ def atoms_to_text(atoms):
             datestring=" "+atom.date
             lastdate=atom.date
         if atom.start==atom.end:
-            returntext+= "######"+datestring+ " "+ atom.start+":"
+            returntext+= "######"+datestring+ " "+ atom.start+","
         else:
-            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+":"
+            returntext+= "######"+datestring+ " "+ atom.start+ " to "+atom.end+","
         returntext+= "{}".format(atom.content)
 
     return returntext
@@ -372,13 +419,8 @@ def pink_slime(config_file='/config.json'):
     atoms=cut(atoms,"01-Jan-2018 00:00","01-Jan-2018 23:59")
     temp=sorted(atoms,key=lambda x: x.get_S(), reverse=False)
     sessions=get_sessions(temp)
-  #  print_original(temp)
-    # for session in sessions:
-    #     print session
 
 def full_detect(config_file='/config.json'):
- #   pink_slime()
- #   return
     cwd=os.path.dirname(os.path.abspath(__file__))
     config = json.loads(open(cwd+config_file).read())
     vision_dir = config["projects"]
@@ -386,7 +428,7 @@ def full_detect(config_file='/config.json'):
 
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT)
-	sys.exit()
+	return
     sessions=[]
     pacesetter_sessions=get_sessions(log_file_to_atoms(config["pacesetter"]))
     email_sessions=get_sessions(desktop_tracking_file_to_atoms(config["desktop"]))
@@ -416,9 +458,11 @@ def full_detect(config_file='/config.json'):
     time =0
     if args.action == "sleep":
         time= sleep_report(sleep_sessions)
-    else:
+    if args.action == "sort":
        time=  output_sessions_as_projects(sessions)
 
+    if args.action == "account":
+        time=output_sessions_as_account(sessions)
 
 #    calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
     calendar_output(cwd+"/calendars/email.ics",email_sessions)
