@@ -397,7 +397,7 @@ def full_detect(config_file='/config.json'):
     projects_sessions=make_projects_file(vision_dir, "projects")
     gromit_sessions=make_projects_file(gromit_dir, "Journals")
     timechart.graph_out(email_sessions,"email")
-    timechart.graph_out(pacesetter_sessions,"Pacesetter")
+#    timechart.graph_out(pacesetter_sessions,"Pacesetter")
     timechart.graph_out(delores_sessions,"DELORES")
     timechart.graph_out(gromit_sessions,"journals")
 
@@ -420,10 +420,11 @@ def full_detect(config_file='/config.json'):
        time=  output_sessions_as_projects(sessions)
 
 
-    calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
+#    calendar_output(cwd+"/calendars/pacesetter.ics",pacesetter_sessions)
     calendar_output(cwd+"/calendars/email.ics",email_sessions)
     calendar_output(cwd+"/calendars/projects.ics",projects_sessions)
     calendar_output(cwd+"/calendars/Exercise.ics",exercise_sessions)
     calendar_output(cwd+"/calendars/Sleep.ics",sleep_sessions)
+    calendar_output(cwd+"/calendars/gromit.ics",gromit_sessions)
     return time
 

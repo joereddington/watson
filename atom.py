@@ -59,6 +59,7 @@ class Atom(object):
             total_date=self.date+" "+self.end
             if not self.e:
                 self.e= fastStrptime(total_date,self.TF)
+		
             types=str(type(self.e))
             if "date" not in types:
                 self.e= fastStrptime(total_date,self.TF)

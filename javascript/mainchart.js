@@ -49,8 +49,8 @@ for(var i = 0; i < journalsrunning_mean.length; i++){
             datasets: [
 	    {
                     type: 'bar',
-                    label: 'Unlabeled Work',
-                    backgroundColor: "rgba(0,0,0,0.25)",
+                    label: 'Journaled time',
+                    backgroundColor: "rgba(255, 165, 0,0.25)",
                     data: journalssessions
                 }, 
                 {
