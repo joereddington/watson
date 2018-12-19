@@ -63,6 +63,7 @@ def setup_argument_list():
     parser = argparse.ArgumentParser( description="manages Watson")
     parser.add_argument('filename')
     parser.add_argument('-d', nargs="?" , help="Show only entries that are at least this many days old")
+    parser.add_argument('-t', action='store_true', help="Show only today")
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
 
@@ -98,6 +99,8 @@ def report_on_day(file):
             entries.append(Entry(line))
     propagate_dates(entries)
     propagate_endings(entries,15)
+    if args.t: #if it must be today...
+	entries=[entry for entry in entries if entry.date==datetime.datetime.today().date()]
     if entries:
         big_time=total_duration(entries)
         print "Date: {}".format(entries[0].date)
@@ -113,13 +116,13 @@ def report_on_day(file):
             print "%s: %s" % (value, key)
         print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
         print "Including"
-        catagories=["+Bed","+Family","+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+Personal"]
+        catagories=["+Bed","+Family","+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+Personal", "+Project"]
         catagory_time=0
         for cat in catagories:
             print "{}".format(format_report(entries,cat))
             catagory_time+=total_duration(entries,cat)
         print "Total time {}".format(minutes_to_string(big_time,"all"))
-        print "Catagory time {}".format(minutes_to_string(catagory_time,"catagories"))
+        print "Category time {}".format(minutes_to_string(catagory_time,"Categories"))
 
 
 
