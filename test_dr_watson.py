@@ -89,16 +89,7 @@ class watsonTest(TestCase):
 
     def test_bug1(self):
         entry=Entry("###### 13:05: ")
-        self.assertEqual(entry.title,None)
-
-    def test_bug2(self):
-        content=get_content('testinputs/bug2.txt')
-	entries=[]
-        for line in content:
-	 if "###" in line:
-            entries.append(Entry(line))
-	self.assertRaises(ValueError,watson.total_duration, entries)
-
+        self.assertEqual(entry.title,"")
 
 
 if __name__=="__main__":
