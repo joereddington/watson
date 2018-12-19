@@ -5,8 +5,6 @@ import urllib
 import json
 import os
 
-import atom
-import session
 from entry import Entry
 import datetime
 from urllib2 import urlopen, Request

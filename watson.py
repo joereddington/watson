@@ -140,7 +140,7 @@ def minutes_to_string(minutes,slug):
 
 ########## Input ##########
 
-def full_detect(config_file='/config.json'):
+def full_detect():
 
     print "Watson v2.0"
     print "------------------------------"
