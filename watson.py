@@ -94,8 +94,11 @@ def report_on_day(file):
     entries=[]
     content=get_content(file)
     for line in content:
-        if line.startswith("##"):
-            entries.append(Entry(line))
+	try: 
+	    if line.startswith("##"):
+		entries.append(Entry(line))
+	except ValueError:
+		continue
     propagate_dates(entries)
     propagate_endings(entries,15)
     if args.t: #if it must be today...
