@@ -1,29 +1,26 @@
 number_of_days=7
-//email
-//vision
-//jurgen
-//
 
 function prepare_data(slug){
         running_mean[slug] = running_mean[slug].slice(Math.max(running_mean[slug].length - number_of_days, 1))
         running_mean[slug].push((sessions[slug][6] + running_mean[slug][6]) / 2) //to give some idea of where we go from here...
         sessions[slug] = sessions[slug].slice(Math.max(sessions[slug].length - number_of_days, 1))
+}
 
+function get_dic(slug, color){
+return  { type: 'bar', label: slug, backgroundColor: color, data: sessions[slug] }
 }
 
 prepare_data("EQT")
 prepare_data("Family")
 prepare_data("PersonalProject")
-//
+
 sum=[]
-for(var i = 0; i < running_mean["EQT"].length; i++){
+for(var i = 0; i < running_mean["Family"].length; i++){
    sum.push(running_mean["EQT"][i]+running_mean["Family"]);
 }
 
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
         var d = new Date()
-        var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
 	daylabels=[]	
 	for (i=-number_of_days;i<0;i++)
 	{
@@ -32,26 +29,10 @@ for(var i = 0; i < running_mean["EQT"].length; i++){
 
         var barChartData = {
             labels: daylabels,
-
             datasets: [
-	    {
-                    type: 'bar',
-                    label: 'EQT',
-                    backgroundColor: "rgba(0,0,0,0.25)",
-                    data: sessions["EQT"]
-                }, 
-                {
-                    type: 'bar',
-                    label: 'PersonalProjects',
-                    backgroundColor: "rgba(0,0,24,0.35)",
-                    data: sessions["PersonalProject"]
-                },
-                {
-                    type: 'bar',
-                    label: 'Family',
-                    backgroundColor: "rgba(0,0,24,0.35)",
-                    data: sessions["Family"]
-                },
+                 get_dic('PersonalProject',"rgba(0,0,24,0.35)") ,
+                 get_dic('Family',"rgba(0,0,104,0.65)") ,
+                 get_dic('EQT',"rgba(200,0,4,0.65)") ,
  {
                     type: 'line',
                     label: 'Rolling Average',
