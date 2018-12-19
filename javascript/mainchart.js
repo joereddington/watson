@@ -1,36 +1,23 @@
-//refactoring :most of this should be in the individual javascript files
-	number_of_days=7
+number_of_days=7
 //email
-        emailrunning_mean = emailrunning_mean.slice(Math.max(emailrunning_mean.length - number_of_days, 1))
-       emailrunning_mean.push((emailsessions[6] + emailrunning_mean[6]) / 2) //to give some idea of where we go from here...
-      emailsessions = emailsessions.slice(Math.max(emailsessions.length - number_of_days, 1))
 //vision
-        projectsrunning_mean = projectsrunning_mean.slice(Math.max(projectsrunning_mean.length - number_of_days, 1))
-        projectsrunning_mean.push((projectssessions[6] + projectsrunning_mean[6]) / 2) //to give some idea of where we go from here...
-        projectssessions = projectssessions.slice(Math.max(projectssessions.length - number_of_days, 1))
 //jurgen
-        jurgenrunning_mean = jurgenrunning_mean.slice(Math.max(jurgenrunning_mean.length - number_of_days, 1))
-        jurgensessions = jurgensessions.slice(Math.max(jurgensessions.length - number_of_days, 1))
-        jurgenrunning_mean.push((jurgensessions[6] + jurgenrunning_mean[6]) / 2) //to give some idea of where we go from here...
 //
 
+function prepare_data(slug){
+        running_mean[slug] = running_mean[slug].slice(Math.max(running_mean[slug].length - number_of_days, 1))
+        running_mean[slug].push((sessions[slug][6] + running_mean[slug][6]) / 2) //to give some idea of where we go from here...
+        sessions[slug] = sessions[slug].slice(Math.max(sessions[slug].length - number_of_days, 1))
 
-        exerciserunning_mean = exerciserunning_mean.slice(Math.max(exerciserunning_mean.length - number_of_days, 1))
-        exerciserunning_mean.push((exercisesessions[6] + exerciserunning_mean[6]) / 2) //to give some idea of where we go from here...
-        exercisesessions = exercisesessions.slice(Math.max(exercisesessions.length - number_of_days, 1))
-//
-        pacesetterrunning_mean = pacesetterrunning_mean.slice(Math.max(pacesetterrunning_mean.length - number_of_days, 1))
-        pacesetterrunning_mean.push((pacesettersessions[6] + pacesetterrunning_mean[6]) / 2) //to give some idea of where we go from here...
-        pacesettersessions = pacesettersessions.slice(Math.max(pacesettersessions.length - number_of_days, 1))
+}
+
+prepare_data("EQT")
+prepare_data("Family")
+prepare_data("PersonalProject")
 //
 sum=[]
-//console.log("Jlength"+jurgenrunning_mean.length)
-//console.log("Vlength"+running_mean.length)
-for(var i = 0; i < pacesetterrunning_mean.length; i++){
-	//console.log("V:"+running_mean[i]+" J:"+jurgenrunning_mean[i]);
-   //sum.push(jurgenrunning_mean[i] + visionrunning_mean[i]+emailrunning_mean[i]);
-   //sum.push(pacesetterrunning_mean[i]+jurgenrunning_mean[i]+projectsrunning_mean[i]);
-   sum.push(pacesetterrunning_mean[i]+emailrunning_mean[i]+jurgenrunning_mean[i]+exerciserunning_mean[i]+projectsrunning_mean[i]);
+for(var i = 0; i < running_mean["EQT"].length; i++){
+   sum.push(running_mean["EQT"][i]+running_mean["Family"]);
 }
 
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"]
@@ -49,36 +36,22 @@ for(var i = 0; i < pacesetterrunning_mean.length; i++){
             datasets: [
 	    {
                     type: 'bar',
-                    label: 'Unlabeled Work',
+                    label: 'EQT',
                     backgroundColor: "rgba(0,0,0,0.25)",
-                    data: pacesettersessions
+                    data: sessions["EQT"]
                 }, 
                 {
                     type: 'bar',
-                    label: 'Exercise',
+                    label: 'PersonalProjects',
                     backgroundColor: "rgba(0,0,24,0.35)",
-                    data: exercisesessions
+                    data: sessions["PersonalProject"]
                 },
                 {
                     type: 'bar',
-                    label: 'Logged Next Actions Work',
-                    backgroundColor: "rgba(0,0,240,0.35)",
-                    data: jurgensessions
+                    label: 'Family',
+                    backgroundColor: "rgba(0,0,24,0.35)",
+                    data: sessions["Family"]
                 },
-
-                {
-                    type: 'bar',
-                    label: 'Logged Email Work',
-                    backgroundColor: "rgba(240,0,0,0.25)",
-                    data: emailsessions
-                },   {
-                    type: 'bar',
-                    label: 'Logged Project Work',
-                    backgroundColor: "rgba(240,240,0,0.25)",
-                    data: projectssessions
-                },
-
-
  {
                     type: 'line',
                     label: 'Rolling Average',

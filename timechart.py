@@ -1,6 +1,9 @@
 import datetime
 import os
 
+
+
+
 # Running mean/Moving average
 def get_running_mean(l, N):
         sum = 0
@@ -16,26 +19,21 @@ def get_running_mean(l, N):
 
         return result
 
-def graph_out(sessions,slug):
+def create_javascript_file(entries,slug): 
+        entries=[entry for entry in entries if slug in entry.title]
         DAY_COUNT = 26
         total_time = []
         for single_date in (
                 datetime.datetime.today() - datetime.timedelta(days=n)
                 for n in range(DAY_COUNT)):
-                single_date_sessions = [
-                    entry for entry in sessions if (
-                        entry.start.date() == single_date.date())]
-                element = int(
-                              sum(
-                                  [entry.length()
-                                   for entry in single_date_sessions],
-                                  datetime.timedelta()).total_seconds() / 60)
+                single_date_sessions = [ entry for entry in entries if ( entry.date == single_date.date())]
+                element = int( sum( [entry.get_duration() for entry in single_date_sessions]))
                 total_time = [element]+total_time
         running_mean = get_running_mean(total_time, 7)
-        write_to_javascript(total_time,running_mean,slug)
+        write_to_javascript(total_time,running_mean,slug[1:])
 
 def write_to_javascript(total_time,running_mean,slug):
         f = open(os.path.dirname(os.path.abspath(__file__))+"/javascript/"+slug+".js", 'wb')
-        f.write(slug+"sessions=["+",".join(str(x) for x in total_time)+"];\n")
-        f.write(slug+"running_mean=["+",".join(str(x) for x in running_mean)+"]")
+        f.write("sessions[\""+slug+"\"]=["+",".join(str(x) for x in total_time)+"];\n")
+        f.write("running_mean[\""+slug+"\"]=["+",".join(str(x) for x in running_mean)+"]")
         f.close()
