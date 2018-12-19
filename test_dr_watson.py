@@ -86,6 +86,14 @@ class watsonTest(TestCase):
         for line in content:
             entries.append(Entry(line))
 
+    def test_day_selection(self):
+        entries=[]
+        content=get_content('testinputs/test_day_selection.txt')
+        for line in content:
+            entries.append(Entry(line))
+	self.assertEqual(entries[0].isdate("18/12/18"), True)
+	self.assertEqual(entries[1].isdate("19/12/18"), True)
+	self.assertEqual(entries[1].isdate("29/12/18"), False)
 
     def test_bug1(self):
         entry=Entry("###### 13:05: ")

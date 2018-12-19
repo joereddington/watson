@@ -12,6 +12,8 @@ import timechart
 from entry import Entry
 
 
+# Todo: 
+# 1. Should be more resilient to false positives - currently this file has a 'If startswith' to decide if it's an entry and entry must parse, should be that entry checks to see if it's reasonable text, or asks nicely if the entry is well formed.
 
 def get_content(infilename):
         with open(infilename) as f:
@@ -60,7 +62,7 @@ def setup_argument_list():
     "creates and parses the argument list for Watson"
     parser = argparse.ArgumentParser( description="manages Watson")
     parser.add_argument('filename')
-    parser.add_argument('-d', nargs="?" , help="Show only tasks that are at least this many days old")
+    parser.add_argument('-d', nargs="?" , help="Show only entries that are at least this many days old")
     parser.set_defaults(verbatim=False)
     return parser.parse_args()
 
@@ -92,7 +94,7 @@ def report_on_day(file):
     entries=[]
     content=get_content(file)
     for line in content:
-        if "###" in line:
+        if line.startswith("##"):
             entries.append(Entry(line))
     propagate_dates(entries)
     propagate_endings(entries,15)

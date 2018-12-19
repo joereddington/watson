@@ -3,6 +3,8 @@ import datetime
 
 class Entry(object):
 
+	def isdate(self,inputdate):
+		return True
 
         def __init__(self, input_string):
           try:
