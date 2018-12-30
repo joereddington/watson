@@ -11,8 +11,10 @@ return  { type: 'bar', label: slug, backgroundColor: color, data: sessions[slug]
 }
 
 prepare_data("EQT")
+prepare_data("Email")
 prepare_data("Family")
 prepare_data("PersonalProject")
+prepare_data("Exercise")
 
 sum=[]
 for(var i = 0; i < running_mean["Family"].length; i++){
@@ -32,7 +34,9 @@ for(var i = 0; i < running_mean["Family"].length; i++){
             datasets: [
                  get_dic('PersonalProject',"rgba(0,0,24,0.35)") ,
                  get_dic('Family',"rgba(0,0,104,0.65)") ,
-                 get_dic('EQT',"rgba(200,0,4,0.65)") ,
+                 get_dic('EQT',"rgba(0,200,4,0.65)") ,
+                 get_dic('Email',"rgba(200,0,4,0.65)") ,
+                 get_dic('Exercise',"rgba(100,100,4,0.65)") ,
  {
                     type: 'line',
                     label: 'Rolling Average',
