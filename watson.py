@@ -118,7 +118,7 @@ def report_on_day(file):
             print "%s: %s" % (value, key)
         print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
         print "Including"
-        catagories=["+Bed","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
+        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
         catagory_time=0
         for cat in catagories:
 	    timechart.create_javascript_file(entries,cat)
