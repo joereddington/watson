@@ -86,9 +86,6 @@ def output_sessions_as_account(sessions):
         return total_time
 
 
-def days_old(session):
-        delta = datetime.datetime.now() - session.date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
-	return delta.days
 
 def report_on_day(file):
     entries=[]
@@ -102,9 +99,9 @@ def report_on_day(file):
     propagate_dates(entries)
     propagate_endings(entries,15)
     if args.t: #if it must be today...
-	entries=[entry for entry in entries if entry.istoday()]
+	entries=[entry for entry in entries if entry.is_today()]
     if args.d: 
-	entries=[entry for entry in entries if days_old(entry)<int(args.d)] 
+	entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
     if entries:
         big_time=total_duration(entries)
         print "Date: {}".format(entries[0].date)

@@ -3,14 +3,21 @@ import datetime
 
 class Entry(object):
 
-        def istoday(self):
+        def is_today(self):
             if self.date==datetime.datetime.today().date():
                 return True
             else:
                 return False
 
+        def days_old(self):
+            if not self.date: 
+                return 999999
+            else:
+                delta = datetime.date.today() - self.date
+                return delta.days
 
-	def isdate(self,input_string):
+
+	def is_date(self,input_string):
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:
                 testdate = datetime.datetime.strptime(match.group(), '%d/%m/%y').date()
