@@ -3,6 +3,13 @@ import datetime
 
 class Entry(object):
 
+        def istoday(self):
+            if self.date==datetime.datetime.today().date():
+                return True
+            else:
+                return False
+
+
 	def isdate(self,input_string):
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:

@@ -102,7 +102,9 @@ def report_on_day(file):
     propagate_dates(entries)
     propagate_endings(entries,15)
     if args.t: #if it must be today...
-	entries=[entry for entry in entries if entry.date==datetime.datetime.today().date()]
+	entries=[entry for entry in entries if entry.istoday()]
+    if args.d: 
+	entries=[entry for entry in entries if days_old(entry)<int(args.d)] 
     if entries:
         big_time=total_duration(entries)
         print "Date: {}".format(entries[0].date)
