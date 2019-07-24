@@ -79,7 +79,7 @@ class Entry(object):
                 return 0
             #from https://stackoverflow.com/a/3096984/170243
             from datetime import datetime
-            FMT = '%Y-%M-D%H:%M'
+            FMT = '%H:%M'
             tdelta = datetime.strptime(self.end, FMT) - datetime.strptime(self.start, FMT)
             return tdelta.total_seconds()/60 #returns in minutes
 
