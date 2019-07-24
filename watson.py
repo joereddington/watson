@@ -9,6 +9,7 @@ import argparse
 import os
 import json
 import timechart
+import calendar_helper_functions
 from entry import Entry
 
 
@@ -37,6 +38,8 @@ def propagate_endings(entries,max_minutes):
     for entry in reversed(entries):
         if entry.end==None:
             entry.end=laststart
+            print "here" 
+            print entry
             if entry.get_duration()>max_minutes:
                 entry.end=None
         laststart=entry.start
@@ -121,6 +124,7 @@ def report_on_day(file):
         catagory_time=0
         for cat in catagories:
 	    timechart.create_javascript_file(entries,cat)
+            calendar_helper_functions.calendar_output(cat+".ics",entries,cat)
             print "{}".format(format_report(entries,cat))
             catagory_time+=total_duration(entries,cat)
         print "Total time {}".format(minutes_to_string(big_time,"all"))

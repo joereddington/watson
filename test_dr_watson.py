@@ -20,6 +20,10 @@ def get_content(infilename):
 
 class watsonTest(TestCase):
 
+    def test_parse_line_problem(self):
+        entry=Entry("## 24/07/19 11:08,  +EQT")
+        temp=entry.get_duration()
+        self.assertEqual(entry.title,"+EQT")
 
     def test_parse_line(self):
         entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
@@ -89,9 +93,9 @@ class watsonTest(TestCase):
         content=get_content('testinputs/test_day_selection.txt')
         for line in content:
             entries.append(Entry(line))
-	self.assertEqual(entries[0].isdate("18/12/18"), True)
-	self.assertEqual(entries[2].isdate("19/12/18"), True)
-	self.assertEqual(entries[2].isdate("29/12/18"), False)
+	self.assertEqual(entries[0].is_date("18/12/18"), True)
+	self.assertEqual(entries[2].is_date("19/12/18"), True)
+	self.assertEqual(entries[2].is_date("29/12/18"), False)
 
     def test_bug1(self):
         entry=Entry("###### 13:05: ")

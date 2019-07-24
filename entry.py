@@ -64,13 +64,22 @@ class Entry(object):
             print input_string
             raise err
 
+        def start_datetime(self):
+            from datetime import datetime
+            FMT = '%H:%M'
+            return datetime.strptime(str(self.date) + self.start, FMT) 
+            
+        def end_datetime(self):
+            from datetime import datetime
+            FMT = '%Y-%M-D%H:%M'
+            return datetime.strptime(str(self.date) + self.end, FMT) 
 
         def get_duration(self):
             if self.end==None:
                 return 0
             #from https://stackoverflow.com/a/3096984/170243
             from datetime import datetime
-            FMT = '%H:%M'
+            FMT = '%Y-%M-D%H:%M'
             tdelta = datetime.strptime(self.end, FMT) - datetime.strptime(self.start, FMT)
             return tdelta.total_seconds()/60 #returns in minutes
 
