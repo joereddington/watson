@@ -70,8 +70,12 @@ class Entry(object):
             return datetime.strptime(str(self.date) + self.start, FMT) 
             
         def end_datetime(self):
+            print self
+            print "hello"
             from datetime import datetime
             FMT = '%Y-%m-%d%H:%M'
+            print str(self.date)
+            print self.end
             return datetime.strptime(str(self.date) + self.end, FMT) 
 
         def get_duration(self):

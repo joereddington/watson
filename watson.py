@@ -41,7 +41,7 @@ def propagate_endings(entries,max_minutes):
             print "here" 
             print entry
             if entry.get_duration()>max_minutes:
-                entry.end=None
+                entry.end=entry.start
         laststart=entry.start
 
 def total_duration(entries,matchtext=""):
@@ -90,10 +90,9 @@ def output_sessions_as_account(sessions):
 
 
 
-def report_on_day(file):
+def report_on_day(rawcontent):
     entries=[]
-    content=get_content(file)
-    for line in content:
+    for line in rawcontent:
 	try: 
 	    if line.startswith("##"):
 		entries.append(Entry(line))
@@ -127,6 +126,7 @@ def report_on_day(file):
             calendar_helper_functions.calendar_output(cat+".ics",entries,cat)
             print "{}".format(format_report(entries,cat))
             catagory_time+=total_duration(entries,cat)
+        calendar_helper_functions.calendar_output("untagged.ics",get_entries_with_tag(entries,None),None)
         print "Total time {}".format(minutes_to_string(big_time,"all"))
         print "Category time {}".format(minutes_to_string(catagory_time,"Categories"))
 
@@ -153,6 +153,7 @@ def get_entries_with_tag(entries,matchString):
             for entry in entries:
                 if  (matchString in entry.title):
                     return_me.append(entry)
+        print "Returning with {} entires".format(len(return_me))
         return return_me
 
 
@@ -162,5 +163,7 @@ def full_detect():
 
     print "Watson v2.0"
     print "------------------------------"
-    report_on_day(args.filename)
+    content=get_content(args.filename)
+    content=get_content("../todo.txt/historic_notes.md")+get_content("../todo.txt/workspace.md")
+    report_on_day(content)
 
