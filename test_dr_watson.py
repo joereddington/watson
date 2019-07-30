@@ -101,6 +101,9 @@ class watsonTest(TestCase):
         entry=Entry("###### 13:05: ")
         self.assertEqual(entry.title,"")
 
+    def test_get_untagged_entries(self):
+        pass
+
 
 if __name__=="__main__":
     unittest.main()

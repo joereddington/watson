@@ -66,12 +66,12 @@ class Entry(object):
 
         def start_datetime(self):
             from datetime import datetime
-            FMT = '%H:%M'
+            FMT = '%Y-%m-%d%H:%M'
             return datetime.strptime(str(self.date) + self.start, FMT) 
             
         def end_datetime(self):
             from datetime import datetime
-            FMT = '%Y-%M-D%H:%M'
+            FMT = '%Y-%m-%d%H:%M'
             return datetime.strptime(str(self.date) + self.end, FMT) 
 
         def get_duration(self):
