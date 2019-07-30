@@ -102,8 +102,16 @@ class watsonTest(TestCase):
         self.assertEqual(entry.title,"")
 
     def test_get_untagged_entries(self):
-        pass
-
+        entries=[]
+        content=get_content('testinputs/splitontitle.md')
+        for line in content:
+            try: 
+                if line.startswith("##"):
+                    entries.append(Entry(line))
+            except ValueError:
+                    continue
+        tagged=watson.get_entries_with_tag(entries,None)
+	self.assertEqual(len(tagged),12)
 
 if __name__=="__main__":
     unittest.main()

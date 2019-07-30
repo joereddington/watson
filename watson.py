@@ -143,6 +143,18 @@ def minutes_to_string(minutes,slug):
     return "{:>2}:{:0>2} for {}".format(hours,minutes_left,slug)
 
 
+def get_entries_with_tag(entries,matchString):
+        return_me=[]
+        if (matchString==None):
+            for entry in entries:
+                if ("+" not in entry.title):
+                    return_me.append(entry)
+        else:
+            for entry in entries:
+                if  (matchString in entry.title):
+                    return_me.append(entry)
+        return return_me
+
 
 ########## Input ##########
 
