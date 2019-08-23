@@ -16,11 +16,10 @@ __TIME_FORMAT = "%d/%m/%y %H:%M"
 
 max_dist_between_logs = 15  # in minutes TODO these should be arguments for different types of input.
 min_session_size = 15  # in minutes
-config = json.loads(open(os.path.dirname(os.path.abspath(__file__))+'/config.json').read())
 vision_dir = os.path.dirname(os.path.abspath(__file__))+'/../vision/issues/'
 
 pacesetter_file = os.path.dirname(os.path.abspath(__file__))+'/../../pacesetter.md'
-watch_file=config["heart"]
+watch_file = os.path.dirname(os.path.abspath(__file__))+'/../Downloads/Heart Rate.csv'
 
 email_file = os.path.dirname(os.path.abspath(__file__))+'/../../desktop.md'
 
@@ -251,10 +250,12 @@ def make_email_file():
 
 def make_exercise_file():
      TF = "%d-%b-%Y %H:%M"
+     print "here"
      atoms=read_watch_heartrate(watch_file)
      atoms.pop(0) #to get rid of the column titles
      atoms=get_atom_clusters(atoms)
      sessions=get_sessions(atoms,TF)
+     print "here"
      return sessions
 
 
@@ -368,30 +369,14 @@ def make_sleep_file():
 
 
 
+
 def do():
     if args.action == "now":
 	print datetime.datetime.now(pytz.timezone("Europe/London")).strftime("###### "+__TIME_FORMAT) 
 	sys.exit()
     sessions=[]
-    pacesetter_sessions=make_pacesetter_file()
-    jurgen_sessions=make_jurgen_file()
-    email_sessions=make_email_file()
-    projects_sessions=make_projects_file()
     exercise_sessions=make_exercise_file()
     sleep_sessions=make_sleep_file()
-    meeting_sessions=make_meetings_file()
-    sessions.extend(pacesetter_sessions)
-    sessions.extend(jurgen_sessions)
-    sessions.extend(email_sessions)
-    sessions.extend(exercise_sessions)
-    sessions.extend(projects_sessions)
-    sessions.extend(meeting_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/pacesetter.ics",pacesetter_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/meetings.ics",meeting_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/jurgen.ics",jurgen_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/email.ics",email_sessions)
-    calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/projects.ics",projects_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Exercise.ics",exercise_sessions)
     calendar_output(os.path.dirname(os.path.abspath(__file__))+"/calendars/Sleep.ics",exercise_sessions)
     if args.d:
