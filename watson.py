@@ -123,10 +123,10 @@ def report_on_day(rawcontent):
         catagory_time=0
         for cat in catagories:
 	    timechart.create_javascript_file(entries,cat)
-            calendar_helper_functions.calendar_output(cat+".ics",entries,cat)
+            calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
             print "{}".format(format_report(entries,cat))
             catagory_time+=total_duration(entries,cat)
-        calendar_helper_functions.calendar_output("untagged.ics",get_entries_with_tag(entries,None),None)
+        calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",get_entries_with_tag(entries,None),None)
         print "Total time {}".format(minutes_to_string(big_time,"all"))
         print "Category time {}".format(minutes_to_string(catagory_time,"Categories"))
 
