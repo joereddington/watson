@@ -164,6 +164,5 @@ def full_detect():
     print "Watson v2.0"
     print "------------------------------"
     content=get_content(args.filename)
-    content=get_content("../todo.txt/historic_notes.md")+get_content("../todo.txt/workspace.md")
     report_on_day(content)
 
