@@ -1,4 +1,5 @@
 from unittest import TestCase
+import calendar_helper_functions
 import unittest
 import watson
 import urllib
@@ -112,6 +113,31 @@ class watsonTest(TestCase):
                     continue
         tagged=watson.get_entries_with_tag(entries,None)
 	self.assertEqual(len(tagged),12)
+
+    def test_gitlog(self):
+        entries=[]
+        content=get_content('testinputs/gitlog.md')
+        for line in content:
+            try: 
+                if "##" in line:
+                    entries.append(Entry(line))
+            except ValueError:
+                    continue
+        tagged=watson.get_entries_with_tag(entries,None)
+	self.assertEqual(len(tagged),120)
+
+    def test_normalise_for_summer_time(self):
+        entry=Entry("## 15/09/19 06:04 ")
+        result=calendar_helper_functions.normalise_for_summer_time(entry.start_datetime())
+        print entry.start_datetime()
+        print result
+
+        entry=Entry("## 24/11/19 11:08,  +EQT")
+        result=calendar_helper_functions.normalise_for_summer_time(entry.start_datetime())
+        print entry.start_datetime()
+        print result
+        
+
 
 if __name__=="__main__":
     unittest.main()

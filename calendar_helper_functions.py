@@ -1,10 +1,16 @@
 from icalendar import Calendar, Event
+import pytz
+import datetime
+
+def normalise_for_summer_time(dt):
+        bst = pytz.timezone('Europe/London')
+        return  bst.localize(dt).astimezone(pytz.utc)
 
 def calendar_output(filename,entries, matchString=None):
         cal = get_cal()
         for entry in entries:
             if (matchString==None) or (matchString in entry.title):
-                add_event(cal, entry.title, entry.start_datetime(), entry.end_datetime())
+                add_event(cal, entry.title, normalise_for_summer_time(entry.start_datetime()), normalise_for_summer_time(entry.end_datetime()))
         write_cal(filename,cal)
 
 

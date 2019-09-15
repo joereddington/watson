@@ -94,7 +94,7 @@ def report_on_day(rawcontent):
     entries=[]
     for line in rawcontent:
 	try: 
-	    if line.startswith("##"):
+	    if "## " in line:
 		entries.append(Entry(line))
 	except ValueError:
 		continue
