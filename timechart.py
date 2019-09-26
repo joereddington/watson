@@ -20,7 +20,7 @@ def get_running_mean(l, N):
         return result
 
 def create_javascript_file(entries,slug): 
-        entries=[entry for entry in entries if slug in entry.title]
+#        entries=[entry for entry in entries if slug in entry.title]
         DAY_COUNT = 26
         total_time = []
         for single_date in (

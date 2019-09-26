@@ -1,6 +1,7 @@
 number_of_days=7
 
 function prepare_data(slug){
+	console.log(slug)
         running_mean[slug] = running_mean[slug].slice(Math.max(running_mean[slug].length - number_of_days, 1))
         running_mean[slug].push((sessions[slug][6] + running_mean[slug][6]) / 2) //to give some idea of where we go from here...
         sessions[slug] = sessions[slug].slice(Math.max(sessions[slug].length - number_of_days, 1))
@@ -11,11 +12,13 @@ return  { type: 'bar', label: slug, backgroundColor: color, data: sessions[slug]
 }
 
 prepare_data("EQT")
+prepare_data("untagged")
 prepare_data("Email")
 prepare_data("Family")
 prepare_data("PersonalProject")
 prepare_data("Exercise")
 prepare_data("PlanningAndTracking")
+prepare_data("Bed")
 
 sum=[]
 for(var i = 0; i < running_mean["Family"].length; i++){
@@ -38,7 +41,9 @@ for(var i = 0; i < running_mean["Family"].length; i++){
                  get_dic('EQT',"rgba(0,200,4,0.65)") ,
                  get_dic('Email',"rgba(200,0,4,0.65)") ,
                  get_dic('Exercise',"rgba(100,100,4,0.65)") ,
+                 get_dic('Bed',"rgba(100,100,100,0.65)") ,
                  get_dic('PlanningAndTracking',"rgba(0,100,200,0.65)") ,
+                 get_dic('untagged',"rgba(250,250,250,0.65)") ,
  {
                     type: 'line',
                     label: 'Rolling Average',
@@ -86,7 +91,7 @@ for(var i = 0; i < running_mean["Family"].length; i++){
                         xAxes: [{
                             // Change here
 stacked: true,
-                            barPercentage: 0.1
+                            barPercentage: 0.6
                         }]
                     }
                 }

@@ -122,16 +122,18 @@ def report_on_day(rawcontent):
         catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
         catagory_time=0
         for cat in catagories:
-	    timechart.create_javascript_file(entries,cat)
+	    timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
             calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
             print "{}".format(format_report(entries,cat))
             catagory_time+=total_duration(entries,cat)
-        calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",get_entries_with_tag(entries,None),None)
+        untagged=get_entries_with_tag(entries,None)
+        calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",untagged,None)
+        timechart.create_javascript_file(untagged," untagged")#space is necesary
         print "Total time {}".format(minutes_to_string(big_time,"all"))
         print "Category time {}".format(minutes_to_string(catagory_time,"Categories"))
 
 
-
+    
 
 def format_report(entires,slug):
     minutes=total_duration(entires,slug)
@@ -144,6 +146,7 @@ def minutes_to_string(minutes,slug):
 
 
 def get_entries_with_tag(entries,matchString):
+#Should probably make this a filter to look nice. 
         return_me=[]
         if (matchString==None):
             for entry in entries:
