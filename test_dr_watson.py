@@ -16,9 +16,6 @@ def get_content(infilename):
                 content = f.readlines()
         return content
 
-
-
-
 class watsonTest(TestCase):
 
     def test_parse_line_problem(self):
@@ -116,7 +113,7 @@ class watsonTest(TestCase):
 
     def test_gitlog(self):
         entries=[]
-        content=get_content('testinputs/gitlog.md')
+        content=get_content('testinputs/test_diary.md')
         for line in content:
             try: 
                 if "##" in line:
@@ -124,7 +121,7 @@ class watsonTest(TestCase):
             except ValueError:
                     continue
         tagged=watson.get_entries_with_tag(entries,None)
-	self.assertEqual(len(tagged),120)
+	self.assertEqual(len(tagged),222)
 
     def test_normalise_for_summer_time(self):
         entry=Entry("## 15/09/19 06:04 ")
@@ -137,7 +134,17 @@ class watsonTest(TestCase):
         print entry.start_datetime()
         print result
         
-
+    def test_bug(self):
+        entries=[]
+        content=get_content('testinputs/bug.md')
+        for line in content:
+            try: 
+                if "##" in line:
+                    entries.append(Entry(line))
+            except ValueError:
+                    continue
+        calendar_helper_functions.calendar_output("testoutputs/bug.ics",entries)
+        self.assertEqual(3,2)
 
 if __name__=="__main__":
     unittest.main()
