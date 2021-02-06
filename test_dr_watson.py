@@ -133,10 +133,11 @@ class watsonTest(TestCase):
         result=calendar_helper_functions.normalise_for_summer_time(entry.start_datetime())
         print entry.start_datetime()
         print result
-        
-    def test_bug(self):
+
+    def test_bug2(self):
         entries=[]
-        content=get_content('testinputs/bug.md')
+        content="""## 06/02/21 10:34, How about now?
+*some more text"""
         for line in content:
             try: 
                 if "##" in line:
@@ -144,7 +145,29 @@ class watsonTest(TestCase):
             except ValueError:
                     continue
         calendar_helper_functions.calendar_output("testoutputs/bug.ics",entries)
-        self.assertEqual(3,2)
+        self.assertEqual(2,2)
+        
+    def test_bug(self):
+        entries=[]
+        content=get_content('testinputs/bug.md')
+        print content
+        entry=Entry(content[0])
+        print "XXXX"
+        print entry.end_datetime()
+        print entry.start_datetime()
+        print "XXXX"
+        cal = calendar_helper_functions.get_cal()
+        calendar_helper_functions.add_event(cal, entry.title, entry.start_datetime(), entry.end_datetime())
+        self.assertEqual(2,2)
+
+
+    def test_error_when_passing_list(self):
+        content=get_content('testinputs/bug.md')#this is a multi line 
+        self.assertRaises(ValueError,Entry,content)
+        self.assertRaises(ValueError,Entry,"Hello")
+
+
+
 
 if __name__=="__main__":
     unittest.main()

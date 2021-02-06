@@ -34,9 +34,10 @@ def propagate_dates(entries):
 
 
 def propagate_endings(entries,max_minutes):
-    laststart=None
+#This doesn't deal with the last entry! TODO  
+    laststart=entries[-1].start #it must have a value - the last entry is often only half. 
     for entry in reversed(entries):
-        if entry.end==None:
+        if entry.end==entry.start:
             entry.end=laststart
             print "here" 
             print entry

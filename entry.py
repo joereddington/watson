@@ -31,8 +31,14 @@ class Entry(object):
 
 
         def __init__(self, input_string):
+          import types
+          if isinstance(input_string, basestring):
+            pass
+          else: 
+            raise ValueError("Input to constructor wasn't a string") 
           try:
             self.input_string=input_string
+            print(input_string)
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:
                 self.date = datetime.datetime.strptime(match.group(), '%d/%m/%y').date()
@@ -48,9 +54,9 @@ class Entry(object):
                 match = re.search(r'(?P<start>\d{2}:\d{2})', input_string)
                 if match:
                     self.start = match.group('start')
-		else:
-		   raise ValueError("No Start value found on: {}".format(input_string))
-                self.end=None
+                    self.end = self.start
+                else:
+                   raise ValueError("No Start value found on: {}".format(input_string))
             match = re.search(r',\s*(?P<title>.*)', input_string)
             self.title=None
             if match:
@@ -70,17 +76,13 @@ class Entry(object):
             return datetime.strptime(str(self.date) + self.start, FMT) 
             
         def end_datetime(self):
-            print self
-            print "hello"
+            if self.end==None:
+                self.end=self.start
             from datetime import datetime
             FMT = '%Y-%m-%d%H:%M'
-            print str(self.date)
-            print self.end
             return datetime.strptime(str(self.date) + self.end, FMT) 
 
         def get_duration(self):
-            if self.end==None:
-                return 0
             #from https://stackoverflow.com/a/3096984/170243
             from datetime import datetime
             FMT = '%H:%M'
