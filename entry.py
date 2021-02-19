@@ -70,6 +70,19 @@ class Entry(object):
             print(input_string)
             raise err
 
+        def start_epoch(self):
+            time=self.start_datetime()
+            epoch = time.timestamp()
+            return epoch
+
+
+
+
+        def end_epoch(self):
+            time=self.end_datetime()
+            epoch = time.timestamp()
+            return epoch
+
         def start_datetime(self):
             from datetime import datetime
             FMT = '%Y-%m-%d%H:%M'

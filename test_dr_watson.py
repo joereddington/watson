@@ -155,11 +155,15 @@ class watsonTest(TestCase):
         self.assertRaises(ValueError,Entry,content)
         self.assertRaises(ValueError,Entry,"Hello")
 
+    def test_epoch_ouput(self):
+        entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
+        self.assertEqual(entry.start_epoch(),1535324460)
+        self.assertEqual(entry.end_epoch(),1535352780)
 
     def test_command_history(self):
-        entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
+        entry=Entry("## 19/02/21 11:00 to 12:00, working on this code")
         c_list=command_list.main(entry)
-        self.assertEqual(len(c_list),10) 
+        self.assertEqual(len(c_list),25) 
 
 if __name__=="__main__":
     unittest.main()
