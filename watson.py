@@ -39,8 +39,7 @@ def propagate_endings(entries,max_minutes):
     for entry in reversed(entries):
         if entry.end==entry.start:
             entry.end=laststart
-            print "here" 
-            print entry
+            print(entry)
             if entry.get_duration()>max_minutes:
                 entry.end=entry.start
         laststart=entry.start
@@ -82,11 +81,11 @@ def output_sessions_as_account(sessions):
             else:
                projects[session.project]=session.length()
 
-        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
-            print "%s: %s" % (value, key)
+        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
+            print("%s: %s" % (value, key))
 
 
-        print "Total project time".ljust(45)+str(total_time)
+        print("Total project time".ljust(45)+str(total_time))
         return total_time
 
 
@@ -94,44 +93,44 @@ def output_sessions_as_account(sessions):
 def report_on_day(rawcontent):
     entries=[]
     for line in rawcontent:
-	try: 
-	    if "## " in line:
-		entries.append(Entry(line))
-	except ValueError:
-		continue
+        try: 
+            if "## " in line:
+                entries.append(Entry(line))
+        except ValueError:
+            continue
     propagate_dates(entries)
     propagate_endings(entries,15)
     if args.t: #if it must be today...
-	entries=[entry for entry in entries if entry.is_today()]
+        entries=[entry for entry in entries if entry.is_today()]
     if args.d: 
-	entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
+        entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
     if entries:
         big_time=total_duration(entries)
-        print "Date: {}".format(entries[0].date)
-        print ""
-        print "# Ordered list of topics"
+        print("Date: {}".format(entries[0].date))
+        print("")
+        print("# Ordered list of topics")
         projects={}
         for entry in entries:
             if entry.title in projects:
                projects[entry.title]+=entry.get_duration()
             else:
                projects[entry.title]=entry.get_duration()
-        for key, value in sorted(projects.iteritems(), key=lambda (k,v): (v,k)):
-            print "%s: %s" % (value, key)
-        print "Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60))
-        print "Including"
+        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
+            print("%s: %s" % (value, key))
+        print("Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60)))
+        print("Including")
         catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
         catagory_time=0
         for cat in catagories:
-	    timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
+            timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
             calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
-            print "{}".format(format_report(entries,cat))
+            print("{}".format(format_report(entries,cat)))
             catagory_time+=total_duration(entries,cat)
         untagged=get_entries_with_tag(entries,None)
         calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",untagged,None)
         timechart.create_javascript_file(untagged," untagged")#space is necesary
-        print "Total time {}".format(minutes_to_string(big_time,"all"))
-        print "Category time {}".format(minutes_to_string(catagory_time,"Categories"))
+        print("Total time {}".format(minutes_to_string(big_time,"all")))
+        print("Category time {}".format(minutes_to_string(catagory_time,"Categories")))
 
 
     
@@ -157,7 +156,7 @@ def get_entries_with_tag(entries,matchString):
             for entry in entries:
                 if  (matchString in entry.title):
                     return_me.append(entry)
-        print "Returning with {} entires".format(len(return_me))
+        print("Returning with {} entires".format(len(return_me)))
         return return_me
 
 
@@ -165,8 +164,8 @@ def get_entries_with_tag(entries,matchString):
 
 def full_detect():
 
-    print "Watson v2.0"
-    print "------------------------------"
+    print("Watson v2.0")
+    print("------------------------------")
     content=get_content(args.filename)
     report_on_day(content)
 

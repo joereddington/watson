@@ -17,22 +17,22 @@ class Entry(object):
                 return delta.days
 
 
-	def is_date(self,input_string):
+        def is_date(self,input_string):
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:
                 testdate = datetime.datetime.strptime(match.group(), '%d/%m/%y').date()
-		if testdate==self.date:
-			return True
-		else:
-			return False
+                if testdate==self.date:
+                    return True
+                else:
+                    return False
             else:
                 raise ValueException("Date string is badly formed") 
-	    return False #should never be here
+            return False #should never be here
 
 
         def __init__(self, input_string):
           import types
-          if isinstance(input_string, basestring):
+          if isinstance(input_string, str):
             pass
           else: 
             raise ValueError("Input to constructor wasn't a string") 
@@ -62,12 +62,12 @@ class Entry(object):
             if match:
                 self.title =match.group("title").strip()
             if self.title==None:
-                print "Warning: NO title for {}".format(self)
+                print("Warning: NO title for {}".format(self))
                 self.title=""
 
           except AttributeError as err:
-            print "Exception! On this line:"
-            print input_string
+            print("Exception! On this line:")
+            print(input_string)
             raise err
 
         def start_datetime(self):

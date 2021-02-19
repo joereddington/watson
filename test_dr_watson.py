@@ -3,13 +3,11 @@ import calendar_helper_functions
 import unittest
 import watson
 import command_list
-import urllib
 import json
 import os
 
 from entry import Entry
 import datetime
-from urllib2 import urlopen, Request
 
 
 def get_content(infilename):
@@ -60,7 +58,7 @@ class watsonTest(TestCase):
             entries.append(Entry(line))
         watson.propagate_endings(entries,15)
         for entry in entries:
-            print "{}: {}".format(entry.end,entry.input_string.strip())
+            print("{}: {}".format(entry.end,entry.input_string.strip()))
         self.assertEqual(entries[2].end,"08:15")
 
     def test_parse_line_batch(self):
@@ -92,9 +90,9 @@ class watsonTest(TestCase):
         content=get_content('testinputs/test_day_selection.txt')
         for line in content:
             entries.append(Entry(line))
-	self.assertEqual(entries[0].is_date("18/12/18"), True)
-	self.assertEqual(entries[2].is_date("19/12/18"), True)
-	self.assertEqual(entries[2].is_date("29/12/18"), False)
+        self.assertEqual(entries[0].is_date("18/12/18"), True)
+        self.assertEqual(entries[2].is_date("19/12/18"), True)
+        self.assertEqual(entries[2].is_date("29/12/18"), False)
 
     def test_bug1(self):
         entry=Entry("###### 13:05: ")
@@ -110,7 +108,7 @@ class watsonTest(TestCase):
             except ValueError:
                     continue
         tagged=watson.get_entries_with_tag(entries,None)
-	self.assertEqual(len(tagged),12)
+        self.assertEqual(len(tagged),12)
 
     def test_gitlog(self):
         entries=[]
@@ -122,18 +120,13 @@ class watsonTest(TestCase):
             except ValueError:
                     continue
         tagged=watson.get_entries_with_tag(entries,None)
-	self.assertEqual(len(tagged),222)
+        self.assertEqual(len(tagged),222)
 
     def test_normalise_for_summer_time(self):
         entry=Entry("## 15/09/19 06:04 ")
         result=calendar_helper_functions.normalise_for_summer_time(entry.start_datetime())
-        print entry.start_datetime()
-        print result
-
         entry=Entry("## 24/11/19 11:08,  +EQT")
         result=calendar_helper_functions.normalise_for_summer_time(entry.start_datetime())
-        print entry.start_datetime()
-        print result
 
     def test_bug2(self):
         entries=[]
@@ -151,12 +144,7 @@ class watsonTest(TestCase):
     def test_bug(self):
         entries=[]
         content=get_content('testinputs/bug.md')
-        print content
         entry=Entry(content[0])
-        print "XXXX"
-        print entry.end_datetime()
-        print entry.start_datetime()
-        print "XXXX"
         cal = calendar_helper_functions.get_cal()
         calendar_helper_functions.add_event(cal, entry.title, entry.start_datetime(), entry.end_datetime())
         self.assertEqual(2,2)
@@ -168,7 +156,7 @@ class watsonTest(TestCase):
         self.assertRaises(ValueError,Entry,"Hello")
 
 
-    def test_parse_line(self):
+    def test_command_history(self):
         entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
         c_list=command_list.main(entry)
         self.assertEqual(len(c_list),10) 
