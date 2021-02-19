@@ -2,6 +2,7 @@ from unittest import TestCase
 import calendar_helper_functions
 import unittest
 import watson
+import command_list
 import urllib
 import json
 import os
@@ -167,7 +168,10 @@ class watsonTest(TestCase):
         self.assertRaises(ValueError,Entry,"Hello")
 
 
-
+    def test_parse_line(self):
+        entry=Entry("###### 27/08/18 00:01 to 07:53, +Sleep")
+        c_list=command_list.main(entry)
+        self.assertEqual(len(c_list),10) 
 
 if __name__=="__main__":
     unittest.main()
