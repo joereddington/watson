@@ -38,7 +38,6 @@ class Entry(object):
             raise ValueError("Input to constructor wasn't a string") 
           try:
             self.input_string=input_string
-            print(input_string)
             match = re.search(r'\d{2}/\d{2}/\d{2}', input_string)
             if match:
                 self.date = datetime.datetime.strptime(match.group(), '%d/%m/%y').date()

@@ -1,5 +1,6 @@
 from entry import Entry
 import time
+import sys
 from pathlib import Path
 
 __TIME_FORMAT = "%d/%m/%y %H:%M"
@@ -8,7 +9,7 @@ def main(entry):
     begin=entry.start_epoch()
     end=entry.end_epoch()
     home = str(Path.home())
-    start_printing=False
+    start_output=False
     timestamp=""
     command=""
     return_me=[]
@@ -18,16 +19,20 @@ def main(entry):
                 #get the number 
                 number=int(line[1:]) 
                 if number>begin:
-                    start_printing=True
+                    start_output=True
                 if number>end:
                     return return_me
                 timestamp=time.strftime(__TIME_FORMAT, time.localtime(number))
             else:
                 if len(line)>1:
                     command=line.strip()
-                if start_printing:
+                if start_output:
                     string="{}, {}".format(timestamp,command)
-                    print(string)
                     return_me.append(string)
 
     return return_me
+
+if __name__ == "__main__":
+    commands=main(Entry(sys.argv[1]))
+    for command in commands:
+        print(command)
