@@ -100,37 +100,37 @@ def report_on_day(rawcontent):
             continue
     propagate_dates(entries)
     propagate_endings(entries,15)
-    if args.t: #if it must be today...
-        entries=[entry for entry in entries if entry.is_today()]
-    if args.d: 
-        entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
+#    if args.t: #if it must be today...
+#        entries=[entry for entry in entries if entry.is_today()]
+#    if args.d: 
+#        entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
     if entries:
         big_time=total_duration(entries)
         print("Date: {}".format(entries[0].date))
         print("")
         print("# Ordered list of topics")
-        projects={}
-        for entry in entries:
-            if entry.title in projects:
-               projects[entry.title]+=entry.get_duration()
-            else:
-               projects[entry.title]=entry.get_duration()
-        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
-            print("%s: %s" % (value, key))
+#        projects={}
+#        for entry in entries:
+#            if entry.title in projects:
+#               projects[entry.title]+=entry.get_duration()
+#            else:
+#               projects[entry.title]=entry.get_duration()
+#        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
+#            print("%s: %s" % (value, key))
         print("Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60)))
         print("Including")
-        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
-        catagory_time=0
-        for cat in catagories:
-            timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
-            calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
-            print("{}".format(format_report(entries,cat)))
-            catagory_time+=total_duration(entries,cat)
-        untagged=get_entries_with_tag(entries,None)
-        calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",untagged,None)
-        timechart.create_javascript_file(untagged," untagged")#space is necesary
+#        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
+#        catagory_time=0
+#        for cat in catagories:
+#            timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
+#            calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
+#            print("{}".format(format_report(entries,cat)))
+#            catagory_time+=total_duration(entries,cat)
+#        untagged=get_entries_with_tag(entries,None)
+        calendar_helper_functions.calendar_output("calendars/"+"all.ics",entries,None)
+#        timechart.create_javascript_file(untagged," untagged")#space is necesary
         print("Total time {}".format(minutes_to_string(big_time,"all")))
-        print("Category time {}".format(minutes_to_string(catagory_time,"Categories")))
+    #    print("Category time {}".format(minutes_to_string(catagory_time,"Categories")))
 
 
     

@@ -160,10 +160,34 @@ class watsonTest(TestCase):
         self.assertEqual(entry.start_epoch(),1535324460)
         self.assertEqual(entry.end_epoch(),1535352780)
 
-    def test_command_history(self):
+    def laptop_test_command_history(self):
         entry=Entry("## 19/02/21 11:00 to 12:00, working on this code")
         c_list=command_list.main(entry)
         self.assertEqual(len(c_list),25) 
+
+    def test_big_diary2(self):
+        content=get_content('testinputs/diary.md')
+        watson.report_on_day(content)
+        
+
+
+    def test_big_diary(self):
+        entries=[]
+        content=get_content('testinputs/diary.md')
+        for line in content:
+            try: 
+                if "##" in line:
+                    entries.append(Entry(line))
+            except ValueError:
+                    continue
+        entry=entries[0]
+        cal = calendar_helper_functions.get_cal()
+        calendar_helper_functions.add_event(cal, entry.title, entry.start_datetime(), entry.end_datetime())
+        self.assertEqual(2,2)
+
+
+
+
 
 if __name__=="__main__":
     unittest.main()
