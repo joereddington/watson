@@ -5,10 +5,12 @@ import sys
 from pathlib import Path
 
 __TIME_FORMAT = "%d/%m/%y %H:%M"
+summer="3600"  #This is the summer time hack
+#summer="0"  
 
 def get_history_from_database(filename, start, end):
     cursor = sqlite3.connect(filename).cursor()
-    cursor.execute('''SELECT datetime(moz_historyvisits.visit_date/1000000,'unixepoch'), moz_places.url, title , visit_date FROM moz_places, moz_historyvisits WHERE moz_places.id = moz_historyvisits.place_id and visit_date>{} and visit_date<{}'''.format(start,end))
+    cursor.execute('''SELECT datetime((moz_historyvisits.visit_date/1000000)+'''+summer+''','unixepoch'), moz_places.url, title , visit_date FROM moz_places, moz_historyvisits WHERE moz_places.id = moz_historyvisits.place_id and visit_date>{} and visit_date<{}'''.format(start,end))
     return cursor.fetchall()
 
 
