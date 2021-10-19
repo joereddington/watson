@@ -71,69 +71,16 @@ def setup_argument_list():
     return parser.parse_args()
 
 
-def output_sessions_as_account(sessions):
-        total_time = sum([entry.length()
-                          for entry in sessions], datetime.timedelta())
-        projects = {}
-        for session in sessions:
-            if session.project in projects:
-               projects[session.project]+=session.length()
-            else:
-               projects[session.project]=session.length()
-
-        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
-            print("%s: %s" % (value, key))
-
-
-        print("Total project time".ljust(45)+str(total_time))
-        return total_time
 
 
 
 def report_on_day(rawcontent):
-    entries=[]
-    for line in rawcontent:
-        try: 
-            if "## " in line:
-                entries.append(Entry(line))
-        except ValueError:
-            continue
+    entries=[Entry(line) for line in rawcontent if "## " in line]
     propagate_dates(entries)
     propagate_endings(entries,15)
-    if args.t: #if it must be today...
-        entries=[entry for entry in entries if entry.is_today()]
-    if args.d: 
-        entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
     if entries:
-        big_time=total_duration(entries)
-        print("Date: {}".format(entries[0].date))
-        print("")
-        print("# Ordered list of topics")
-        projects={}
-        for entry in entries:
-            if entry.title in projects:
-               projects[entry.title]+=entry.get_duration()
-            else:
-               projects[entry.title]=entry.get_duration()
-        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
-            print("%s: %s" % (value, key))
-        print("Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60)))
-        print("Including")
-        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
-        catagory_time=0
-        for cat in catagories:
-            timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
-            calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
-            print("{}".format(format_report(entries,cat)))
-            catagory_time+=total_duration(entries,cat)
-        untagged=get_entries_with_tag(entries,None)
-        calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",untagged,None)
-        timechart.create_javascript_file(untagged," untagged")#space is necesary
-        print("Total time {}".format(minutes_to_string(big_time,"all")))
-        print("Category time {}".format(minutes_to_string(catagory_time,"Categories")))
-
-
-    
+        print("Total time {}".format(minutes_to_string(total_duration(entries),"all")))
+        print("Total time {}".format(minutes_to_string(total_duration(entries,"+EQT"),"EQT")))
 
 def format_report(entires,slug):
     minutes=total_duration(entires,slug)
@@ -164,8 +111,6 @@ def get_entries_with_tag(entries,matchString):
 
 def full_detect():
 
-    print("Watson v2.0")
-    print("------------------------------")
-    content=get_content(args.filename)
+    content=get_content("/Users/joereddingtonfileless/git/inbox.md")
     report_on_day(content)
 
