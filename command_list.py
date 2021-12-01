@@ -36,3 +36,5 @@ if __name__ == "__main__":
     commands=main(Entry(sys.argv[1]))
     for command in commands:
         print(command)
+    if len(commands)==0:
+        print("No Commands found")
