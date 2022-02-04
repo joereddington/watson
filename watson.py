@@ -45,7 +45,7 @@ def minutes_to_string(minutes):
 
 
 def full_detect():
-    content=get_content("/Users/joereddingtonfileless/git/inbox.md")
+    content=get_content("/Users/joe2021/git/inbox.md")
     report_on_day(content)
 
 full_detect()
