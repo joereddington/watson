@@ -30,12 +30,32 @@ def total_duration(entries,matchtext=""):
             running_total+=entry.get_duration()
     return running_total
 
+
 def report_on_day(rawcontent):
+    # Here's what what I want. 
+    # Total time on calendar 
+    # EQT time on calendar 
+    # Time left to reach eight hours 
+    # Time left before 5pm. 
     entries=[Entry(line) for line in rawcontent if "## " in line]
     propagate_dates(entries)
     propagate_endings(entries,15)
-    print("Total time {}".format(minutes_to_string(total_duration(entries))))
-    print("EQT time {}".format(minutes_to_string(total_duration(entries,"+EQT"))))
+    # Total time on calendar 
+    print("Total time      {}".format(minutes_to_string(total_duration(entries))))
+    # EQT time on calendar 
+    print("EQT time        {}".format(minutes_to_string(total_duration(entries,"+EQT"))))
+    # Time left to work 
+    print("Left to do      {}".format(minutes_to_string(60*8-total_duration(entries,"+EQT"))))
+    # Time left before 5pm. 
+    import datetime 
+    now = datetime.datetime.now()
+    fivepm = datetime.time(hour=17,minute=0)
+    fivepm =datetime.datetime.combine(now,fivepm)
+    timeleft=fivepm-now 
+    minutesleft=timeleft.seconds/60 
+    print("Time until 5pm  {}".format(minutes_to_string(minutesleft)))
+    
+
 
 
 def minutes_to_string(minutes):
