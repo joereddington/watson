@@ -49,11 +49,11 @@ def report_on_day(rawcontent):
     # Time left before 5pm. 
     import datetime 
     now = datetime.datetime.now()
-    fivepm = datetime.time(hour=17,minute=0)
-    fivepm =datetime.datetime.combine(now,fivepm)
-    timeleft=fivepm-now 
+    endtime = datetime.time(hour=16,minute=10)
+    endtime =datetime.datetime.combine(now,endtime)
+    timeleft=endtime-now 
     minutesleft=timeleft.seconds/60 
-    print("Time until 5pm  {}".format(minutes_to_string(minutesleft)))
+    print("Time until 4.10 {}".format(minutes_to_string(minutesleft)))
     
 
 
@@ -65,7 +65,7 @@ def minutes_to_string(minutes):
 
 
 def full_detect():
-    content=get_content("/Users/joe2021/git/inbox.md")
+    content=get_content("/Users/joe/git/inbox.md")
     report_on_day(content)
 
 full_detect()

@@ -13,7 +13,7 @@ def main(entry):
     timestamp=""
     command=""
     return_me=[]
-    with open(home+'/.bash_history') as f:
+    with open(home+'/.bash_history' , 'rt', encoding='latin1') as f: # the encoding fixed a unicdoe error 
         for line in f:
             if '#' in line[:1]:
                 #get the number 
@@ -29,10 +29,16 @@ def main(entry):
                 if start_output:
                     string="{}, {}".format(timestamp,command)
                     return_me.append(string)
-
     return return_me
 
+import locale
 if __name__ == "__main__":
+    print("The entry was {}".format(sys.argv[1]))
+    print(locale.getpreferredencoding(False))
+    print()
+    print()
+    print()
+    print()
     commands=main(Entry(sys.argv[1]))
     for command in commands:
         print(command)
