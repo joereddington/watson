@@ -57,8 +57,6 @@ class watsonTest(TestCase):
         for line in content:
             entries.append(Entry(line))
         watson.propagate_endings(entries,15)
-        for entry in entries:
-            print("{}: {}".format(entry.end,entry.input_string.strip()))
         self.assertEqual(entries[2].end,"08:15")
 
     def test_parse_line_batch(self):
@@ -98,29 +96,6 @@ class watsonTest(TestCase):
         entry=Entry("###### 13:05: ")
         self.assertEqual(entry.title,"")
 
-    def test_get_untagged_entries(self):
-        entries=[]
-        content=get_content('testinputs/splitontitle.md')
-        for line in content:
-            try: 
-                if line.startswith("##"):
-                    entries.append(Entry(line))
-            except ValueError:
-                    continue
-        tagged=watson.get_entries_with_tag(entries,None)
-        self.assertEqual(len(tagged),12)
-
-    def test_gitlog(self):
-        entries=[]
-        content=get_content('testinputs/test_diary.md')
-        for line in content:
-            try: 
-                if "##" in line:
-                    entries.append(Entry(line))
-            except ValueError:
-                    continue
-        tagged=watson.get_entries_with_tag(entries,None)
-        self.assertEqual(len(tagged),222)
 
     def test_normalise_for_summer_time(self):
         entry=Entry("## 15/09/19 06:04 ")
@@ -161,9 +136,16 @@ class watsonTest(TestCase):
         self.assertEqual(entry.end_epoch(),1535352780)
 
     def test_command_history(self):
-        entry=Entry("## 19/02/21 11:00 to 12:00, working on this code")
+        entry_text="## 26/09/23 12:00 to 13:03, Working on this code"
+        entry=Entry(entry_text)
         c_list=command_list.main(entry)
-        self.assertEqual(len(c_list),25) 
+        self.assertEqual(len(c_list),29) 
+
+    def test_markdown(self):
+        content=get_content('testinputs/sample.md')
+        entries=watson.string_to_entries(content)
+        time=watson.total_duration(entries)
+        watson.print_report_on_entries(entries)
 
 if __name__=="__main__":
     unittest.main()

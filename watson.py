@@ -1,71 +1,85 @@
 #!/usr/bin/python
+
+import datetime
+import re
 from entry import Entry
 
+# Constants
+HOURS_IN_DAY = 8
+END_HOUR = 16
+END_MINUTE = 10
+MAX_DURATION = 15
+
 def get_content(infilename):
-        with open(infilename) as f:
-                content = f.readlines()
-        return content
+    """Read the content of a file and return it."""
+    with open(infilename) as f:
+        return f.readlines()
 
 def propagate_dates(entries):
-    current_date=None
+    """Ensure each entry has an associated date."""
+    current_date = None
     for entry in entries:
-        if entry.date!=None:
-            current_date=entry.date
-        entry.date=current_date
+        if entry.date:
+            current_date = entry.date
+        entry.date = current_date
 
-def propagate_endings(entries,max_minutes):
-#This doesn't deal with the last entry! TODO  
-    laststart=entries[-1].start #it must have a value - the last entry is often only half. 
+def propagate_endings(entries, max_minutes):
+    """Propagate end times for entries."""
+    laststart = entries[-1].start
     for entry in reversed(entries):
-        if entry.end==entry.start:
-            entry.end=laststart
-            if entry.get_duration()>max_minutes:
-                entry.end=entry.start
-        laststart=entry.start
+        if entry.end == entry.start:
+            entry.end = laststart
+            if entry.get_duration() > max_minutes:
+                entry.end = entry.start
+        laststart = entry.start
 
-def total_duration(entries,matchtext=""):
-    running_total=0
-    for entry in entries:
-        if matchtext in entry.title:
-            running_total+=entry.get_duration()
-    return running_total
+def total_duration(entries, matchtext=""):
+    """Compute total duration for entries matching a given text."""
+    return sum(entry.get_duration() for entry in entries if matchtext in entry.title)
 
+def minutes_to_string(minutes):
+    """Convert minutes to a formatted string."""
+    hours, minutes_left = divmod(minutes, 60)
+    return "{:>2}:{:0>2}".format(int(hours), int(minutes_left))
 
-def report_on_day(rawcontent):
-    # Here's what what I want. 
-    # Total time on calendar 
-    # EQT time on calendar 
-    # Time left to reach eight hours 
-    # Time left before 5pm. 
-    entries=[Entry(line) for line in rawcontent if "## " in line]
+def string_to_entries(rawcontent):
+    """Generate and print the day's report."""
+    pattern = r'^## \d{2}/\d{2}/\d{2} \d{2}:\d{2}'
+    entries = [Entry(line) for line in rawcontent if re.match(pattern, line)]
+
     propagate_dates(entries)
-    propagate_endings(entries,15)
-    # Total time on calendar 
-    print("Total time      {}".format(minutes_to_string(total_duration(entries))))
-    # EQT time on calendar 
-    print("EQT time        {}".format(minutes_to_string(total_duration(entries,"+EQT"))))
-    # Time left to work 
-    print("Left to do      {}".format(minutes_to_string(60*8-total_duration(entries,"+EQT"))))
-    # Time left before 5pm. 
-    import datetime 
+    propagate_endings(entries, MAX_DURATION)
+    return entries
+
+def print_line(start,entries,tag=""):
+    entries=[entry for entry in entries if tag in entry.title]
+    print("{}{}".format(start,minutes_to_string(total_duration(entries))))
+
+
+def print_report_on_entries(entries):
+    print_line ("Total time       ",entries)
+    print_line ("EQT time         ",entries,"+EQT")
+    print_line ("With URL         ",entries,"http")
+    print("Left to do       {}".format(minutes_to_string(60 * HOURS_IN_DAY - total_duration(entries, "+EQT"))))
+   
     now = datetime.datetime.now()
-    endtime = datetime.time(hour=16,minute=10)
-    endtime =datetime.datetime.combine(now,endtime)
-    timeleft=endtime-now 
-    minutesleft=timeleft.seconds/60 
-    print("Time until 4.10 {}".format(minutes_to_string(minutesleft)))
+    endtime = datetime.datetime.combine(now, datetime.time(hour=END_HOUR, minute=END_MINUTE))
+    minutesleft = (endtime - now).seconds / 60
+    print("Time until {}.{} {}".format(END_HOUR, END_MINUTE, minutes_to_string(minutesleft)))
+
+def full_detect(filename):
+    """Main function to generate the report from a given file."""
+    content = get_content(filename)
+    entries=string_to_entries(content)
+    print_report_on_entries(entries) 
+
+if __name__ == "__main__":
+    content = get_content("/home/joe/git/diary/inbox.md")
+    entries=string_to_entries(content)
+    content = get_content("/home/joe/git/diary/index.md")
+    entries.extend(string_to_entries(content))
+    entries=[X for X in entries if X.is_today()]
+    print_report_on_entries(entries)
     
 
 
-
-def minutes_to_string(minutes):
-    hours=int(minutes/60)
-    minutes_left=int(minutes%60)
-    return "{:>2}:{:0>2}".format(hours,minutes_left)
-
-
-def full_detect():
-    content=get_content("/home/joe/git/inbox.md")
-    report_on_day(content)
-
-full_detect()

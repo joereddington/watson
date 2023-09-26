@@ -61,7 +61,7 @@ class Entry(object):
             if match:
                 self.title =match.group("title").strip()
             if self.title==None:
-                print("Warning: NO title for {}".format(self))
+                print("Warning: NO title for {}".format(self)) #TODO - make it a logging thing 
                 self.title=""
 
           except AttributeError as err:
