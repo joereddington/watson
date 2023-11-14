@@ -73,13 +73,17 @@ def full_detect(filename):
     entries=string_to_entries(content)
     print_report_on_entries(entries) 
 
+
+def report(entries,daysold=1):
+    entries=[X for X in entries if X.days_old()<daysold]
+    print_report_on_entries(entries)
+
 if __name__ == "__main__":
     content = get_content("/home/joe/git/diary/inbox.md")
     entries=string_to_entries(content)
     content = get_content("/home/joe/git/diary/index.md")
     entries.extend(string_to_entries(content))
-    entries=[X for X in entries if X.is_today()]
-    print_report_on_entries(entries)
-    
-
-
+    print("Today")
+    report(entries)
+    print("Last seven days")
+    report(entries,7)
