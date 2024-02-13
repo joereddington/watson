@@ -57,10 +57,13 @@ def print_line(start,entries,tag=""):
 
 
 def print_report_on_entries(entries):
-    print_line ("Total time       ",entries)
-    print_line ("EQT time         ",entries,"+EQT")
-    print_line ("With URL         ",entries,"http")
-    print("Left to do       {}".format(minutes_to_string(60 * HOURS_IN_DAY - total_duration(entries, "+EQT"))))
+    print_line ("Total time        ",entries)
+    print_line ("EQT time          ",entries,"+EQT")
+    print_line ("RHUL time         ",entries,"+RHUL")
+    print_line ("TODO time         ",entries,"+TODO")
+    print_line ("BOOK time         ",entries,"+BOOK")
+    print_line ("With URL          ",entries,"http")
+    print("+EQT Left to do       {}".format(minutes_to_string(60 * HOURS_IN_DAY - total_duration(entries, "+EQT"))))
    
     now = datetime.datetime.now()
     endtime = datetime.datetime.combine(now, datetime.time(hour=END_HOUR, minute=END_MINUTE))
