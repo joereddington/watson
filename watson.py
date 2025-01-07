@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import datetime
+import json
+from collections import defaultdict
 import re
 from entry import Entry
 
@@ -81,11 +83,39 @@ def report(entries,daysold=1):
     entries=[X for X in entries if X.days_old()<daysold]
     print_report_on_entries(entries)
 
+
+def export_to_json(entries,daysold=1):
+    entries=[X for X in entries if X.days_old()<daysold]
+    daily_data = defaultdict(lambda: defaultdict(float))  # Nested dictionary
+
+    for entry in entries:
+        if entry.date:
+            day_str = entry.date.strftime("%Y-%m-%d")
+            daily_data[day_str][entry.title] += entry.get_duration() / 60  # Convert to hours
+
+    # Find the full date range
+    all_dates = sorted(daily_data.keys())
+    start_date = datetime.datetime.strptime(all_dates[0], "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(all_dates[-1], "%Y-%m-%d")
+    date_range = [(start_date + datetime.timedelta(days=i)).strftime("%Y-%m-%d") 
+                  for i in range((end_date - start_date).days + 1)]
+
+    # Fill in missing dates with empty periods
+    data = []
+    for date in date_range:
+        periods = [{"label": label, "hours": hours} for label, hours in daily_data[date].items()] if date in daily_data else []
+        data.append({"date": date, "periods": periods})
+
+    # Pretty-print JSON with indentation
+    with open("report.json", "w") as f:
+        json.dump(data, f, indent=4)
+
 if __name__ == "__main__":
     content = get_content("/home/joe/git/diary/inbox.md")
     entries=string_to_entries(content)
     content = get_content("/home/joe/git/diary/index.md")
     entries.extend(string_to_entries(content))
+    export_to_json(entries,7)
     print("Today")
     report(entries)
     print("Last seven days")
