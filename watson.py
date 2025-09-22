@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import re
 import sys
 import math
@@ -81,7 +81,7 @@ def output_sessions_as_account(sessions):
             else:
                projects[session.project]=session.length()
 
-        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
+        for key, value in sorted(projects.items(), key=lambda kv: kv[1]):
             print("%s: %s" % (value, key))
 
 
@@ -115,7 +115,7 @@ def report_on_day(rawcontent):
                projects[entry.title]+=entry.get_duration()
             else:
                projects[entry.title]=entry.get_duration()
-        for key, value in sorted(projects.iteritems(), key=lambda kv: vk):
+        for key, value in sorted(projects.items(), key=lambda kv: kv[1]):
             print("%s: %s" % (value, key))
         print("Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60)))
         print("Including")

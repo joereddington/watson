@@ -30,7 +30,7 @@ def create_javascript_file(entries,slug):
                 element = int( sum( [entry.get_duration() for entry in single_date_sessions]))
                 total_time = [element]+total_time
         running_mean = get_running_mean(total_time, 7)
-        write_to_javascript(total_time,running_mean,slug[1:])
+#        write_to_javascript(total_time,running_mean,slug[1:])
 
 def write_to_javascript(total_time,running_mean,slug):
         f = open(os.path.dirname(os.path.abspath(__file__))+"/javascript/"+slug+".js", 'wb')
