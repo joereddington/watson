@@ -16,7 +16,7 @@ from entry import Entry
 # Todo: 
 # 1. Should be more resilient to false positives - currently this file has a 'If startswith' to decide if it's an entry and entry must parse, should be that entry checks to see if it's reasonable text, or asks nicely if the entry is well formed.
 
-def get_content(infilename):
+def get_content(infilename): #Literally reads the file into a variable 
         with open(infilename) as f:
                 content = f.readlines()
         return content
@@ -101,8 +101,10 @@ def report_on_day(rawcontent):
     propagate_dates(entries)
     propagate_endings(entries,15)
     if args.t: #if it must be today...
+        print("Today only") 
         entries=[entry for entry in entries if entry.is_today()]
     if args.d: 
+        print("Examining entries from the last"+args.d+"days")
         entries=[entry for entry in entries if entry.days_old()<int(args.d)] 
     if entries:
         big_time=total_duration(entries)
@@ -113,18 +115,22 @@ def report_on_day(rawcontent):
         for entry in entries:
             if entry.title in projects:
                projects[entry.title]+=entry.get_duration()
+               print("We found project {}".format(entry.title)) 
             else:
                projects[entry.title]=entry.get_duration()
+        print("There are {} projects".format(len(projects)))
+        #Okay, but these aren't 'projects' these are JUST  times you were working onthe same thing, which is fine but hey.
         for key, value in sorted(projects.items(), key=lambda kv: kv[1]):
             print("%s: %s" % (value, key))
         print("Total time was {} hours and {} minutes".format(int(total_duration(entries)/60),int(total_duration(entries)%60)))
         print("Including")
-        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+WWW", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
+        catagories=["+Bed","+PlanningAndTracking","+Family", "+Email", "+Faff","+EQT", "+RHUL", "+Overhead", "+Health", "+Exercise", "+PersonalProject"]
         catagory_time=0
         for cat in catagories:
             timechart.create_javascript_file(get_entries_with_tag(entries,cat),cat)
             calendar_helper_functions.calendar_output("calendars/"+cat+".ics",entries,cat)
             print("{}".format(format_report(entries,cat)))
+            # TODO the above needs to be without the decimal point 
             catagory_time+=total_duration(entries,cat)
         untagged=get_entries_with_tag(entries,None)
         calendar_helper_functions.calendar_output("calendars/"+"untagged.ics",untagged,None)
